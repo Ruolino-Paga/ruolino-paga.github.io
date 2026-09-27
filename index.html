@@ -295,7 +295,7 @@ footer p{margin:9px 0}
                 <option value="7.51445">Servizi fiduciari D — nuova tabella</option>
               </optgroup>
               <optgroup label="Tabelle precedenti">
-                <option value="7.78457">4° livello, tabella gen–mar 2026</option>
+                <option value="7.78457">5° livello, tabella dic 2025 – mar 2026</option>
                 <option value="0">Altro — la scrivo io</option>
               </optgroup>
             </select>
@@ -307,16 +307,26 @@ footer p{margin:9px 0}
           </div>
         </div>
         <div class="note" id="warn-min" hidden></div>
-        <div class="g2" style="margin-top:11px">
+        <div class="g3" style="margin-top:11px">
+          <div class="f">
+            <label for="mese">Mese</label>
+            <select id="mese">
+              <option value="1">Gennaio</option><option value="2">Febbraio</option><option value="3">Marzo</option>
+              <option value="4">Aprile</option><option value="5">Maggio</option><option value="6">Giugno</option>
+              <option value="7">Luglio</option><option value="8">Agosto</option><option value="9">Settembre</option>
+              <option value="10">Ottobre</option><option value="11">Novembre</option><option value="12">Dicembre</option>
+            </select>
+          </div>
           <div class="f">
             <label for="gg">Giorni lavorati</label>
             <input type="number" id="gg" inputmode="numeric" value="24">
           </div>
           <div class="f">
-            <label for="ferie">Giorni di ferie o permesso</label>
+            <label for="ferie">Ferie o permessi (gg)</label>
             <input type="number" id="ferie" inputmode="numeric" value="0">
           </div>
         </div>
+        <div class="hint" id="mese-hint"></div>
       </div>
 
       <details>
@@ -436,15 +446,21 @@ footer p{margin:9px 0}
         </div>
         <div class="g2" style="margin-top:11px">
           <div class="f">
-            <label for="d-addiz">Addizionali regionale + comunale (%)</label>
-            <input type="number" id="d-addiz" inputmode="decimal" step="0.1" value="2.1">
+            <label for="d-festret">Festività non lavorate (n.)</label>
+            <input type="number" id="d-festret" inputmode="numeric" value="0">
+            <div class="hint">Le feste nazionali del mese in cui non eri in servizio: in busta valgono 6,66 ore l'una. Si compila da sola dal mese scelto; se in una festa hai lavorato, togline una e metti le ore fra le festive.</div>
           </div>
           <div class="f">
             <label for="d-contr">Contributi a tuo carico (%)</label>
             <input type="number" id="d-contr" inputmode="decimal" step="0.01" value="9.76">
           </div>
         </div>
-        <div class="note">I valori di partenza sono quelli letti sulle buste 2026 dell'istituto di riferimento: contributi 9,76% (9,19% IVS più 0,57%), addizionali intorno al 2,1% per la Lombardia. Cambiali se la tua busta dice altro.</div>
+        <div class="f" style="margin-top:11px">
+          <label for="d-addiz">Addizionali regionale e comunale trattenute al mese (€)</label>
+          <input type="number" id="d-addiz" inputmode="decimal" step="1" value="52">
+          <div class="hint">In busta sono rate fisse dell'anno prima, non una percentuale: nell'istituto di riferimento 48 € a gennaio e febbraio, 52 € da marzo a novembre, niente a dicembre. Se scrivi un numero fino a 10 lo uso come percentuale dell'imponibile.</div>
+        </div>
+        <div class="note">I valori di partenza sono quelli letti sulle otto buste 2026 dell'istituto di riferimento: contributi 9,76% (9,19% IVS più 0,57%), addizionali a rata, straordinario fisso di 20 ore, trasferta a 7 € l'ora. Cambiali se la tua busta dice altro.</div>
       </div>
     </div>
 
@@ -538,6 +554,22 @@ footer p{margin:9px 0}
         </div>
       </details>
       <details>
+        <summary>Aumento contrattuale tassato al 5%</summary>
+        <div class="b">
+          <div class="f">
+            <label for="c-aum">Aumento da rinnovo CCNL (€ al mese)</label>
+            <input type="number" id="c-aum" inputmode="decimal" step="0.01" value="126.34">
+            <div class="hint">Nel 2026 gli aumenti dei contratti rinnovati pagano un'imposta del 5% al posto dell'IRPEF, per chi sta sotto i 28.000 € l'anno (legge 199/2025). Nell'istituto di riferimento: 4° livello 126,34 €, 5° livello 119,11 €, in proporzione alle ore pagate. Metti 0 se la tua busta non ha la voce «imponibile detassazione».</div>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary>Da dove vengono i numeri</summary>
+        <div class="b">
+          <p class="hint" style="font-size:12.5px;margin:0">Tabelle CCNL vigilanza privata dal 01/04/2026, divisore 173: il 4° e il 5° livello coincidono con le buste dell'istituto di riferimento. IRPEF 2026 a tre aliquote, 23, 33 e 43%, e detrazioni da lavoro dipendente (legge 199/2025 e art. 13 TUIR). Bonus del 7,1, 5,3 e 4,8% e ulteriore detrazione da 1.000 € (legge 207/2024). Trattamento integrativo fino a 1.200 € l'anno sotto i 15.000 €. Imposta sostitutiva del 5% sugli aumenti da rinnovo contrattuale, solo per il 2026 e fino a 28.000 € (legge 199/2025). Assegno unico: circolare INPS n. 7 del 30/01/2026. Indennità, straordinario fisso, trasferta, buoni e addizionali a rata: letti su otto buste paga 2026 di un solo istituto, da gennaio ad agosto. Controllo fatto il 27/09/2026.</p>
+        </div>
+      </details>
+      <details>
         <summary>Chi paga il notturno a ore</summary>
         <div class="b">
           <div class="g2">
@@ -621,6 +653,21 @@ footer p{margin:9px 0}
             <button type="button" class="btn" id="ed-add">Aggiungi</button>
           </div>
           <ul class="turni" id="ed-turni"></ul>
+          <div class="g3" style="margin-top:12px;align-items:end">
+            <div class="f">
+              <label for="ed-ore">Ore secche</label>
+              <input type="number" id="ed-ore" inputmode="decimal" step="0.5" min="0" max="24" placeholder="es. 20">
+            </div>
+            <div class="f">
+              <label for="ed-k">Servizio</label>
+              <select id="ed-k"><option value="p">Piantonam.</option><option value="s">Stradale</option><option value="r">Rischio</option></select>
+            </div>
+            <label class="chk"><input type="checkbox" id="ed-notte"> Notte</label>
+          </div>
+          <div class="quick" id="ed-ore-quick">
+            <button type="button" data-o="8">8 h</button><button type="button" data-o="12">12 h</button><button type="button" data-o="16">16 h</button><button type="button" data-o="20">20 h</button><button type="button" data-o="24">24 h</button>
+          </div>
+          <div class="hint">Se non ti va di mettere gli orari, scrivi solo le ore del giorno: contano nel mese come i turni. «Notte» dà l'indennità notturna.</div>
           <div class="g2" style="margin-top:11px">
             <div class="f">
               <label for="ed-stato">Giornata</label>
@@ -711,9 +758,9 @@ const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catc
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 const jGet=(k,d)=>{try{const v=JSON.parse(lsGet(k,'null'));return v===null?d:v}catch(e){return d}};
 const BASE_IST={'c-ore':173,'c-gg':26,'c-buono':7,'c-ggferie':6.66,'c-festperc':35,'c-nott':4.18,'c-strad':5.61,
-  'c-risc':3.12,'c-diur':0.65,'c-nottperc':0,'c-nottore':0,'c-mens':14};
+  'c-risc':3.12,'c-diur':0.65,'c-nottperc':0,'c-nottore':0,'c-mens':14,'c-aum':126.34};
 const P=()=>({oreMese:n('c-ore')||173, ggMese:n('c-gg')||26, buono:n('c-buono'), oreGg:n('c-ggferie')||6.66,
-  festPerc:n('c-festperc'), iNott:n('c-nott'), iStrad:n('c-strad'), iRisc:n('c-risc'), iDiur:n('c-diur'),
+  festPerc:n('c-festperc'), aum:Math.max(0,n('c-aum')), iNott:n('c-nott'), iStrad:n('c-strad'), iRisc:n('c-risc'), iDiur:n('c-diur'),
   nottPerc:n('c-nottperc'), nottOre:n('c-nottore'), mens:parseFloat($('c-mens').value)||14});
 
 /* ---- fisco 2026 ---- */
@@ -721,12 +768,16 @@ const detrLavDip=ra=>ra<=15000?1955:ra<=28000?1910+1190*(28000-ra)/13000:ra<=500
 const ulteriore=ra=>ra<=20000?0:ra<=32000?1000:ra<=40000?1000*(40000-ra)/8000:0;
 const bonusEsente=ra=>{ if(ra>20000) return 0;
   return Math.min(ra,8500)*0.071 + Math.max(0,Math.min(ra,15000)-8500)*0.053 + Math.max(0,Math.min(ra,20000)-15000)*0.048; };
-const irpefLorda=ra=>Math.min(ra,28000)*0.23 + Math.max(0,Math.min(ra,50000)-28000)*0.35 + Math.max(0,ra-50000)*0.43;
+const irpefLorda=ra=>Math.min(ra,28000)*0.23 + Math.max(0,Math.min(ra,50000)-28000)*0.33 + Math.max(0,ra-50000)*0.43;   // legge 199/2025: seconda aliquota al 33%
+const trattIntegrativo=ra=>{ if(ra<=0) return 0; const lorda=irpefLorda(ra), detr=detrLavDip(ra);
+  if(ra<=15000) return lorda>detr?1200:0;                       // serve capienza: imposta lorda sopra la detrazione
+  if(ra<=28000) return Math.max(0,Math.min(1200,detr-lorda));    // spetta per la parte di detrazioni senza imposta
+  return 0; };
 
-/* ---- assegno unico 2026 ---- */
-const ISEE_MIN=17090.61, ISEE_MAX=45574.96;
+/* ---- assegno unico 2026 (circolare INPS n. 7 del 30/01/2026, rivalutazione +1,4%) ---- */
+const ISEE_MIN=17468.51, ISEE_MAX=46582.71;
 function auuFiglio(isee,maggiorenne){
-  const max=maggiorenne?96.90:199.40, min=maggiorenne?28.50:57.00;
+  const max=maggiorenne?99.10:203.80, min=maggiorenne?29.10:58.30;
   if(!isee||isee>=ISEE_MAX) return min;
   if(isee<=ISEE_MIN) return max;
   return max-(max-min)*(isee-ISEE_MIN)/(ISEE_MAX-ISEE_MIN);
@@ -736,12 +787,12 @@ function calcolaAUU(){
   const tot=fm+fM; if(!tot) return {tot:0,fm,fM};
   let s=fm*auuFiglio(isee,false)+fM*auuFiglio(isee,true);
   if(tot>=3){                       // maggiorazione dal terzo figlio in poi
-    const m=isee&&isee<=ISEE_MIN?96.90:isee>=ISEE_MAX||!isee?17.10:96.90-(96.90-17.10)*(isee-ISEE_MIN)/(ISEE_MAX-ISEE_MIN);
+    const m=isee&&isee<=ISEE_MIN?99.10:isee>=ISEE_MAX||!isee?17.40:99.10-(99.10-17.40)*(isee-ISEE_MIN)/(ISEE_MAX-ISEE_MIN);
     s+=(tot-2)*m;
   }
-  if(tot>=4) s+=150;                // forfait nuclei numerosi
+  if(tot>=4) s+=150;                // forfait nuclei con almeno quattro figli
   if(due){                          // entrambi i genitori con reddito da lavoro
-    const m=isee&&isee<=ISEE_MIN?34.10:isee>=ISEE_MAX||!isee?0:34.10*(1-(isee-ISEE_MIN)/(ISEE_MAX-ISEE_MIN));
+    const m=isee&&isee<=ISEE_MIN?34.90:isee>=ISEE_MAX||!isee?0:34.90*(1-(isee-ISEE_MIN)/(ISEE_MAX-ISEE_MIN));
     s+=tot*m;
   }
   return {tot:s,fm,fM};
@@ -760,7 +811,8 @@ function calcola(){
   let notti=n('d-notti'); if(notti<0) notti=ggInd-i561-i312;
   notti=Math.max(0,Math.min(notti,ggInd-i561-i312));
   const diurni=Math.max(0,ggInd-notti-i561-i312);   // giorni lavorati senza notte: indennità diurna
-  const pAdd=n('d-addiz')/100, pContr=n('d-contr')/100;
+  const addizIn=Math.max(0,n('d-addiz')), pContr=n('d-contr')/100;
+  const festRet=Math.max(0,Math.round(n('d-festret')));
 
   const oreFerie=ferie*c.oreGg;
   const ordinarie=Math.max(0,Math.min(ore,c.oreMese-oreFerie));
@@ -771,29 +823,36 @@ function calcola(){
   const vFerie=oreFerie*oraria;
   const vStr=strEff*oraria*(1+strP/100);
   const vFest=festOre*oraria*(1+c.festPerc/100);
+  const vFestRet=festRet*c.oreGg*oraria;        // festività non lavorate: 6,66 ore l'una, dentro l'imponibile
   const vInd=notti*c.iNott + i561*c.iStrad + i312*c.iRisc + diurni*c.iDiur;
   const vNottOre=c.nottPerc>0 ? c.nottOre*oraria*(c.nottPerc/100) : 0;   // contratti che pagano il notturno a ore
   const ratei=(oraria*c.oreMese)*Math.max(0,c.mens-12)/12;
   const vTrasf=oreTrasf*valTra;                 // esente
   const buoni=ggInd*c.buono;                    // i buoni si fermano alle giornate del mese
 
-  const imponibile=vOrd+vFerie+vStr+vFest+vInd+vNottOre+ratei;
+  const imponibile=vOrd+vFerie+vStr+vFest+vFestRet+vInd+vNottOre+ratei;
   const contributi=imponibile*pContr;
-  const baseFisc=imponibile-contributi;
+  const reddito=imponibile-contributi;
+  // aumento da rinnovo CCNL tassato al 5% (legge 199/2025): solo 2026, fino a 28.000 € l'anno, in proporzione alle ore pagate
+  const orePagate=ordinarie+oreFerie+festRet*c.oreGg+c.oreMese*Math.max(0,c.mens-12)/12;
+  const detass=(c.aum>0 && reddito*12<=28000) ? Math.min(reddito, c.aum*orePagate/c.oreMese) : 0;
+  const impSost=detass*0.05;
+  const baseFisc=reddito-detass;
   const ra=baseFisc*12;
   const irLorda=irpefLorda(ra)/12;
   const detraz=(detrLavDip(ra)+ulteriore(ra))/12;
   const irNetta=Math.max(0,irLorda-detraz);
-  const addiz=baseFisc*pAdd;
+  const addiz=addizIn>10 ? addizIn : baseFisc*addizIn/100;   // fino a 10 è una percentuale, sopra è la rata in euro
   const bonus=bonusEsente(ra)/12;
+  const trattInt=trattIntegrativo(ra)/12;
 
   const trattenute=Math.max(0,n('quinto'))+Math.max(0,n('presti'))+Math.max(0,n('sind'))+Math.max(0,n('altre'));
-  const nettoBusta=baseFisc-irNetta-addiz+vTrasf+bonus-trattenute;
+  const nettoBusta=reddito-irNetta-impSost-addiz+vTrasf+bonus+trattInt-trattenute;
   const auu=calcolaAUU();
   const inCasa=nettoBusta+auu.tot;
 
-  render({ore,ordinarie,strEff,oreTrasf,festOre,oreFerie,gg,ggInd,notti,i561,i312,diurni,oraria,
-    vOrd,vFerie,vStr,vFest,vInd,vNottOre,ratei,vTrasf,buoni,imponibile,contributi,irNetta,addiz,bonus,
+  render({ore,ordinarie,strEff,oreTrasf,festOre,festRet,oreFerie,gg,ggInd,notti,i561,i312,diurni,oraria,
+    vOrd,vFerie,vStr,vFest,vFestRet,vInd,vNottOre,ratei,vTrasf,buoni,imponibile,contributi,detass,impSost,irNetta,addiz,addizIn,bonus,trattInt,
     trattenute,nettoBusta,auu,inCasa,valTra,c});
 }
 
@@ -809,6 +868,7 @@ function render(m){
     ['Ferie e permessi',m.vFerie,'#7d8ea6'],
     ['Straordinario',m.vStr,'var(--accent)'],
     ['Festivo',m.vFest,'#b8862f'],
+    ['Festività',m.vFestRet,'#9a7b2e'],
     ['Trasferta',m.vTrasf,'var(--accent-2)'],
     ['Indennità',m.vInd,'#5c8a6e'],
     ['Notturno',m.vNottOre,'#4f7d94'],
@@ -825,14 +885,17 @@ function render(m){
   if(m.vFerie>0) h+=r('Ferie e permessi',eur2(m.vFerie)+' €',f1(m.oreFerie)+' h');
   if(m.vStr>0) h+=r('Straordinario',eur2(m.vStr)+' €',f1(m.strEff)+' h');
   if(m.vFest>0) h+=r('Lavoro festivo',eur2(m.vFest)+' €',f1(m.festOre)+' h × +'+m.c.festPerc+'%');
+  if(m.vFestRet>0) h+=r('Festività non lavorate',eur2(m.vFestRet)+' €',m.festRet+' × '+eur2(m.c.oreGg)+' h');
   h+=r('Indennità giornaliere',eur2(m.vInd)+' €',(m.notti+m.i561+m.i312+m.diurni)+' gg'+(m.gg>m.c.ggMese?' su '+m.gg:''));
   if(m.vNottOre>0) h+=r('Maggiorazione notturna',eur2(m.vNottOre)+' €',f1(m.c.nottOre)+' h × '+m.c.nottPerc+'%');
   if(m.ratei>0) h+=r(m.c.mens>=14?'Ratei 13ª e 14ª':'Rateo 13ª',eur2(m.ratei)+' €');
   h+=`<tr class="tot"><td>Totale imponibile</td><td>${eur2(m.imponibile)} €</td></tr>`;
   h+=rs('Contributi a tuo carico','−'+eur2(m.contributi)+' €');
   h+=rs('IRPEF dopo le detrazioni','−'+eur2(m.irNetta)+' €');
-  h+=rs('Addizionali','−'+eur2(m.addiz)+' €');
+  if(m.impSost>0) h+=rs('Imposta del 5% sull\'aumento contrattuale <span class="q">su '+eur2(m.detass)+' €</span>','−'+eur2(m.impSost)+' €');
+  h+=rs('Addizionali'+(m.addizIn>10?' <span class="q">rata</span>':''),'−'+eur2(m.addiz)+' €');
   if(m.bonus>0) h+=rs('Bonus in busta (taglio del cuneo)','+'+eur2(m.bonus)+' €');
+  if(m.trattInt>0) h+=rs('Trattamento integrativo','+'+eur2(m.trattInt)+' €');
   if(m.vTrasf>0) h+=r('Trasferta o disponibilità <span class="q">esente</span>','+'+eur2(m.vTrasf)+' €',f1(m.oreTrasf)+' h × '+eur2(m.valTra)+' €');
   if(m.trattenute>0) h+=r('Trattenute e rate','−'+eur2(m.trattenute)+' €');
   h+=`<tr class="tot"><td>Netto in busta</td><td>${eur2(Math.max(0,m.nettoBusta))} €</td></tr>`;
@@ -882,6 +945,7 @@ function render(m){
 
   aggiornaEncomio(m);
   aggiornaHintRuolino();
+  aggiornaMeseHint();
   const st={}; CAMPI.forEach(id=>{ st[id]=$(id).value; }); lsSet('gpg',JSON.stringify(st));
 }
 
@@ -1125,19 +1189,24 @@ function festivo(s){ const d=daYmd(s); if(FISSE.indexOf((d.getMonth()+1)+'-'+d.g
   const p=pasqua(d.getFullYear()); return ymd(new Date(p.getFullYear(),p.getMonth(),p.getDate()+1))===s; }   // lunedì dell'Angelo
 const isFest=s=>{ const r=REG[s]; return r&&typeof r.fest==='boolean'?r.fest:festivo(s); };
 const giorno=s=>REG[s]||(REG[s]={t:[],s:'',ob:'',src:'man'});
-const oreGiorno=r=>r.t.reduce((a,t)=>a+(t.f?oreTurno(t.i,t.f):0),0);
-const notteGiorno=r=>r.t.some(t=>{ if(!t.f) return false; const h=+t.i.split(':')[0], h2=+t.f.split(':')[0]; return h>=20||h<6||h2<=8; });
+const oreGiorno=r=>r.t.reduce((a,t)=>a+(t.f?oreTurno(t.i,t.f):0),0)+(r.o>0?r.o:0);   // turni con orario più le ore secche
+const notteGiorno=r=>!!r.n||r.t.some(t=>{ if(!t.f) return false; const h=+t.i.split(':')[0], h2=+t.f.split(':')[0]; return h>=20||h<6||h2<=8; });
+const tipoGiorno=(r,k)=>r.k===k||r.t.some(t=>t.k===k);
 function riepilogo(ym){
-  const R={ore:0,gg:0,notti:0,i561:0,i312:0,diurni:0,fest:0,ferie:0,turni:0};
+  const R={ore:0,gg:0,notti:0,i561:0,i312:0,diurni:0,fest:0,festret:0,ferie:0,turni:0};
   Object.keys(REG).forEach(s=>{
     if(s.slice(0,7)!==ym) return; const r=REG[s]; const o=oreGiorno(r);
-    if(o>0){ R.ore+=o; R.gg++; R.turni+=r.t.filter(t=>t.f).length;
-      if(r.t.some(t=>t.k==='s')) R.i561++; else if(r.t.some(t=>t.k==='r')) R.i312++; else if(notteGiorno(r)) R.notti++; else R.diurni++;
+    if(o>0){ R.ore+=o; R.gg++; R.turni+=r.t.filter(t=>t.f).length+(r.o>0?1:0);
+      if(tipoGiorno(r,'s')) R.i561++; else if(tipoGiorno(r,'r')) R.i312++; else if(notteGiorno(r)) R.notti++; else R.diurni++;
       if(isFest(s)) R.fest+=o; }
     if(r.s==='ferie'||r.s==='permesso') R.ferie++;
   });
+  // festività non lavorate: le feste nazionali del mese senza ore di servizio (in busta valgono 6,66 ore l'una)
+  const y=+ym.slice(0,4), m=+ym.slice(5,7), nG=new Date(y,m,0).getDate();
+  for(let g=1;g<=nG;g++){ const s=ymd(new Date(y,m-1,g)); if(isFest(s) && !(REG[s]&&oreGiorno(REG[s])>0)) R.festret++; }
   return R;
 }
+const festiviMese=(y,m)=>{ let k=0; const nG=new Date(y,m,0).getDate(); for(let g=1;g<=nG;g++) if(festivo(ymd(new Date(y,m-1,g)))) k++; return k; };
 const CAL={ym:oggi().slice(0,7), sel:oggi()};
 function renderCal(){
   const y=+CAL.ym.slice(0,4), m=+CAL.ym.slice(5,7);
@@ -1153,6 +1222,7 @@ function renderCal(){
     const r=REG[c.s], cls=['d']; if(c.out) cls.push('out'); if(c.s===t) cls.push('today'); if(c.s===CAL.sel) cls.push('sel'); if(isFest(c.s)) cls.push('fest');
     let chips='';
     if(r){ r.t.forEach(x=>{ chips+=`<span class="chip ${x.k||'p'}${x.f?'':' open'}">${x.i.slice(0,2)}–${x.f?x.f.slice(0,2):'…'}</span>`; });
+      if(r.o>0) chips+=`<span class="chip ${r.k||'p'}">${f1(r.o).replace(',0','')} h</span>`;
       if(r.s) chips+=`<span class="chip st ${r.s}">${({riposo:'rip.',ferie:'ferie',permesso:'perm.',malattia:'mal.'})[r.s]||r.s}</span>`; }
     return `<button type="button" class="${cls.join(' ')}" data-d="${c.s}" aria-label="${+c.s.slice(8)} ${NM[+c.s.slice(5,7)-1]}"><span class="n">${+c.s.slice(8)}</span>${chips}</button>`;
   }).join('');
@@ -1177,18 +1247,26 @@ function renderEd(){
   $('ed-stato').value=r?(r.s||''):'';
   $('ed-ob').value=r?(r.ob||''):'';
   $('ed-fest').checked=isFest(s);
+  $('ed-ore').value=r&&r.o>0?r.o:'';
+  $('ed-notte').checked=!!(r&&r.n);
+  $('ed-k').value=r&&r.k?r.k:'p';
 }
 function toccaGiorno(s){
   const r=giorno(s); r.src='man';
   if(APERTO&&APERTO.d===s&&!r.t.some(x=>!x.f)){ APERTO=null; lsSet(KEY_APERTO,'null'); renderTb(); }
-  if(!r.t.length&&!r.s&&!r.ob&&typeof r.fest!=='boolean') delete REG[s];
+  if(!r.t.length&&!r.o&&!r.s&&!r.ob&&typeof r.fest!=='boolean') delete REG[s];
   salvaReg(); renderCal(); collegaSeServe();
 }
 function aggiungiTurno(s,i,f){ const r=giorno(s); r.t.push({i:i,f:f,k:'p'}); if(r.s) r.s=''; toccaGiorno(s); }
 document.querySelectorAll('#ed .quick button[data-t]').forEach(b=>b.onclick=()=>{ const p=b.getAttribute('data-t').split('-'); aggiungiTurno(CAL.sel,p[0],p[1]); });
 $('ed-altro').onclick=()=>{ $('ed-custom').hidden=!$('ed-custom').hidden; };
 $('ed-add').onclick=()=>{ const i=oraOk($('ed-i').value), f=oraOk($('ed-f').value); if(!i||!f) return msgCal('Scrivi le ore come 06:00.'); aggiungiTurno(CAL.sel,i,f); $('ed-custom').hidden=true; };
-$('ed-stato').onchange=()=>{ const r=giorno(CAL.sel); r.s=$('ed-stato').value; if(r.s) r.t=r.t.filter(x=>!x.f); toccaGiorno(CAL.sel); };
+$('ed-stato').onchange=()=>{ const r=giorno(CAL.sel); r.s=$('ed-stato').value; if(r.s){ r.t=r.t.filter(x=>!x.f); delete r.o; delete r.n; } toccaGiorno(CAL.sel); };
+$('ed-ore').oninput=()=>{ const r=giorno(CAL.sel); const v=parseFloat($('ed-ore').value); if(isNaN(v)||v<=0) delete r.o; else { r.o=Math.min(24,v); if(r.s) r.s=''; } salvaReg(); };
+$('ed-ore').onchange=()=>toccaGiorno(CAL.sel);
+document.querySelectorAll('#ed-ore-quick button').forEach(b=>b.onclick=()=>{ const r=giorno(CAL.sel); r.o=+b.getAttribute('data-o'); if(r.s) r.s=''; toccaGiorno(CAL.sel); });
+$('ed-notte').onchange=()=>{ const r=giorno(CAL.sel); if($('ed-notte').checked) r.n=true; else delete r.n; toccaGiorno(CAL.sel); };
+$('ed-k').onchange=()=>{ const r=giorno(CAL.sel); if($('ed-k').value==='p') delete r.k; else r.k=$('ed-k').value; toccaGiorno(CAL.sel); };
 $('ed-ob').oninput=()=>{ const r=giorno(CAL.sel); r.ob=$('ed-ob').value; salvaReg(); };
 $('ed-ob').onchange=()=>{ toccaGiorno(CAL.sel); };
 $('ed-fest').onchange=()=>{ const r=giorno(CAL.sel); r.fest=$('ed-fest').checked; toccaGiorno(CAL.sel); };
@@ -1196,9 +1274,10 @@ $('ed-settimana').onclick=()=>{
   const d=daYmd(CAL.sel), lun=new Date(d.getFullYear(),d.getMonth(),d.getDate()-wd(d)); let nCop=0, nSalt=0;
   for(let i=0;i<7;i++){
     const a=ymd(new Date(lun.getFullYear(),lun.getMonth(),lun.getDate()+i)), b=ymd(new Date(lun.getFullYear(),lun.getMonth(),lun.getDate()+7+i));
-    const ra=REG[a]; if(!ra||(!ra.t.length&&!ra.s)) continue;
-    const rb=REG[b]; if(rb&&(rb.t.length||rb.s)){ nSalt++; continue; }
-    REG[b]={t:ra.t.filter(t=>t.f).map(t=>({i:t.i,f:t.f,k:t.k||'p'})),s:ra.s||'',ob:ra.ob||'',src:'man'}; nCop++;
+    const ra=REG[a]; if(!ra||(!ra.t.length&&!ra.o&&!ra.s)) continue;
+    const rb=REG[b]; if(rb&&(rb.t.length||rb.o||rb.s)){ nSalt++; continue; }
+    REG[b]={t:ra.t.filter(t=>t.f).map(t=>({i:t.i,f:t.f,k:t.k||'p'})),s:ra.s||'',ob:ra.ob||'',src:'man'};
+    if(ra.o>0) REG[b].o=ra.o; if(ra.n) REG[b].n=true; if(ra.k) REG[b].k=ra.k; nCop++;
   }
   salvaReg(); renderCal(); collegaSeServe();
   msgCal(nCop?`Copiati ${nCop} giorni nella settimana dopo`+(nSalt?`, ${nSalt} lasciati perché avevano già qualcosa.`:'.'):'La settimana dopo ha già i suoi turni: non ho toccato niente.');
@@ -1208,7 +1287,7 @@ $('cal-prev').onclick=()=>{ const y=+CAL.ym.slice(0,4), m=+CAL.ym.slice(5,7); CA
 $('cal-next').onclick=()=>{ const y=+CAL.ym.slice(0,4), m=+CAL.ym.slice(5,7); CAL.ym=ymd(new Date(y,m,1)).slice(0,7); CAL.sel=null; renderCal(); };
 function renderStat(){
   const R=riepilogo(CAL.ym);
-  $('stat').innerHTML=[['Ore',f1(R.ore)],['Giorni',R.gg],['Turni',R.turni],['Notti',R.notti],['Stradale',R.i561],['Rischio',R.i312],
+  $('stat').innerHTML=[['Ore',f1(R.ore)],['Giorni',R.gg],['Festività',R.festret],['Notti',R.notti],['Stradale',R.i561],['Rischio',R.i312],
     ['Festive',f1(R.fest)+' h'],['Ferie/perm.',R.ferie],['Oltre le '+(n('c-ore')||173),f1(Math.max(0,R.ore-(n('c-ore')||173)))+' h']]
     .map(p=>`<div><b>${p[1]}</b><span>${p[0]}</span></div>`).join('');
   $('cal-usa').disabled=!(R.ore>0||R.ferie>0);
@@ -1219,13 +1298,17 @@ function msgCal(t){ $('cal-msg').textContent=t; clearTimeout(msgCal.t); msgCal.t
 function usaNelCalcolo(ym,quiet){
   const R=riepilogo(ym);
   $('ore').value=R.ore.toFixed(1); $('gg').value=R.gg; $('ferie').value=R.ferie; $('d-notti').value=R.notti;
-  $('d-i561').value=R.i561; $('d-i312').value=R.i312; $('d-fest').value=R.fest.toFixed(1);
+  $('d-i561').value=R.i561; $('d-i312').value=R.i312; $('d-fest').value=R.fest.toFixed(1); $('d-festret').value=R.festret;
+  ANNO=+ym.slice(0,4); $('mese').value=String(+ym.slice(5,7));
   lsSet(KEY_LINK,ym); calcola(); renderStat();
   if(!quiet){ mostraTab('t-r'); inCima(); }
 }
 $('cal-usa').onclick=()=>usaNelCalcolo(CAL.ym,false);
 function collegaSeServe(){ const l=lsGet(KEY_LINK,''); if(l&&l===CAL.ym) usaNelCalcolo(CAL.ym,true); }
-const CAMPI_ORE=['ore','gg','ferie','d-notti','d-i561','d-i312','d-fest'];
+const CAMPI_ORE=['ore','gg','ferie','d-notti','d-i561','d-i312','d-fest','d-festret'];
+let ANNO=new Date().getFullYear();
+function aggiornaMeseHint(){ const m=+$('mese').value||1, k=festiviMese(ANNO,m);
+  $('mese-hint').textContent = k ? `${NM[m-1]} ${ANNO}: ${k} ${k===1?'festività nazionale':'festività nazionali'}, pagate a parte se non le lavori.` : `${NM[m-1]} ${ANNO}: nessuna festività nazionale.`; }
 function staccaRuolino(){ lsSet(KEY_LINK,''); }
 function aggiornaHintRuolino(){
   const el=$('ore-ruolino'), link=lsGet(KEY_LINK,'');
@@ -1237,7 +1320,7 @@ function aggiornaHintRuolino(){
 }
 function testoRiepilogo(ym){
   const R=riepilogo(ym), y=ym.slice(0,4), m=+ym.slice(5,7);
-  let t=`RUOLINO · ${NM[m-1]} ${y}\nOre ${f1(R.ore)} · giorni ${R.gg} · turni ${R.turni}\nNotti ${R.notti} · stradale ${R.i561} · rischio ${R.i312} · diurni ${R.diurni}\nFestive ${f1(R.fest)} h · ferie/permessi ${R.ferie} gg`;
+  let t=`RUOLINO · ${NM[m-1]} ${y}\nOre ${f1(R.ore)} · giorni ${R.gg} · turni ${R.turni}\nNotti ${R.notti} · stradale ${R.i561} · rischio ${R.i312} · diurni ${R.diurni}\nFestive ${f1(R.fest)} h · festività non lavorate ${R.festret} · ferie/permessi ${R.ferie} gg`;
   if(lsGet(KEY_LINK,'')===ym) t+=`\nNetto stimato ${$('netto').textContent.replace(/\s+/g,' ')}`;
   return t;
 }
@@ -1432,17 +1515,22 @@ $('c-reset').onclick=()=>{ for(const k in BASE_IST) if($(k)) $(k).value=BASE_IST
 
 /* ---- avvio ---- */
 const CAMPI=['ore','oraria','liv','gg','ferie','fig-min','fig-mag','isee','duelav','quinto','presti','sind','altre',
-  'd-str','d-strp','d-val','d-notti','d-i561','d-i312','d-fest','d-addiz','d-contr','v-netto',
-  'c-ore','c-gg','c-buono','c-ggferie','c-festperc','c-nott','c-strad','c-risc','c-diur','c-nottperc','c-nottore','c-mens'];
+  'd-str','d-strp','d-val','d-notti','d-i561','d-i312','d-fest','d-festret','d-addiz','d-contr','v-netto',
+  'c-ore','c-gg','c-buono','c-ggferie','c-festperc','c-nott','c-strad','c-risc','c-diur','c-nottperc','c-nottore','c-mens','c-aum'];
 try{
   const auto=jGet('gpg',null);
   if(auto) applicaCampi(auto);
   aggiornaSelect(lsGet(KEY_ULT,''));
 }catch(e){ aggiornaSelect(); }
 CAMPI.forEach(id=>{ const el=$(id); if(el) el.addEventListener('input',()=>{ if(CAMPI_ORE.indexOf(id)>=0) staccaRuolino(); calcola(); }); });
+/* il mese parte da oggi, e le festività non lavorate si compilano da sole; se cambi mese si ricalcolano */
+$('mese').value=String(new Date().getMonth()+1);
+$('d-festret').value=festiviMese(ANNO,+$('mese').value);
+$('mese').onchange=()=>{ staccaRuolino(); $('d-festret').value=festiviMese(ANNO,+$('mese').value); calcola(); };
 calcola();
 renderTb();
 renderCal();
+{ const l=lsGet(KEY_LINK,''); if(l&&/^\d{4}-\d{2}$/.test(l)) usaNelCalcolo(l,true); }   // se il calcolo segue il ruolino, riparte da lì
 window.RP={inflateJS,inflateBytes,frammenti,foglio,leggiPDF,riepilogo,FRASI,GRADI,pasqua,festivo,reg:()=>REG};
 /* installabile e utilizzabile senza rete: solo quando la pagina arriva da un indirizzo, non da un file */
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
