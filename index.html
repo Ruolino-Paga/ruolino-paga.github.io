@@ -194,6 +194,15 @@ footer p{margin:9px 0}
 .timbra{display:flex;gap:8px}
 .timbra .btn{flex:1;margin:0 2px}
 .testo{white-space:pre-wrap;font-family:"IBM Plex Mono",Menlo,Consolas,monospace;font-size:12px;line-height:1.45;margin:10px 0 0}
+textarea{min-height:120px;font-size:14px;font-family:"IBM Plex Mono",Menlo,Consolas,monospace;line-height:1.4;resize:vertical}
+.sv-grado{font-family:Oswald,sans-serif;font-size:26px;font-weight:500;color:var(--accent);line-height:1.1}
+.mostrine{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.mostrina{border:1px solid var(--line);border-radius:10px;padding:8px 6px;text-align:center;font-size:10.5px;color:var(--muted);line-height:1.3;opacity:.7;min-width:0}
+.mostrina.ok{border-color:var(--oro);background:var(--accent-soft);color:var(--ink-2);opacity:1}
+.mostrina b{display:block;font-family:Oswald,sans-serif;font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.mostrina.ok b{color:var(--accent)}
+#banner{border-left:3px solid var(--oro);margin-top:14px}
+#medaglia-img{width:100%;border-radius:10px;margin-top:10px;display:block}
 @media (min-width:600px){.big{font-size:54px}.wrap{padding:0 20px}.cal .d{min-height:64px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -216,6 +225,8 @@ footer p{margin:9px 0}
 </header>
 
 <div class="wrap">
+
+  <div class="note" id="banner" hidden></div>
 
   <div class="result">
     <div class="top">
@@ -474,6 +485,29 @@ footer p{margin:9px 0}
         <div class="note" id="v-esito">Inserisci il netto della tua busta per vedere quanto si discosta dalla stima.</div>
         <div class="hint" style="margin-top:9px">Per il minimo di legge sulla paga oraria guarda la scheda Servizio: sotto la paga oraria ti dico se sei al tabellare del tuo livello.</div>
       </div>
+      <details>
+        <summary>Voce per voce <em>facoltativo</em></summary>
+        <div class="b">
+          <p style="margin:0 0 10px;font-size:13px;color:var(--ink-2)">Ricopia le voci che trovi in busta: ti dico dove la stima si stacca, non solo di quanto.</p>
+          <div class="g2">
+            <div class="f"><label for="v-ord">Retribuzione ordinaria + ferie (€)</label><input type="number" id="v-ord" inputmode="decimal" step="0.01" value="0"></div>
+            <div class="f"><label for="v-str">Straordinario (€)</label><input type="number" id="v-str" inputmode="decimal" step="0.01" value="0"></div>
+          </div>
+          <div class="g2" style="margin-top:10px">
+            <div class="f"><label for="v-ind">Indennità giornaliere (€)</label><input type="number" id="v-ind" inputmode="decimal" step="0.01" value="0"></div>
+            <div class="f"><label for="v-trasf">Trasferta o disponibilità (€)</label><input type="number" id="v-trasf" inputmode="decimal" step="0.01" value="0"></div>
+          </div>
+          <div class="g2" style="margin-top:10px">
+            <div class="f"><label for="v-imp">Totale imponibile (€)</label><input type="number" id="v-imp" inputmode="decimal" step="0.01" value="0"></div>
+            <div class="f"><label for="v-contr">Contributi (€)</label><input type="number" id="v-contr" inputmode="decimal" step="0.01" value="0"></div>
+          </div>
+          <div class="g2" style="margin-top:10px">
+            <div class="f"><label for="v-irpef">Totale IRPEF del mese (€)</label><input type="number" id="v-irpef" inputmode="decimal" step="0.01" value="0"></div>
+            <div class="f"><label for="v-addiz">Addizionali (€)</label><input type="number" id="v-addiz" inputmode="decimal" step="0.01" value="0"></div>
+          </div>
+          <table id="v-voci" style="margin-top:12px"></table>
+        </div>
+      </details>
     </div>
   </div>
 
@@ -587,7 +621,11 @@ footer p{margin:9px 0}
         </div>
       </details>
       <div class="b" style="padding-top:0">
-        <button class="btn" id="c-reset" style="width:100%">Rimetti i valori predefiniti</button>
+        <div class="btnrow" style="margin-top:0">
+          <button class="btn primary" id="c-share">Condividi il tuo contratto</button>
+          <button class="btn" id="c-reset">Rimetti i valori predefiniti</button>
+        </div>
+        <div class="hint" style="margin-top:8px">«Condividi» crea un link con questi parametri: il collega lo apre, tocca «Usali» e ha il tuo contratto senza ricopiare niente.</div>
       </div>
     </div>
   </div>
@@ -689,6 +727,9 @@ footer p{margin:9px 0}
             <button type="button" class="btn" id="ed-settimana">Ripeti la settimana nella prossima</button>
             <button type="button" class="btn" id="ed-svuota">Svuota il giorno</button>
           </div>
+          <div class="btnrow" style="margin-top:8px">
+            <button type="button" class="btn" id="ed-passa">Passa il turno a un collega</button>
+          </div>
         </div>
       </div>
     </div>
@@ -701,8 +742,41 @@ footer p{margin:9px 0}
           <button type="button" class="btn primary" id="cal-usa">Usa nel calcolo</button>
           <button type="button" class="btn" id="cal-copia">Copia riepilogo</button>
         </div>
+        <div class="btnrow" style="margin-top:8px">
+          <button type="button" class="btn gold" id="cal-medaglia">Medaglia del mese</button>
+          <button type="button" class="btn" id="cal-ics">Nel calendario del telefono</button>
+        </div>
         <div class="hint" id="cal-link" style="margin-top:8px"></div>
         <div class="hint" id="cal-msg"></div>
+        <div id="medaglia-box" hidden><img id="medaglia-img" alt="Medaglia del mese"><div class="hint">Tieni premuto sull'immagine per salvarla o mandarla nel gruppo.</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Stato di servizio</h3>
+      <div class="b">
+        <div class="sv-grado" id="sv-grado">Recluta</div>
+        <div class="hint" id="sv-riga" style="font-size:12.5px;color:var(--ink-2);margin-top:4px"></div>
+        <div class="hint" id="sv-conto" style="margin-top:8px"></div>
+        <div class="mostrine" id="sv-mostrine"></div>
+      </div>
+    </div>
+    <div class="card" id="sv-anno-card" hidden>
+      <h3>L'anno</h3>
+      <div class="b"><table id="sv-anno"></table></div>
+    </div>
+
+    <div class="card">
+      <h3>Turni da un messaggio</h3>
+      <div class="b">
+        <label for="tt-testo">Incolla qui i turni come li ricevi, per esempio da WhatsApp</label>
+        <textarea id="tt-testo" placeholder="lun 28/09 06-14&#10;mar 29 22-06&#10;mer riposo&#10;gio 01/10 14.00-22.00 stradale&#10;ven 20 ore notte"></textarea>
+        <div class="btnrow">
+          <button type="button" class="btn primary" id="tt-leggi">Leggi</button>
+          <button type="button" class="btn" id="tt-applica" hidden>Metti nel calendario</button>
+        </div>
+        <table id="tt-anteprima" style="margin-top:10px"></table>
+        <div class="hint" id="tt-msg" style="margin-top:8px">Capisce date come 28/09, giorni come «lun» o «martedì 29», orari come 06-14 o 14.00-22.00, ore secche come «20 ore», e le parole riposo, ferie, permesso, malattia, stradale, rischio, notte. I giorni senza data seguono l'ultimo letto, nel mese aperto nel calendario.</div>
       </div>
     </div>
 
@@ -730,6 +804,7 @@ footer p{margin:9px 0}
         <p style="margin:0 0 10px;font-size:13px;color:var(--ink-2)">Registro, profili e valori stanno solo in questo browser. Se cambi telefono o pulisci i dati, li perdi: salvati un file ogni tanto.</p>
         <div class="btnrow" style="margin-top:0">
           <button type="button" class="btn" id="bk-esporta">Salva file</button>
+          <button type="button" class="btn" id="bk-manda">Manda a te stesso</button>
           <label class="btn" for="bk-file" style="margin:0 2px;flex:1;display:flex;align-items:center;justify-content:center">Carica file<input type="file" id="bk-file" accept="application/json,.json" hidden></label>
         </div>
         <div class="hint" id="bk-msg" style="margin-top:8px"></div>
@@ -742,7 +817,8 @@ footer p{margin:9px 0}
     <p><strong>Il calcolo è stato costruito e verificato sulle buste paga di un solo istituto.</strong> Per altri istituti,
     con accordi aziendali e prassi diverse, il risultato può essere anche completamente sbagliato: prendilo per quello che
     è, una stima da confrontare con la tua busta.</p>
-    <p>Tutto viene calcolato in locale, sul tuo telefono: nessun dato esce da questa pagina, niente viene trattenuto, niente viene inviato. Anche il registro delle ore resta qui.</p>
+    <p>Tutto viene calcolato in locale, sul tuo telefono: nessun dato esce da questa pagina, niente viene trattenuto, niente viene inviato. Anche il registro delle ore resta qui.<span id="nota-contatore" hidden> L'unica cosa che parte è un conteggio anonimo delle aperture, senza cookie: serve a sapere in quanti la usano.</span></p>
+    <p id="versione"></p>
   </footer>
 </div>
 
@@ -946,6 +1022,7 @@ function render(m){
   aggiornaEncomio(m);
   aggiornaHintRuolino();
   aggiornaMeseHint();
+  aggiornaVoci(m);
   const st={}; CAMPI.forEach(id=>{ st[id]=$(id).value; }); lsSet('gpg',JSON.stringify(st));
 }
 
@@ -1228,7 +1305,7 @@ function renderCal(){
   }).join('');
   $('cal').innerHTML=h;
   $('cal').querySelectorAll('.d').forEach(b=>b.onclick=()=>{ CAL.sel=b.getAttribute('data-d'); CAL.ym=CAL.sel.slice(0,7); renderCal(); });
-  renderEd(); renderStat();
+  renderEd(); renderStat(); renderServizio();
 }
 function renderEd(){
   const ed=$('ed'); if(!CAL.sel){ ed.hidden=true; return; } ed.hidden=false;
@@ -1446,13 +1523,7 @@ drop.addEventListener('drop',e=>leggiPDF(Array.prototype.slice.call(e.dataTransf
 
 /* ---- copia di sicurezza ---- */
 $('bk-esporta').onclick=()=>{
-  const data={app:'ruolino-paga',v:1,quando:new Date().toISOString(),campi:statoCampi(),profili:leggiProfili(),registro:REG,aperto:APERTO,link:lsGet(KEY_LINK,''),ob:lsGet(KEY_OB,'')};
-  try{
-    const blob=new Blob([JSON.stringify(data)],{type:'application/json'}), a=document.createElement('a');
-    a.href=URL.createObjectURL(blob); a.download='ruolino-paga-'+oggi()+'.json'; document.body.appendChild(a); a.click();
-    setTimeout(()=>{ URL.revokeObjectURL(a.href); document.body.removeChild(a); },3000);
-    $('bk-msg').textContent='File salvato fra i download: tienilo da parte.';
-  }catch(e){ $('bk-msg').textContent='Questo browser non fa scaricare il file.'; }
+  $('bk-msg').textContent = scarica(new Blob([backupJSON()],{type:'application/json'}),'ruolino-paga-'+oggi()+'.json') ? 'File salvato fra i download: tienilo da parte.' : 'Questo browser non fa scaricare il file.';
 };
 $('bk-file').onchange=e=>{
   const f=e.target.files&&e.target.files[0]; if(!f) return;
@@ -1513,9 +1584,270 @@ function msgProf(t){ $('prof-msg').textContent=t; clearTimeout(msgProf.t);
 $('c-reset').onclick=()=>{ for(const k in BASE_IST) if($(k)) $(k).value=BASE_IST[k];
   msgProf('Valori predefiniti ripristinati.'); calcola(); };
 
+/* ---- versione, indirizzo, contatore ---- */
+const VERSIONE='2026.09.27';
+const SITO='https://ruolino-paga.github.io/';
+const CONTATORE='';   // codice GoatCounter; vuoto = nessun conteggio delle aperture
+const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const b64d=s=>{ s=s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; return decodeURIComponent(escape(atob(s))); };
+async function condividi(data){
+  try{
+    if(navigator.share){
+      const d={}; if(data.title) d.title=data.title; if(data.text) d.text=data.text; if(data.url) d.url=data.url;
+      if(data.files&&navigator.canShare&&navigator.canShare({files:data.files})) d.files=data.files;
+      else if(data.files&&!data.text&&!data.url) return null;       // solo file, e il telefono non li condivide: si scarica
+      await navigator.share(d); return 'share';
+    }
+  }catch(e){ if(e&&e.name==='AbortError') return 'abort'; }
+  return null;
+}
+function scarica(blob,nome){ try{ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=nome; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); document.body.removeChild(a); },3000); return true; }catch(e){ return false; } }
+
+/* ---- contratto via link ---- */
+const CAMPI_CONTRATTO=['c-ore','c-gg','c-buono','c-ggferie','c-festperc','c-nott','c-strad','c-risc','c-diur','c-nottperc','c-nottore','c-mens','c-aum','d-str','d-strp','d-val','d-contr','d-addiz'];
+function linkContratto(nome){ const v={}; CAMPI_CONTRATTO.forEach(id=>{ v[id]=$(id).value; }); return SITO+'#c='+b64e(JSON.stringify({n:nome,v:v})); }
+$('c-share').onclick=async()=>{
+  const nome=(prompt('Che nome diamo a questo contratto? (es. Istituto Alfa, 4° livello)')||'').trim(); if(!nome) return;
+  const url=linkContratto(nome);
+  const r=await condividi({title:'Ruolino Paga',text:`Parametri «${nome}» per Ruolino Paga: apri il link e tocca «Usali».`,url:url});
+  if(r==='share'||r==='abort') return;
+  msgProf((await copiaTesto(url))?'Link copiato: incollalo al collega.':'Non riesco a copiare il link da qui.');
+};
+
+/* ---- cambio turno via link ---- */
+$('ed-passa').onclick=async()=>{
+  const r=REG[CAL.sel]; if(!r||(!r.t.filter(x=>x.f).length&&!r.o)) return msgCal('Questo giorno non ha turni da passare.');
+  const d=daYmd(CAL.sel);
+  const data={d:CAL.sel,t:r.t.filter(x=>x.f).map(x=>({i:x.i,f:x.f,k:x.k||'p'})),o:r.o||0,n:!!r.n,k:r.k||'p',ob:(r.ob||'').slice(0,60)};
+  const desc=data.t.map(x=>x.i+'–'+x.f).join(', ')+(data.o?` ${data.o} h`:'');
+  const url=SITO+'#t='+b64e(JSON.stringify(data));
+  const res=await condividi({title:'Ruolino Paga',text:`Ti passo il turno di ${GN[wd(d)]} ${d.getDate()}/${pad(d.getMonth()+1)}: ${desc}. Apri il link e tocca «Metti nel mio calendario».`,url:url});
+  if(res==='share'||res==='abort') return;
+  msgCal((await copiaTesto(url))?'Link del turno copiato: mandalo al collega.':'Non riesco a copiare il link da qui.');
+};
+function chiudiBanner(){ $('banner').hidden=true; try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){ location.hash=''; } }
+function leggiHash(){
+  const mm=(location.hash||'').match(/^#([ct])=([A-Za-z0-9_\-%]+)$/); if(!mm) return;
+  let data=null; try{ data=JSON.parse(b64d(decodeURIComponent(mm[2]))); }catch(e){ return; }
+  if(!data||typeof data!=='object') return;
+  const box=$('banner');
+  if(mm[1]==='c' && data.v && typeof data.v==='object'){
+    const nome=String(data.n||'un collega').slice(0,60);
+    box.hidden=false;
+    box.innerHTML=`<strong>Parametri di contratto in arrivo: «${esc(nome)}».</strong> Sostituiscono la scheda Contratto e le voci del mese; i tuoi dati non si toccano.
+      <div class="btnrow"><button type="button" class="btn primary" id="bn-si">Usali</button><button type="button" class="btn" id="bn-no">Ignora</button></div>`;
+    $('bn-si').onclick=()=>{ const v={}; CAMPI_CONTRATTO.forEach(id=>{ if(data.v[id]!==undefined&&data.v[id]!==null) v[id]=String(data.v[id]).slice(0,20); }); applicaCampi(v); calcola(); chiudiBanner(); mostraTab('t-c'); msgProf(`Parametri «${nome}» applicati. Salvali come profilo se vuoi tenerli.`); };
+  } else if(mm[1]==='t' && typeof data.d==='string' && /^\d{4}-\d{2}-\d{2}$/.test(data.d)){
+    const d=daYmd(data.d); const turni=Array.isArray(data.t)?data.t.filter(x=>x&&oraOk(x.i)&&oraOk(x.f)):[];
+    const desc=turni.map(x=>oraOk(x.i)+'–'+oraOk(x.f)).join(', ')+(data.o>0?` ${Math.min(24,+data.o)} h`:'');
+    box.hidden=false;
+    box.innerHTML=`<strong>Turno proposto da un collega:</strong> ${GN[wd(d)]} ${d.getDate()} ${NM[d.getMonth()]} ${d.getFullYear()}, ${esc(desc||'giornata di servizio')}${data.ob?' · '+esc(String(data.ob).slice(0,60)):''}.
+      <div class="btnrow"><button type="button" class="btn primary" id="bn-si">Metti nel mio calendario</button><button type="button" class="btn" id="bn-no">Ignora</button></div>`;
+    $('bn-si').onclick=()=>{ const r=giorno(data.d); turni.forEach(x=>r.t.push({i:oraOk(x.i),f:oraOk(x.f),k:['s','r'].indexOf(x.k)>=0?x.k:'p'}));
+      if(data.o>0) r.o=Math.min(24,+data.o); if(data.n) r.n=true; if(['s','r'].indexOf(data.k)>=0) r.k=data.k; if(data.ob) r.ob=String(data.ob).slice(0,60); if(r.s) r.s=''; r.src='man';
+      salvaReg(); CAL.ym=data.d.slice(0,7); CAL.sel=data.d; renderCal(); collegaSeServe(); chiudiBanner(); mostraTab('t-p'); msgCal('Turno messo nel calendario.'); };
+  } else return;
+  $('bn-no').onclick=chiudiBanner;
+}
+
+/* ---- calendario del telefono (.ics) ---- */
+function icsMese(ym){
+  const y=+ym.slice(0,4), m=+ym.slice(5,7), nG=new Date(y,m,0).getDate();
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Ruolino Paga//IT','CALSCALE:GREGORIAN'];
+  const st=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+'00';
+  const ds=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
+  const now=st(new Date()); const pulisci=s=>String(s).replace(/[\r\n,;\\]/g,' ');
+  for(let g=1;g<=nG;g++){
+    const s=ymd(new Date(y,m-1,g)), r=REG[s]; if(!r) continue;
+    r.t.filter(t=>t.f).forEach((t,i)=>{ const a=new Date(y,m-1,g,+t.i.slice(0,2),+t.i.slice(3,5)), b=new Date(y,m-1,g,+t.f.slice(0,2),+t.f.slice(3,5)); if(b<=a) b.setDate(b.getDate()+1);
+      L.push('BEGIN:VEVENT',`UID:ruolino-${s}-${i}@ruolino-paga.github.io`,`DTSTAMP:${now}`,`DTSTART:${st(a)}`,`DTEND:${st(b)}`,`SUMMARY:Servizio ${t.i}–${t.f}${r.ob?' · '+pulisci(r.ob):''}`,'END:VEVENT'); });
+    if(r.o>0) L.push('BEGIN:VEVENT',`UID:ruolino-${s}-o@ruolino-paga.github.io`,`DTSTAMP:${now}`,`DTSTART;VALUE=DATE:${ds(new Date(y,m-1,g))}`,`DTEND;VALUE=DATE:${ds(new Date(y,m-1,g+1))}`,`SUMMARY:Servizio ${r.o} h${r.n?' (notte)':''}${r.ob?' · '+pulisci(r.ob):''}`,'END:VEVENT');
+    if(r.s) L.push('BEGIN:VEVENT',`UID:ruolino-${s}-s@ruolino-paga.github.io`,`DTSTAMP:${now}`,`DTSTART;VALUE=DATE:${ds(new Date(y,m-1,g))}`,`DTEND;VALUE=DATE:${ds(new Date(y,m-1,g+1))}`,`SUMMARY:${r.s.charAt(0).toUpperCase()+r.s.slice(1)}`,'END:VEVENT');
+  }
+  L.push('END:VCALENDAR'); return L.join('\r\n')+'\r\n';
+}
+$('cal-ics').onclick=async()=>{
+  const txt=icsMese(CAL.ym); if(txt.indexOf('BEGIN:VEVENT')<0) return msgCal('Niente da esportare in questo mese.');
+  const nome=`ruolino-${CAL.ym}.ics`;
+  let r=null; try{ r=await condividi({title:'Turni di '+NM[+CAL.ym.slice(5,7)-1],files:[new File([txt],nome,{type:'text/calendar'})]}); }catch(e){}
+  if(r==='share'||r==='abort') return;
+  msgCal(scarica(new Blob([txt],{type:'text/calendar'}),nome)?'File .ics scaricato: aprilo e il telefono lo mette nel suo calendario.':'Questo browser non fa scaricare il file.');
+};
+
+/* ---- copia di sicurezza e reclami ---- */
+function backupJSON(){ return JSON.stringify({app:'ruolino-paga',v:1,quando:new Date().toISOString(),campi:statoCampi(),profili:leggiProfili(),registro:REG,aperto:APERTO,link:lsGet(KEY_LINK,''),ob:lsGet(KEY_OB,'')}); }
+$('bk-manda').onclick=async()=>{
+  const nome='ruolino-paga-'+oggi()+'.json'; let r=null;
+  try{ r=await condividi({title:'Copia di sicurezza Ruolino Paga',files:[new File([backupJSON()],nome,{type:'application/json'})]}); }catch(e){}
+  if(r==='share') return $('bk-msg').textContent='Copia inviata: mandala a te stesso su WhatsApp o su Drive.';
+  if(r==='abort') return;
+  $('bk-msg').textContent=scarica(new Blob([backupJSON()],{type:'application/json'}),nome)?'Questo browser non condivide i file: l\'ho scaricato, mandalo tu.':'Questo browser non fa scaricare il file.';
+};
+async function reclamo(){
+  const t=`Reclamo al Comando · Ruolino Paga v${VERSIONE} · ${(navigator.userAgent.match(/\(([^)]+)\)/)||['',''])[1].slice(0,60)}\nCosa non va: `;
+  const r=await condividi({title:'Reclamo al Comando',text:t}); if(r==='share'||r==='abort') return;
+  msgProf((await copiaTesto(t))?'Testo del reclamo copiato: incollalo nel gruppo.':'Non riesco a copiare da qui.');
+}
+
+/* ---- busta voce per voce ---- */
+function aggiornaVoci(m){
+  const VOCI=[['v-ord','Retribuzione ordinaria e ferie',m.vOrd+m.vFerie],['v-str','Straordinario',m.vStr],['v-ind','Indennità giornaliere',m.vInd],['v-trasf','Trasferta o disponibilità',m.vTrasf],
+    ['v-imp','Totale imponibile',m.imponibile],['v-contr','Contributi',m.contributi],['v-irpef','IRPEF del mese',m.irNetta+m.impSost],['v-addiz','Addizionali',m.addiz]];
+  let h=''; VOCI.forEach(v=>{ const b=n(v[0]); if(b>0){ const d=v[2]-b; h+=`<tr><td>${v[1]} <span class="q">busta ${eur2(b)} €</span></td><td>${d>=0?'+':'−'}${eur2(Math.abs(d))} €</td></tr>`; } });
+  $('v-voci').innerHTML=h?`<tr class="sub"><td>Stima meno busta, voce per voce</td><td></td></tr>`+h:'';
+}
+
+/* ---- stato di servizio: gradi e mostrine ---- */
+const GRADI_SERVIZIO=[[0,'Recluta'],[300,'Guardia'],[1000,'Guardia scelta'],[2000,'Caporale di garitta'],[3500,'Sergente del piantonamento'],[5000,'Maresciallo del cedolino'],[8000,'Colonnello della trasferta'],[12000,'Generale somaro']];
+function statoServizio(){
+  const giorni=Object.keys(REG).filter(s=>/^\d{4}-\d{2}-\d{2}$/.test(s)).sort();
+  const S={ore:0,notti:0,gg:0,mesi:{},maxGiorno:0,maxMese:0,streak:0,streakNotti:0,trentuno:0,festeLav:0,doppi:0,primo:null,ultimo:null};
+  let prev=null, run=0, runN=0;
+  giorni.forEach(s=>{
+    const r=REG[s], o=oreGiorno(r), ym=s.slice(0,7);
+    const M=S.mesi[ym]||(S.mesi[ym]={ore:0,gg:0,notti:0,ferie:0,s:false,r:false});
+    if(r.s==='ferie'||r.s==='permesso') M.ferie++;
+    if(!(o>0)){ prev=null; run=0; runN=0; return; }
+    S.ore+=o; S.gg++; M.ore+=o; M.gg++; if(!S.primo) S.primo=s; S.ultimo=s; S.maxGiorno=Math.max(S.maxGiorno,o);
+    const notte=!tipoGiorno(r,'s')&&!tipoGiorno(r,'r')&&notteGiorno(r); if(notte){ S.notti++; M.notti++; }
+    if(tipoGiorno(r,'s')) M.s=true; if(tipoGiorno(r,'r')) M.r=true;
+    if(s.slice(8)==='31') S.trentuno++; if(isFest(s)) S.festeLav++; if(r.t.filter(t=>t.f).length>=2) S.doppi++;
+    const cons=prev&&ymd(new Date(prev.getFullYear(),prev.getMonth(),prev.getDate()+1))===s;
+    run=cons?run+1:1; runN=notte?(cons?runN+1:1):0; S.streak=Math.max(S.streak,run); S.streakNotti=Math.max(S.streakNotti,runN); prev=daYmd(s);
+  });
+  Object.keys(S.mesi).forEach(k=>{ S.maxMese=Math.max(S.maxMese,S.mesi[k].ore); });
+  const mesiConOre=Object.keys(S.mesi).filter(k=>S.mesi[k].ore>0).sort(); S.nMesi=mesiConOre.length;
+  let senza=0, maxSenza=0; mesiConOre.forEach(k=>{ senza=S.mesi[k].ferie?0:senza+1; maxSenza=Math.max(maxSenza,senza); }); S.maxSenzaFerie=maxSenza;
+  S.buridano=Object.keys(S.mesi).some(k=>S.mesi[k].s&&S.mesi[k].r);
+  let g=GRADI_SERVIZIO[0][1]; GRADI_SERVIZIO.forEach(x=>{ if(S.ore>=x[0]) g=x[1]; }); S.grado=g;
+  const next=GRADI_SERVIZIO.filter(x=>x[0]>S.ore)[0]; S.prossimo=next?{ore:next[0]-S.ore,nome:next[1]}:null;
+  return S;
+}
+const MOSTRINE=[
+  ['Notturno d’oro','dieci notti di fila',S=>S.streakNotti>=10],
+  ['Sentinella del 31','in servizio un 31 del mese',S=>S.trentuno>=1],
+  ['Uomo di alto valore','un mese oltre le 350 ore',S=>S.maxMese>350],
+  ['Stachanov','una giornata da 20 ore o più',S=>S.maxGiorno>=20],
+  ['Lunedì dell’Angelo','in servizio in una festa nazionale',S=>S.festeLav>=1],
+  ['Doppio turno','due turni nello stesso giorno',S=>S.doppi>=1],
+  ['Due settimane senza posa','quattordici giorni di seguito',S=>S.streak>=14],
+  ['Cento notti','cento notti in totale',S=>S.notti>=100],
+  ['Mille ore','mille ore in totale',S=>S.ore>=1000],
+  ['Ferie? Mai sentite','tre mesi di fila senza ferie né permessi',S=>S.maxSenzaFerie>=3],
+  ['Asino di Buridano','stradale e rischio nello stesso mese',S=>S.buridano],
+  ['Il Comando ringrazia','dodici mesi con ore segnate',S=>S.nMesi>=12],
+  ['Diecimila ore','diecimila ore in totale',S=>S.ore>=10000]
+];
+function renderServizio(){
+  const S=statoServizio();
+  $('sv-grado').textContent=S.grado;
+  $('sv-riga').textContent = S.gg
+    ? `${f1(S.ore)} ore, ${S.notti} notti, ${S.gg} giorni in ${S.nMesi} ${S.nMesi===1?'mese':'mesi'}`+(S.prossimo?` · al grado di ${S.prossimo.nome} mancano ${f1(S.prossimo.ore)} ore.`:' · grado massimo raggiunto.')
+    : 'Segna i turni nel calendario: qui si accumulano ore, notti, gradi e mostrine.';
+  const ok=MOSTRINE.filter(x=>x[2](S)).length; $('sv-conto').textContent=`${ok} mostrine su ${MOSTRINE.length}. Le altre si conquistano sul campo.`;
+  $('sv-mostrine').innerHTML=MOSTRINE.map(x=>`<div class="mostrina${x[2](S)?' ok':''}"><b>${x[0]}</b>${x[1]}</div>`).join('');
+  let rows='', tot=0;
+  for(let m=1;m<=12;m++){ const M=S.mesi[ANNO+'-'+pad(m)]; if(!M||!(M.ore>0||M.ferie>0)) continue; tot+=M.ore;
+    rows+=`<tr><td>${NM[m-1]}</td><td>${f1(M.ore)} h · ${M.gg} gg · ${M.notti} notti${M.ferie?' · '+M.ferie+' ferie':''}</td></tr>`; }
+  $('sv-anno').innerHTML=rows?rows+`<tr class="tot"><td>${ANNO}</td><td>${f1(tot)} h</td></tr>`:'';
+  $('sv-anno-card').hidden=!rows;
+}
+
+/* ---- medaglia del mese ---- */
+const SCUDO_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 50" width="440" height="500"><path d="M22 2 41 8v18.5C41 37.5 33.2 44.6 22 48 10.8 44.6 3 37.5 3 26.5V8z" fill="#16243a" stroke="#c9a227" stroke-width="2.2"/><path d="M22 6.6 37 11.4v15.1c0 9-6.3 14.9-15 17.8-8.7-2.9-15-8.8-15-17.8V11.4z" fill="none" stroke="#c9a227" stroke-width=".8" opacity=".55"/><path d="M22 13.2l2.55 5.35 5.75.82-4.15 4.14 1 5.86L22 26.6l-5.15 2.77 1-5.86-4.15-4.14 5.75-.82z" fill="#c9a227"/><path d="M12.5 33.5h19M14.5 37.4h15M16.5 41.2h11" stroke="#c9a227" stroke-width="1.9" stroke-linecap="round" opacity=".9"/></svg>';
+function scriviRighe(g,text,x,y,maxW,lh,maxLines){
+  const words=String(text).split(' '); let line='', lines=[];
+  words.forEach(w=>{ const t=line?line+' '+w:w; if(g.measureText(t).width>maxW&&line){ lines.push(line); line=w; } else line=t; });
+  if(line) lines.push(line);
+  if(lines.length>maxLines){ lines=lines.slice(0,maxLines); lines[maxLines-1]=lines[maxLines-1].replace(/\s*\S*$/,'')+'…'; }
+  lines.forEach((l,i)=>g.fillText(l,x,y+i*lh)); return lines.length;
+}
+async function medagliaMese(ym){
+  const R=riepilogo(ym), S=statoServizio(), y=+ym.slice(0,4), m=+ym.slice(5,7);
+  const W=1080, H=1350, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const g=cv.getContext('2d');
+  try{ await Promise.all([document.fonts.load('64px "Archivo Black"'),document.fonts.load('500 44px Oswald'),document.fonts.load('italic 40px "IBM Plex Sans"'),document.fonts.load('400 38px "IBM Plex Sans"')]); }catch(e){}
+  const grad=g.createLinearGradient(0,0,0,H); grad.addColorStop(0,'#1a2430'); grad.addColorStop(1,'#0d131b'); g.fillStyle=grad; g.fillRect(0,0,W,H);
+  g.fillStyle='#c9a227'; g.fillRect(0,0,W,10);
+  await new Promise(res=>{ const im=new Image(); im.onload=()=>{ try{ g.drawImage(im,W/2-99,56,198,225); }catch(e){} res(); }; im.onerror=()=>res(); im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(SCUDO_SVG); });
+  g.textAlign='center';
+  g.fillStyle='#ffffff'; g.font='64px "Archivo Black", Impact, "Arial Black", sans-serif'; g.fillText('RUOLINO PAGA',W/2,372);
+  g.fillStyle='#9db0c6'; g.font='500 30px Oswald, "Arial Narrow", sans-serif'; g.fillText(('ENCOMIO · '+S.grado).toUpperCase(),W/2,422);
+  g.fillStyle='#c9a227'; g.fillRect(W/2-220,452,440,3);
+  g.fillStyle='#e8cd7f'; g.font='500 44px Oswald, "Arial Narrow", sans-serif'; g.fillText((NM[m-1]+' '+y).toUpperCase(),W/2,522);
+  g.fillStyle='#ffffff'; g.font='500 156px Oswald, "Arial Narrow", sans-serif'; g.fillText(f1(R.ore).replace(',0','')+' ORE',W/2,690);
+  g.fillStyle='#b5c3d6'; g.font='400 38px "IBM Plex Sans", system-ui, sans-serif'; g.fillText(`${R.gg} giorni · ${R.notti} notti · ${R.turni} turni`,W/2,758);
+  g.fillStyle='#eef2f8'; g.font='italic 40px "IBM Plex Sans", Georgia, serif'; scriviRighe(g,fraseNuova(),W/2,870,920,56,6);
+  g.fillStyle='#9db0c6'; g.font='400 30px "IBM Plex Sans", system-ui, sans-serif'; g.fillText('Il Comando prende atto e ringrazia.',W/2,1236);
+  g.fillStyle='#e8cd7f'; g.font='500 34px Oswald, "Arial Narrow", sans-serif'; g.fillText('ruolino-paga.github.io',W/2,1296);
+  return cv;
+}
+$('cal-medaglia').onclick=async()=>{
+  msgCal('Preparo la medaglia…');
+  let cv; try{ cv=await medagliaMese(CAL.ym); }catch(e){ return msgCal('Non riesco a disegnare la medaglia su questo browser.'); }
+  const img=$('medaglia-img'); img.src=cv.toDataURL('image/png'); $('medaglia-box').hidden=false;
+  msgCal('Medaglia pronta qui sotto: tieni premuto per salvarla o mandarla nel gruppo.');
+  const testo=`Ruolino Paga · ${NM[+CAL.ym.slice(5,7)-1]} ${CAL.ym.slice(0,4)}: ${f1(riepilogo(CAL.ym).ore)} ore. ${SITO}`;
+  cv.toBlob(async blob=>{
+    if(!blob) return;
+    const r=await condividi({title:'Medaglia del mese',text:testo,files:[new File([blob],`medaglia-${CAL.ym}.png`,{type:'image/png'})]});
+    if(r==='share') msgCal('Medaglia condivisa.');
+  },'image/png');
+};
+
+/* ---- turni incollati da un messaggio ---- */
+const GIORNI_ABBR={lun:0,mar:1,mer:2,gio:3,ven:4,sab:5,dom:6};
+function leggiTurniTesto(txt,ym){
+  const y=+ym.slice(0,4), m=+ym.slice(5,7); const out=[]; let cur=null, lastDate=null;
+  const RE_DATA=/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/;
+  const RE_GIORNO=/(?:^|[^a-zà-ú])(lun|mar|mer|gio|ven|sab|dom)(?:ed[iì]|ted[iì]|coled[iì]|ved[iì]|erd[iì]|ato|enica)?\b\.?\s*(\d{1,2})?(?![\/:.\d]|\s*(?:[-–—]|alle\b|a\b|h\b|ore\b))/i;
+  const RE_ORA=/(\d{1,2})(?:[:.](\d{2}))?\s*(?:h|ore)?\s*(?:-|–|—|→|alle|a)\s*(\d{1,2})(?:[:.](\d{2}))?/g;
+  const RE_ORE=/(\d{1,2}(?:[.,]\d)?)\s*(?:h|ore)\b/i;
+  txt.split(/\r?\n/).forEach(raw=>{
+    const line=raw.trim(); if(!line) return; const low=line.toLowerCase();
+    let d=null; const md=line.match(RE_DATA);
+    if(md){ const gg=+md[1], mo=+md[2]; let yy=md[3]?+md[3]:y; if(yy<100) yy+=2000; if(gg>=1&&gg<=31&&mo>=1&&mo<=12) d=ymd(new Date(yy,mo-1,gg)); }
+    const mg=low.match(RE_GIORNO);
+    if(!d&&mg){
+      const wdIdx=GIORNI_ABBR[mg[1]], num=mg[2]?+mg[2]:null;
+      if(num&&num>=1&&num<=31) d=ymd(new Date(y,m-1,num));
+      else if(wdIdx!==undefined){
+        const base=lastDate?daYmd(lastDate):new Date(y,m-1,0);
+        for(let k=1;k<=14;k++){ const c=new Date(base.getFullYear(),base.getMonth(),base.getDate()+k); if(wd(c)===wdIdx){ d=ymd(c); break; } }
+      }
+    }
+    if(d){ cur={d:d,t:[],s:'',o:0,k:'p',n:false}; out.push(cur); lastDate=d; }
+    if(!cur) return;
+    if(/\b(riposo|rip\.?|libero|off)\b/i.test(low)) cur.s='riposo'; else if(/\bferie\b/i.test(low)) cur.s='ferie'; else if(/\bpermess/i.test(low)) cur.s='permesso'; else if(/\bmalatt/i.test(low)) cur.s='malattia';
+    if(/strad/i.test(low)) cur.k='s'; else if(/rischio/i.test(low)) cur.k='r';
+    let resto=line; if(md) resto=resto.replace(md[0],' '); if(mg&&mg[2]) resto=resto.replace(mg[0],' ');
+    let mo; const re=new RegExp(RE_ORA.source,'g');
+    while((mo=re.exec(resto))){ const h1=+mo[1], m1=mo[2]?+mo[2]:0, h2=+mo[3], m2=mo[4]?+mo[4]:0; if(h1>24||h2>24||m1>59||m2>59) continue; cur.t.push({i:pad(h1%24)+':'+pad(m1),f:pad(h2%24)+':'+pad(m2),k:cur.k}); }
+    if(!cur.t.length){ const mh=resto.match(RE_ORE); if(mh){ const v=parseFloat(mh[1].replace(',','.')); if(v>0&&v<=24) cur.o=v; } }
+    if(/\bnott/i.test(low)) cur.n=true;
+    if(cur.t.length||cur.o) cur.s='';
+  });
+  return out.filter(x=>x.t.length||x.o||x.s);
+}
+let TT_LETTI=[];
+$('tt-leggi').onclick=()=>{
+  TT_LETTI=leggiTurniTesto($('tt-testo').value,CAL.ym);
+  if(!TT_LETTI.length){ $('tt-anteprima').innerHTML=''; $('tt-applica').hidden=true; return $('tt-msg').textContent='Non ho riconosciuto nessun giorno. Servono una data o un giorno della settimana per riga.'; }
+  $('tt-anteprima').innerHTML=TT_LETTI.map(x=>{ const d=daYmd(x.d); const desc=x.t.map(t=>t.i+'–'+t.f).join(', ')+(x.o?` ${x.o} h`:'')+(x.s?x.s:'')+(x.k==='s'?' · stradale':x.k==='r'?' · rischio':'')+(x.n?' · notte':'');
+    return `<tr><td>${GN[wd(d)].slice(0,3)} ${d.getDate()}/${pad(d.getMonth()+1)}</td><td>${esc(desc)}</td></tr>`; }).join('');
+  $('tt-applica').hidden=false; $('tt-msg').textContent=`Ho capito ${TT_LETTI.length} ${TT_LETTI.length===1?'giorno':'giorni'}. Se torna, mettili nel calendario: sostituiscono quello che c'è in quei giorni.`;
+};
+$('tt-applica').onclick=()=>{
+  if(!TT_LETTI.length) return; let k=0;
+  TT_LETTI.forEach(x=>{ const r=giorno(x.d); r.t=x.t.map(t=>({i:t.i,f:t.f,k:t.k||'p'})); delete r.o; delete r.n; delete r.k; if(x.o>0) r.o=x.o; if(x.n) r.n=true; if(x.k!=='p') r.k=x.k; r.s=x.s||''; r.src='man'; k++; });
+  salvaReg(); CAL.ym=TT_LETTI[0].d.slice(0,7); CAL.sel=TT_LETTI[0].d; renderCal(); collegaSeServe();
+  $('tt-applica').hidden=true; $('tt-anteprima').innerHTML=''; $('tt-testo').value=''; TT_LETTI=[]; msgCal(`${k} giorni scritti nel calendario.`); $('tt-msg').textContent=`${k} giorni scritti nel calendario.`;
+  try{ document.querySelector('#cal').closest('.card').scrollIntoView(); }catch(e){}
+};
+
 /* ---- avvio ---- */
 const CAMPI=['ore','oraria','liv','gg','ferie','fig-min','fig-mag','isee','duelav','quinto','presti','sind','altre',
-  'd-str','d-strp','d-val','d-notti','d-i561','d-i312','d-fest','d-festret','d-addiz','d-contr','v-netto',
+  'd-str','d-strp','d-val','d-notti','d-i561','d-i312','d-fest','d-festret','d-addiz','d-contr','v-netto','v-ord','v-str','v-ind','v-trasf','v-imp','v-contr','v-irpef','v-addiz',
   'c-ore','c-gg','c-buono','c-ggferie','c-festperc','c-nott','c-strad','c-risc','c-diur','c-nottperc','c-nottore','c-mens','c-aum'];
 try{
   const auto=jGet('gpg',null);
@@ -1531,6 +1863,10 @@ calcola();
 renderTb();
 renderCal();
 { const l=lsGet(KEY_LINK,''); if(l&&/^\d{4}-\d{2}$/.test(l)) usaNelCalcolo(l,true); }   // se il calcolo segue il ruolino, riparte da lì
+$('versione').innerHTML=`Ruolino Paga · versione ${VERSIONE} · <a href="${SITO}" style="color:inherit">ruolino-paga.github.io</a> · <button type="button" class="lnk" id="reclami" style="color:inherit">Reclami al Comando</button>`;
+$('reclami').onclick=reclamo;
+if(CONTATORE && /^https?:$/.test(location.protocol)){ const s=document.createElement('script'); s.async=true; s.src='https://gc.zgo.at/count.js'; s.setAttribute('data-goatcounter','https://'+CONTATORE+'.goatcounter.com/count'); document.head.appendChild(s); $('nota-contatore').hidden=false; }
+leggiHash();
 window.RP={inflateJS,inflateBytes,frammenti,foglio,leggiPDF,riepilogo,FRASI,GRADI,pasqua,festivo,reg:()=>REG};
 /* installabile e utilizzabile senza rete: solo quando la pagina arriva da un indirizzo, non da un file */
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
