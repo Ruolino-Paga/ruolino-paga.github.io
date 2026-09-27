@@ -1,0 +1,1453 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111821">
+<meta name="description" content="Registro di servizio e stima della retribuzione per guardie particolari giurate. Tutto resta sul telefono.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ruolino">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Ruolino Paga</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Oswald:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ink:#131a24; --ink-2:#38495f; --muted:#6a7c93;
+  --bg:#eceff5; --card:#fff; --card-2:#f5f7fb; --line:#dbe2ec; --line-2:#e9eef5;
+  --accent:#8a6d1f; --accent-2:#b08d2a; --accent-soft:#faf3e0; --oro:#a8871c;
+  --good:#15683d; --good-bg:#e7f3ec; --warn:#8a5a05; --warn-bg:#fdf3e1; --info-bg:#eaf0f8;
+  --rosso:#b3261e;
+  --sh:0 1px 2px rgba(19,26,36,.05),0 10px 30px rgba(19,26,36,.06);
+  --r:14px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --ink:#e9eef6; --ink-2:#b5c3d6; --muted:#7e91aa;
+  --bg:#0b1016; --card:#161e28; --card-2:#1d2732; --line:#2b3746; --line-2:#222d3a;
+  --accent:#d9b44a; --accent-2:#e8cd7f; --accent-soft:#2a2314; --oro:#d9b44a;
+  --good:#63d49a; --good-bg:#12291f; --warn:#ecb85c; --warn-bg:#2a2214; --info-bg:#1b2634;
+  --rosso:#ff8a80;
+  --sh:0 1px 2px rgba(0,0,0,.45),0 10px 30px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ink:#e9eef6; --ink-2:#b5c3d6; --muted:#7e91aa;
+  --bg:#0b1016; --card:#161e28; --card-2:#1d2732; --line:#2b3746; --line-2:#222d3a;
+  --accent:#d9b44a; --accent-2:#e8cd7f; --accent-soft:#2a2314; --oro:#d9b44a;
+  --good:#63d49a; --good-bg:#12291f; --warn:#ecb85c; --warn-bg:#2a2214; --info-bg:#1b2634;
+  --rosso:#ff8a80;
+  --sh:0 1px 2px rgba(0,0,0,.45),0 10px 30px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5;
+  padding:0 0 40px}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+h1,h2,h3,h4,.big,.stat-v{font-family:Oswald,"Arial Narrow",system-ui,sans-serif;font-weight:500;text-wrap:balance}
+.mono{font-family:"IBM Plex Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+
+header{background:linear-gradient(170deg,#1a2430,#111821);color:#eef2f8;padding:18px 0 16px;
+  padding-top:calc(18px + env(safe-area-inset-top,0px));border-bottom:3px solid var(--accent)}
+header .wrap{display:flex;align-items:center;gap:12px}
+.shield{width:34px;height:38px;flex:0 0 auto;display:block}
+header h1{margin:0;font-family:"Archivo Black",Oswald,"Arial Black",sans-serif;font-weight:400;font-size:21px;line-height:1.05;color:#fff;letter-spacing:.03em;text-transform:uppercase}
+header p{margin:2px 0 0;font-size:12.5px;color:#9db0c6}
+
+/* risultato */
+.result{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--sh);overflow:hidden;border-top:3px solid var(--oro)}
+.result .top{padding:18px 18px 14px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.result .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-family:Oswald,sans-serif}
+.big{font-size:46px;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
+.big small{font-size:22px;color:var(--muted);font-weight:400}
+.pill-tot{background:var(--good-bg);color:var(--good);border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600}
+.bar{display:flex;height:9px;background:var(--line-2)}
+.bar i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;padding:11px 18px 15px;font-size:12px;color:var(--ink-2)}
+.legend span{display:flex;align-items:center;gap:5px;margin-right:10px}
+.legend b{width:9px;height:9px;border-radius:2px;display:inline-block}
+.legend em{font-style:normal;color:var(--muted)}
+
+/* tabs */
+.tabbar{display:flex;gap:6px;margin-top:16px}
+.tabbar button{flex:1;font:inherit;font-size:13.5px;font-weight:600;padding:11px 4px;border-radius:10px;margin:0 2px;
+  border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;min-height:44px}
+.tabbar button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+:root[data-theme="dark"] .tabbar button[aria-selected="true"]{background:var(--accent);color:#1a1205;border-color:var(--accent)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);margin-top:14px;overflow:hidden}
+.card>h3{margin:0;padding:13px 16px 11px;font-size:12px;letter-spacing:.11em;text-transform:uppercase;font-family:Oswald,sans-serif;
+  color:var(--ink-2);background:var(--card-2);border-bottom:1px solid var(--line-2)}
+.card .b{padding:14px 16px}
+.card .b>p:first-child{margin-top:0}
+
+label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:4px}
+input,select,textarea{width:100%;font:inherit;font-size:16px;padding:10px 11px;border:1px solid var(--line);border-radius:9px;
+  background:var(--card);color:var(--ink);min-height:44px}
+input[type=number],input[type=time],select{font-family:"IBM Plex Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+input[type=checkbox]{width:20px;height:20px;min-height:0;margin:0;padding:0;accent-color:var(--accent)}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.f+.f{margin-top:11px}
+.g2>.f,.g3>.f{margin-top:0}
+.hint{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.35}
+.chk{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink);min-height:44px;margin:0;cursor:pointer}
+
+.hero-field label{font-size:13px;color:var(--ink-2);font-weight:600}
+.hero-field input{font-size:30px;font-family:Oswald,sans-serif;text-align:center;padding:12px;height:auto;letter-spacing:.02em}
+.quick{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.quick button{flex:1;min-width:64px;font:inherit;font-size:13px;padding:8px 4px;border-radius:8px;border:1px solid var(--line);margin:0 2px;
+  background:var(--card-2);color:var(--ink-2);cursor:pointer;min-height:40px;font-family:"IBM Plex Mono",Menlo,Consolas,monospace}
+.quick button:hover,.quick button:focus-visible{border-color:var(--accent);color:var(--ink)}
+
+details{border-top:1px solid var(--line-2)}
+details summary{padding:13px 16px;cursor:pointer;font-size:14px;font-weight:600;list-style:none;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-family:Oswald,sans-serif;font-size:20px;color:var(--muted)}
+details[open] summary::after{content:"–"}
+details summary em{font-style:normal;font-weight:400;color:var(--muted);font-size:12.5px;font-family:"IBM Plex Mono",Menlo,Consolas,monospace}
+details .b{padding:0 16px 16px}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td{padding:7px 0;border-bottom:1px solid var(--line-2)}
+tr:last-child td{border-bottom:none}
+td:last-child{text-align:right;font-family:"IBM Plex Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.tot td{font-weight:600;border-top:2px solid var(--line);padding-top:9px}
+tr.sub td{color:var(--muted);font-size:12.5px}
+td .q{color:var(--muted);font-size:12px;font-family:"IBM Plex Mono",Menlo,Consolas,monospace}
+
+.note{background:var(--info-bg);border-radius:10px;padding:11px 13px;font-size:12.5px;color:var(--ink-2);margin-top:12px}
+.note strong{color:var(--ink)}
+.note.rosso{border-left:3px solid var(--rosso)}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px 14px;text-align:center;color:var(--muted);
+  background:var(--card-2);cursor:pointer;min-height:44px}
+.drop.over{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.drop strong{display:block;color:var(--ink);margin-bottom:3px}
+.flist{margin:10px 0 0;padding:0;list-style:none;font-size:12px}
+.flist li{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid var(--line-2);font-family:"IBM Plex Mono",Menlo,Consolas,monospace}
+.flist li span:last-child{color:var(--muted)}
+.btn{font:inherit;font-size:14px;font-weight:600;padding:11px 16px;border-radius:10px;cursor:pointer;min-height:44px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);text-align:center;text-decoration:none;display:inline-block}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);width:100%}
+:root[data-theme="dark"] .btn.primary{background:var(--accent);color:#1a1205;border-color:var(--accent)}
+.btn.gold{background:var(--oro);color:#1a1205;border-color:var(--oro)}
+.btn:disabled{opacity:.45;cursor:default}
+.btnrow{display:flex;gap:8px;margin-top:12px}
+.btnrow .btn{flex:1;margin:0 2px}
+.lnk{font:inherit;font-size:inherit;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer;min-height:0}
+footer{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.5}
+footer p{margin:9px 0}
+
+/* encomio */
+.encomio{margin-top:14px;background:linear-gradient(170deg,#1a2430,#111821);color:#eef2f8;border-radius:var(--r);
+  border:1px solid #2b3746;box-shadow:var(--sh);overflow:hidden;border-top:3px solid var(--oro)}
+.encomio .h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:14px 18px 4px;flex-wrap:wrap}
+.encomio .h b{font-family:Oswald,sans-serif;font-weight:500;letter-spacing:.16em;text-transform:uppercase;font-size:12px;color:#c9a227}
+.encomio .h span{font-family:Oswald,sans-serif;font-size:12.5px;color:#9db0c6;text-transform:uppercase;letter-spacing:.08em;text-align:right}
+.encomio .frase{padding:6px 18px 10px;font-size:15.5px;line-height:1.55;font-style:italic;color:#eef2f8}
+.encomio .dati{padding:0 18px 12px;font-size:12px;color:#9db0c6;font-family:"IBM Plex Mono",Menlo,Consolas,monospace;line-height:1.45}
+.encomio .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 18px 13px;border-top:1px solid #2b3746;font-size:11.5px;color:#9db0c6}
+.encomio .foot button{font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;border:1px solid #c9a227;background:transparent;color:#e8cd7f;cursor:pointer;min-height:36px}
+
+/* ruolino */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.cal-nav h4{margin:0;font-size:19px;letter-spacing:.01em}
+.cal-nav h4::first-letter{text-transform:uppercase}
+.cal-nav button{font:inherit;font-size:20px;width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.cal .wd{font-family:Oswald,sans-serif;font-size:10.5px;letter-spacing:.1em;text-align:center;color:var(--muted);padding:2px 0 3px}
+.cal .d{min-height:56px;border:1px solid var(--line-2);border-radius:7px;background:var(--card);padding:2px;font:inherit;color:var(--ink);
+  text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;overflow:hidden;margin:0}
+.cal .d.out{opacity:.35}
+.cal .d.today .n{color:var(--accent);font-weight:600}
+.cal .d.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.cal .d.fest .n{color:var(--rosso)}
+.cal .n{font-family:"IBM Plex Mono",Menlo,Consolas,monospace;font-size:12px;line-height:1;margin-bottom:1px}
+.chip{display:block;font-family:"IBM Plex Mono",Menlo,Consolas,monospace;font-size:9px;letter-spacing:-.02em;line-height:1.35;border-radius:3px;padding:1px 1px;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--info-bg);color:var(--ink-2)}
+.chip.s{background:var(--accent-soft);color:var(--accent)}
+.chip.r{background:var(--warn-bg);color:var(--warn)}
+.chip.open{background:var(--good-bg);color:var(--good)}
+.chip.st{background:var(--card-2);color:var(--muted);font-style:italic}
+.chip.st.ferie,.chip.st.permesso{background:var(--good-bg);color:var(--good)}
+.chip.st.malattia{background:var(--warn-bg);color:var(--warn)}
+.turni{list-style:none;margin:10px 0 0;padding:0}
+.turni li{padding:7px 0;border-bottom:1px solid var(--line-2);font-size:13.5px}
+.turni .riga{display:flex;align-items:center;gap:8px}
+.turni .riga .mono{flex:0 0 auto}
+.turni .riga .mono+.mono{flex:1 1 auto;color:var(--muted)}
+.turni li select{margin-top:6px;min-height:38px;padding:5px 8px;font-size:14px}
+.turni li button{font:inherit;font-size:18px;width:38px;height:38px;flex:0 0 auto;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat div{background:var(--card-2);border-radius:9px;padding:8px 10px;min-width:0}
+.stat b{display:block;font-family:Oswald,sans-serif;font-size:20px;font-weight:500;line-height:1.1;white-space:nowrap}
+.stat span{font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-family:Oswald,sans-serif;white-space:nowrap}
+.timbra{display:flex;gap:8px}
+.timbra .btn{flex:1;margin:0 2px}
+.testo{white-space:pre-wrap;font-family:"IBM Plex Mono",Menlo,Consolas,monospace;font-size:12px;line-height:1.45;margin:10px 0 0}
+@media (min-width:600px){.big{font-size:54px}.wrap{padding:0 20px}.cal .d{min-height:64px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <svg class="shield" viewBox="0 0 44 50" aria-hidden="true">
+      <path d="M22 2 41 8v18.5C41 37.5 33.2 44.6 22 48 10.8 44.6 3 37.5 3 26.5V8z" fill="#16243a" stroke="#c9a227" stroke-width="2.2"/>
+      <path d="M22 6.6 37 11.4v15.1c0 9-6.3 14.9-15 17.8-8.7-2.9-15-8.8-15-17.8V11.4z" fill="none" stroke="#c9a227" stroke-width=".8" opacity=".55"/>
+      <path d="M22 13.2l2.55 5.35 5.75.82-4.15 4.14 1 5.86L22 26.6l-5.15 2.77 1-5.86-4.15-4.14 5.75-.82z" fill="#c9a227"/>
+      <path d="M12.5 33.5h19M14.5 37.4h15M16.5 41.2h11" stroke="#c9a227" stroke-width="1.9" stroke-linecap="round" opacity=".9"/>
+    </svg>
+    <div>
+      <h1>Ruolino Paga</h1>
+      <p>Registro di servizio e retribuzione · Guardie Particolari Giurate</p>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="result">
+    <div class="top">
+      <div>
+        <div class="lbl">Netto stimato · accredito</div>
+        <div class="big" id="netto">—</div>
+      </div>
+      <div class="pill-tot" id="pill-auu" hidden></div>
+    </div>
+    <div class="bar" id="bar"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="card" id="card-prof">
+    <div class="b" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:1 1 170px;min-width:0">
+        <label for="prof-sel">Profilo</label>
+        <select id="prof-sel"></select>
+      </div>
+      <div style="display:flex;gap:8px;flex:0 0 auto">
+        <button class="btn" id="prof-save" style="margin-right:8px">Salva</button>
+        <button class="btn" id="prof-del">Elimina</button>
+      </div>
+      <div style="flex:1 1 100%" id="prof-nome-box" hidden>
+        <label for="prof-nome">Nome del profilo</label>
+        <input type="text" id="prof-nome" placeholder="es. Mario — 4° livello" autocomplete="off">
+        <div class="hint">Scrivi il nome e tocca di nuovo Salva.</div>
+      </div>
+      <div class="hint" style="flex:1 1 100%;margin:0" id="prof-msg">I valori restano nel telefono anche se chiudi la pagina. Salva un profilo se calcoli per più persone.</div>
+    </div>
+  </div>
+
+  <div class="tabbar" role="tablist">
+    <button role="tab" id="t-r" aria-selected="true" aria-controls="p-r">Servizio</button>
+    <button role="tab" id="t-d" aria-selected="false" aria-controls="p-d">Competenze</button>
+    <button role="tab" id="t-c" aria-selected="false" aria-controls="p-c">Contratto</button>
+    <button role="tab" id="t-p" aria-selected="false" aria-controls="p-p">Ruolino</button>
+  </div>
+
+  <!-- SERVIZIO -->
+  <div id="p-r" role="tabpanel" aria-labelledby="t-r">
+    <div class="card">
+      <div class="b">
+        <div class="hero-field">
+          <label for="ore">Ore lavorate nel mese</label>
+          <input type="number" id="ore" inputmode="decimal" step="0.5" value="300">
+          <div class="quick">
+            <button type="button" data-ore="173">173</button>
+            <button type="button" data-ore="250">250</button>
+            <button type="button" data-ore="300">300</button>
+            <button type="button" data-ore="350">350</button>
+            <button type="button" data-ore="400">400</button>
+          </div>
+          <div class="hint">Solo ore di servizio effettivo. Se non le hai contate, metti una cifra tonda: la stima si muove di conseguenza. Se le segni nel Ruolino, arrivano da sole.</div>
+          <div class="hint" id="ore-ruolino" hidden style="margin-top:6px;color:var(--ink-2)"></div>
+        </div>
+        <div class="g2" style="margin-top:13px">
+          <div class="f">
+            <label for="liv">Livello</label>
+            <select id="liv">
+              <optgroup label="Guardie particolari giurate">
+                <option value="7.47902">6° livello — primi 24 mesi</option>
+                <option value="8.05705">5° livello — dal 25° al 48° mese</option>
+                <option value="8.49064" selected>4° livello — oltre il 48° mese</option>
+                <option value="9.54514">3° livello</option>
+                <option value="10.75364">2° livello</option>
+                <option value="11.51792">1° livello</option>
+                <option value="13.40481">Quadro</option>
+              </optgroup>
+              <optgroup label="Servizi fiduciari">
+                <option value="7.40711">Livello D</option>
+                <option value="6.87035">Livello E — primi 9 mesi</option>
+              </optgroup>
+              <optgroup label="Da dicembre 2026">
+                <option value="8.83746">4° livello — nuova tabella</option>
+                <option value="7.80601">6° livello — nuova tabella</option>
+                <option value="7.51445">Servizi fiduciari D — nuova tabella</option>
+              </optgroup>
+              <optgroup label="Tabelle precedenti">
+                <option value="7.78457">4° livello, tabella gen–mar 2026</option>
+                <option value="0">Altro — la scrivo io</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="f">
+            <label for="oraria">Paga oraria (€)</label>
+            <input type="number" id="oraria" inputmode="decimal" step="0.00001" value="8.49064">
+            <div class="hint">Minimo tabellare diviso 173. Se in busta ne trovi una diversa — scatti, superminimo — scrivi quella.</div>
+          </div>
+        </div>
+        <div class="note" id="warn-min" hidden></div>
+        <div class="g2" style="margin-top:11px">
+          <div class="f">
+            <label for="gg">Giorni lavorati</label>
+            <input type="number" id="gg" inputmode="numeric" value="24">
+          </div>
+          <div class="f">
+            <label for="ferie">Giorni di ferie o permesso</label>
+            <input type="number" id="ferie" inputmode="numeric" value="0">
+          </div>
+        </div>
+      </div>
+
+      <details>
+        <summary>Famiglia e assegno unico <em id="sum-fam">nessun figlio</em></summary>
+        <div class="b">
+          <div class="g2">
+            <div class="f">
+              <label for="fig-min">Figli fino a 17 anni</label>
+              <input type="number" id="fig-min" inputmode="numeric" value="0">
+            </div>
+            <div class="f">
+              <label for="fig-mag">Figli da 18 a 21 anni</label>
+              <input type="number" id="fig-mag" inputmode="numeric" value="0">
+            </div>
+          </div>
+          <div class="g2" style="margin-top:11px">
+            <div class="f">
+              <label for="isee">ISEE (€)</label>
+              <input type="number" id="isee" inputmode="numeric" step="100" value="0">
+              <div class="hint">Lascia 0 se non l'hai presentato: scatta l'importo minimo.</div>
+            </div>
+            <div class="f">
+              <label for="duelav">Entrambi i genitori lavorano</label>
+              <select id="duelav"><option value="0" selected>No</option><option value="1">Sì</option></select>
+            </div>
+          </div>
+          <div class="note">L'assegno unico <strong>non è in busta paga</strong>: l'INPS lo accredita a parte, di solito verso metà mese. Qui lo vedi sommato per capire quanto entra in casa in tutto.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Trattenute e prestiti <em id="sum-tra">nessuna</em></summary>
+        <div class="b">
+          <div class="g2">
+            <div class="f">
+              <label for="quinto">Cessione del quinto (€)</label>
+              <input type="number" id="quinto" inputmode="decimal" step="1" value="0">
+            </div>
+            <div class="f">
+              <label for="presti">Rata prestito o delega (€)</label>
+              <input type="number" id="presti" inputmode="decimal" step="1" value="0">
+            </div>
+          </div>
+          <div class="g2" style="margin-top:11px">
+            <div class="f">
+              <label for="sind">Quota sindacale (€)</label>
+              <input type="number" id="sind" inputmode="decimal" step="0.01" value="0">
+            </div>
+            <div class="f">
+              <label for="altre">Altre trattenute (€)</label>
+              <input type="number" id="altre" inputmode="decimal" step="1" value="0">
+            </div>
+          </div>
+          <div class="hint" style="margin-top:9px">La cessione del quinto non può superare un quinto del netto: se la superi te lo segnalo qui sotto.</div>
+          <div class="note" id="warn-quinto" hidden></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>Prospetto delle competenze</h3>
+      <div class="b">
+        <table id="break"></table>
+        <div class="note" id="avviso26" hidden></div>
+      </div>
+    </div>
+
+    <div class="encomio" id="encomio" hidden>
+      <div class="h"><b>Encomio</b><span id="enc-grado"></span></div>
+      <div class="frase" id="enc-frase"></div>
+      <div class="dati" id="enc-dati"></div>
+      <div class="foot"><span>Il Comando prende atto e ringrazia.</span><button type="button" id="enc-altro">Un altro</button></div>
+    </div>
+  </div>
+
+  <!-- COMPETENZE -->
+  <div id="p-d" role="tabpanel" aria-labelledby="t-d" hidden>
+    <div class="card">
+      <h3>Voci del mese</h3>
+      <div class="b">
+        <div class="g2">
+          <div class="f">
+            <label for="d-str">Ore di straordinario</label>
+            <input type="number" id="d-str" inputmode="decimal" step="0.5" value="20">
+            <div class="hint">Nell'istituto di riferimento sono 20 fisse ogni mese.</div>
+          </div>
+          <div class="f">
+            <label for="d-strp">Maggiorazione (%)</label>
+            <input type="number" id="d-strp" inputmode="numeric" value="30">
+          </div>
+        </div>
+        <div class="g2" style="margin-top:11px">
+          <div class="f">
+            <label for="d-val">Valore ora di trasferta (€)</label>
+            <input type="number" id="d-val" inputmode="decimal" step="0.5" value="7">
+            <div class="hint">Le ore oltre ordinarie e straordinario vengono pagate così.</div>
+          </div>
+          <div class="f">
+            <label for="d-notti">Giorni con servizio notturno</label>
+            <input type="number" id="d-notti" inputmode="numeric" value="-1">
+            <div class="hint">−1 = come i giorni lavorati. I giorni senza notte prendono l'indennità diurna.</div>
+          </div>
+        </div>
+        <div class="g3" style="margin-top:11px">
+          <div class="f">
+            <label for="d-i561">Giorni zona stradale</label>
+            <input type="number" id="d-i561" inputmode="numeric" value="0">
+          </div>
+          <div class="f">
+            <label for="d-i312">Giorni con rischio</label>
+            <input type="number" id="d-i312" inputmode="numeric" value="0">
+          </div>
+          <div class="f">
+            <label for="d-fest">Ore festive</label>
+            <input type="number" id="d-fest" inputmode="decimal" step="0.5" value="0">
+          </div>
+        </div>
+        <div class="g2" style="margin-top:11px">
+          <div class="f">
+            <label for="d-addiz">Addizionali regionale + comunale (%)</label>
+            <input type="number" id="d-addiz" inputmode="decimal" step="0.1" value="2.1">
+          </div>
+          <div class="f">
+            <label for="d-contr">Contributi a tuo carico (%)</label>
+            <input type="number" id="d-contr" inputmode="decimal" step="0.01" value="9.76">
+          </div>
+        </div>
+        <div class="note">I valori di partenza sono quelli letti sulle buste 2026 dell'istituto di riferimento: contributi 9,76% (9,19% IVS più 0,57%), addizionali intorno al 2,1% per la Lombardia. Cambiali se la tua busta dice altro.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Confronto con la busta</h3>
+      <div class="b">
+        <div class="f">
+          <label for="v-netto">Netto che hai ricevuto davvero (€)</label>
+          <input type="number" id="v-netto" inputmode="decimal" step="1" value="0">
+        </div>
+        <div class="note" id="v-esito">Inserisci il netto della tua busta per vedere quanto si discosta dalla stima.</div>
+        <div class="hint" style="margin-top:9px">Per il minimo di legge sulla paga oraria guarda la scheda Servizio: sotto la paga oraria ti dico se sei al tabellare del tuo livello.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTRATTO -->
+  <div id="p-c" role="tabpanel" aria-labelledby="t-c" hidden>
+    <div class="card">
+      <h3>Regole del contratto</h3>
+      <div class="b">
+        <div class="note" style="margin:0 0 13px;border-left:3px solid var(--oro)">
+          <strong>Leggi prima di fidarti dei numeri.</strong> Questo strumento è nato leggendo le buste paga di un solo
+          istituto, e tutta la logica di calcolo viene da lì. Se lavori per un istituto diverso, anche cambiando qui sotto
+          tutti i parametri il risultato può essere lontano dal vero: accordi aziendali, voci in più, modi diversi di
+          pagare le ore. Usalo come stima e verifica sempre sulla busta.
+        </div>
+        <p style="margin:0 0 12px;font-size:13.5px;color:var(--ink-2)">
+          I valori di partenza sono quelli dell'istituto di riferimento. Cambia quello che serve:
+          il calcolo si adegua subito e resta salvato.</p>
+        <div class="g2">
+          <div class="f">
+            <label for="c-ore">Ore del mese contrattuale</label>
+            <input type="number" id="c-ore" inputmode="decimal" step="1" value="173">
+          </div>
+          <div class="f">
+            <label for="c-gg">Giornate retribuite al mese</label>
+            <input type="number" id="c-gg" inputmode="numeric" value="26">
+            <div class="hint">Oltre questo numero non maturano indennità né buoni.</div>
+          </div>
+        </div>
+        <div class="g2" style="margin-top:11px">
+          <div class="f">
+            <label for="c-buono">Buono pasto (€)</label>
+            <input type="number" id="c-buono" inputmode="decimal" step="0.5" value="7">
+          </div>
+          <div class="f">
+            <label for="c-ggferie">Ore per giorno di ferie</label>
+            <input type="number" id="c-ggferie" inputmode="decimal" step="0.01" value="6.66">
+          </div>
+        </div>
+        <div class="g2" style="margin-top:11px">
+          <div class="f">
+            <label for="c-festperc">Maggiorazione festiva (%)</label>
+            <input type="number" id="c-festperc" inputmode="decimal" step="1" value="35">
+            <div class="hint">Sulle ore festive, sopra la paga oraria.</div>
+          </div>
+          <div class="f">
+            <label for="c-mens">Mensilità all'anno</label>
+            <select id="c-mens">
+              <option value="12">12 — nessuna aggiuntiva</option>
+              <option value="13">13 — tredicesima</option>
+              <option value="14" selected>14 — tredicesima e quattordicesima</option>
+            </select>
+            <div class="hint">I ratei vengono aggiunti a ogni mensilità.</div>
+          </div>
+        </div>
+      </div>
+      <details open>
+        <summary>Indennità giornaliere</summary>
+        <div class="b">
+          <div class="g2">
+            <div class="f">
+              <label for="c-nott">Notturno piantonamento (€)</label>
+              <input type="number" id="c-nott" inputmode="decimal" step="0.01" value="4.18">
+            </div>
+            <div class="f">
+              <label for="c-strad">Notturno zona stradale (€)</label>
+              <input type="number" id="c-strad" inputmode="decimal" step="0.01" value="5.61">
+            </div>
+            <div class="f">
+              <label for="c-risc">Rischio (€)</label>
+              <input type="number" id="c-risc" inputmode="decimal" step="0.01" value="3.12">
+            </div>
+            <div class="f">
+              <label for="c-diur">Diurno piantonamento (€)</label>
+              <input type="number" id="c-diur" inputmode="decimal" step="0.01" value="0.65">
+            </div>
+          </div>
+          <div class="hint" style="margin-top:9px">Una sola indennità al giorno: stradale, altrimenti rischio, altrimenti notturno, altrimenti diurno.</div>
+        </div>
+      </details>
+      <details>
+        <summary>Chi paga il notturno a ore</summary>
+        <div class="b">
+          <div class="g2">
+            <div class="f">
+              <label for="c-nottperc">Maggiorazione notturna (%)</label>
+              <input type="number" id="c-nottperc" inputmode="decimal" step="1" value="0">
+              <div class="hint">Lascia 0 se il tuo contratto usa le indennità giornaliere.</div>
+            </div>
+            <div class="f">
+              <label for="c-nottore">Ore notturne nel mese</label>
+              <input type="number" id="c-nottore" inputmode="decimal" step="1" value="0">
+              <div class="hint">Ore in fascia 22–6.</div>
+            </div>
+          </div>
+        </div>
+      </details>
+      <div class="b" style="padding-top:0">
+        <button class="btn" id="c-reset" style="width:100%">Rimetti i valori predefiniti</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RUOLINO -->
+  <div id="p-p" role="tabpanel" aria-labelledby="t-p" hidden>
+    <div class="card">
+      <h3>Turno di oggi</h3>
+      <div class="b">
+        <div class="timbra">
+          <button class="btn primary" id="tb-inizio">Inizio turno</button>
+          <button class="btn" id="tb-fine" disabled>Fine turno</button>
+        </div>
+        <div class="hint" id="tb-stato" style="margin-top:8px">Nessun turno in corso.</div>
+        <div id="tb-share" hidden style="margin-top:12px">
+          <div class="f">
+            <label for="tb-ob">Posto di servizio</label>
+            <input type="text" id="tb-ob" placeholder="es. Deposito nord" autocomplete="off">
+          </div>
+          <div class="g2" style="margin-top:8px">
+            <label class="chk"><input type="checkbox" id="tb-gps" checked> Con posizione</label>
+            <label class="btn" for="tb-foto" style="margin:0;display:flex;align-items:center;justify-content:center"><span id="tb-foto-t">Aggiungi foto</span><input type="file" id="tb-foto" accept="image/*" hidden></label>
+          </div>
+          <div class="hint" id="tb-gpsmsg"></div>
+          <div class="hint" id="tb-fotomsg"></div>
+          <pre class="note testo" id="tb-testo"></pre>
+          <div class="btnrow">
+            <button class="btn gold" id="tb-manda">Manda su WhatsApp</button>
+            <a class="btn gold" id="tb-wa" href="#" target="_blank" rel="noopener" hidden>Apri WhatsApp</a>
+            <button class="btn" id="tb-copia">Copia</button>
+          </div>
+          <div class="hint" id="tb-msg" style="margin-top:8px">Parte il testo qui sopra, con la posizione e il codice. La foto viaggia insieme dove il telefono lo permette, altrimenti la alleghi in WhatsApp. Niente esce da questa pagina finché non tocchi Manda.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Registro delle ore</h3>
+      <div class="b">
+        <div class="cal-nav">
+          <button type="button" id="cal-prev" aria-label="Mese precedente">‹</button>
+          <h4 id="cal-titolo"></h4>
+          <button type="button" id="cal-next" aria-label="Mese successivo">›</button>
+        </div>
+        <div class="cal" id="cal"></div>
+        <div class="hint" style="margin-top:8px">Tocca un giorno per segnare i turni. Le date in rosso sono festive. Un turno che passa la mezzanotte va sul giorno in cui inizia.</div>
+      </div>
+      <div id="ed" hidden>
+        <div class="b" style="border-top:1px solid var(--line-2)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+            <h4 id="ed-titolo" style="margin:0;font-size:17px"></h4>
+            <span class="hint" id="ed-fonte" style="margin:0"></span>
+          </div>
+          <div class="quick" style="margin-top:10px">
+            <button type="button" data-t="06:00-14:00">06–14</button>
+            <button type="button" data-t="14:00-22:00">14–22</button>
+            <button type="button" data-t="22:00-06:00">22–06</button>
+            <button type="button" id="ed-altro">Altro…</button>
+          </div>
+          <div class="g3" id="ed-custom" hidden style="margin-top:8px;align-items:end">
+            <div class="f"><label for="ed-i">Dalle</label><input type="time" id="ed-i" value="06:00"></div>
+            <div class="f"><label for="ed-f">Alle</label><input type="time" id="ed-f" value="14:00"></div>
+            <button type="button" class="btn" id="ed-add">Aggiungi</button>
+          </div>
+          <ul class="turni" id="ed-turni"></ul>
+          <div class="g2" style="margin-top:11px">
+            <div class="f">
+              <label for="ed-stato">Giornata</label>
+              <select id="ed-stato">
+                <option value="">Lavoro</option>
+                <option value="riposo">Riposo</option>
+                <option value="ferie">Ferie</option>
+                <option value="permesso">Permesso</option>
+                <option value="malattia">Malattia</option>
+              </select>
+            </div>
+            <div class="f">
+              <label for="ed-ob">Posto di servizio</label>
+              <input type="text" id="ed-ob" placeholder="facoltativo" autocomplete="off">
+            </div>
+          </div>
+          <label class="chk" style="margin-top:8px"><input type="checkbox" id="ed-fest"> Giorno festivo (maggiorazione)</label>
+          <div class="btnrow">
+            <button type="button" class="btn" id="ed-settimana">Ripeti la settimana nella prossima</button>
+            <button type="button" class="btn" id="ed-svuota">Svuota il giorno</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Riepilogo del mese</h3>
+      <div class="b">
+        <div class="stat" id="stat"></div>
+        <div class="btnrow">
+          <button type="button" class="btn primary" id="cal-usa">Usa nel calcolo</button>
+          <button type="button" class="btn" id="cal-copia">Copia riepilogo</button>
+        </div>
+        <div class="hint" id="cal-link" style="margin-top:8px"></div>
+        <div class="hint" id="cal-msg"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Fogli di servizio</h3>
+      <div class="b">
+        <div class="drop" id="drop" tabindex="0" role="button">
+          <strong>Trascina o tocca per scegliere</strong>
+          I fogli turni in PDF che ricevi via mail. Puoi darli tutti insieme, anche i doppioni della stessa settimana:
+          finiscono nel registro qui sopra, e non ti serve più riaprirli.
+          <input type="file" id="file" accept="application/pdf,.pdf" multiple hidden>
+        </div>
+        <ul class="flist" id="flist"></ul>
+        <div class="hint" id="pmsg" style="margin-top:10px"></div>
+      </div>
+    </div>
+    <div class="card" id="mesi-card" hidden>
+      <h3>Mesi trovati</h3>
+      <div class="b"><table id="mesi"></table></div>
+    </div>
+
+    <div class="card">
+      <h3>Copia di sicurezza</h3>
+      <div class="b">
+        <p style="margin:0 0 10px;font-size:13px;color:var(--ink-2)">Registro, profili e valori stanno solo in questo browser. Se cambi telefono o pulisci i dati, li perdi: salvati un file ogni tanto.</p>
+        <div class="btnrow" style="margin-top:0">
+          <button type="button" class="btn" id="bk-esporta">Salva file</button>
+          <label class="btn" for="bk-file" style="margin:0 2px;flex:1;display:flex;align-items:center;justify-content:center">Carica file<input type="file" id="bk-file" accept="application/json,.json" hidden></label>
+        </div>
+        <div class="hint" id="bk-msg" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Valori preimpostati sul trattamento dell'istituto di riferimento. Nella scheda Contratto li adatti al tuo.</p>
+    <p><strong>Il calcolo è stato costruito e verificato sulle buste paga di un solo istituto.</strong> Per altri istituti,
+    con accordi aziendali e prassi diverse, il risultato può essere anche completamente sbagliato: prendilo per quello che
+    è, una stima da confrontare con la tua busta.</p>
+    <p>Tutto viene calcolato in locale, sul tuo telefono: nessun dato esce da questa pagina, niente viene trattenuto, niente viene inviato. Anche il registro delle ore resta qui.</p>
+  </footer>
+</div>
+
+<script>
+/* ---- utilità ---- */
+const $=id=>document.getElementById(id), n=id=>{const v=parseFloat($(id).value);return isNaN(v)?0:v};
+const eur=v=>v.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:0});
+const eur2=v=>v.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+const f1=v=>v.toLocaleString('it-IT',{minimumFractionDigits:1,maximumFractionDigits:1});
+const pad=x=>(x<10?'0':'')+x;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const jGet=(k,d)=>{try{const v=JSON.parse(lsGet(k,'null'));return v===null?d:v}catch(e){return d}};
+const BASE_IST={'c-ore':173,'c-gg':26,'c-buono':7,'c-ggferie':6.66,'c-festperc':35,'c-nott':4.18,'c-strad':5.61,
+  'c-risc':3.12,'c-diur':0.65,'c-nottperc':0,'c-nottore':0,'c-mens':14};
+const P=()=>({oreMese:n('c-ore')||173, ggMese:n('c-gg')||26, buono:n('c-buono'), oreGg:n('c-ggferie')||6.66,
+  festPerc:n('c-festperc'), iNott:n('c-nott'), iStrad:n('c-strad'), iRisc:n('c-risc'), iDiur:n('c-diur'),
+  nottPerc:n('c-nottperc'), nottOre:n('c-nottore'), mens:parseFloat($('c-mens').value)||14});
+
+/* ---- fisco 2026 ---- */
+const detrLavDip=ra=>ra<=15000?1955:ra<=28000?1910+1190*(28000-ra)/13000:ra<=50000?1910*(50000-ra)/22000:0;
+const ulteriore=ra=>ra<=20000?0:ra<=32000?1000:ra<=40000?1000*(40000-ra)/8000:0;
+const bonusEsente=ra=>{ if(ra>20000) return 0;
+  return Math.min(ra,8500)*0.071 + Math.max(0,Math.min(ra,15000)-8500)*0.053 + Math.max(0,Math.min(ra,20000)-15000)*0.048; };
+const irpefLorda=ra=>Math.min(ra,28000)*0.23 + Math.max(0,Math.min(ra,50000)-28000)*0.35 + Math.max(0,ra-50000)*0.43;
+
+/* ---- assegno unico 2026 ---- */
+const ISEE_MIN=17090.61, ISEE_MAX=45574.96;
+function auuFiglio(isee,maggiorenne){
+  const max=maggiorenne?96.90:199.40, min=maggiorenne?28.50:57.00;
+  if(!isee||isee>=ISEE_MAX) return min;
+  if(isee<=ISEE_MIN) return max;
+  return max-(max-min)*(isee-ISEE_MIN)/(ISEE_MAX-ISEE_MIN);
+}
+function calcolaAUU(){
+  const fm=Math.max(0,n('fig-min')), fM=Math.max(0,n('fig-mag')), isee=n('isee'), due=n('duelav')===1;
+  const tot=fm+fM; if(!tot) return {tot:0,fm,fM};
+  let s=fm*auuFiglio(isee,false)+fM*auuFiglio(isee,true);
+  if(tot>=3){                       // maggiorazione dal terzo figlio in poi
+    const m=isee&&isee<=ISEE_MIN?96.90:isee>=ISEE_MAX||!isee?17.10:96.90-(96.90-17.10)*(isee-ISEE_MIN)/(ISEE_MAX-ISEE_MIN);
+    s+=(tot-2)*m;
+  }
+  if(tot>=4) s+=150;                // forfait nuclei numerosi
+  if(due){                          // entrambi i genitori con reddito da lavoro
+    const m=isee&&isee<=ISEE_MIN?34.10:isee>=ISEE_MAX||!isee?0:34.10*(1-(isee-ISEE_MIN)/(ISEE_MAX-ISEE_MIN));
+    s+=tot*m;
+  }
+  return {tot:s,fm,fM};
+}
+
+/* ---- motore ---- */
+function calcola(){
+  const ore=n('ore'), oraria=n('oraria')||8.49064, ferie=Math.max(0,n('ferie'));
+  let gg=Math.max(0,n('gg'));
+  const strOre=Math.max(0,n('d-str')), strP=n('d-strp'), valTra=n('d-val')||7;
+  const festOre=Math.max(0,n('d-fest'));
+  const c=P();
+  const ggInd=Math.min(gg,c.ggMese);                  // oltre le giornate del mese non matura nulla
+  const i561=Math.min(Math.max(0,n('d-i561')),ggInd);
+  const i312=Math.min(Math.max(0,n('d-i312')),ggInd-i561);
+  let notti=n('d-notti'); if(notti<0) notti=ggInd-i561-i312;
+  notti=Math.max(0,Math.min(notti,ggInd-i561-i312));
+  const diurni=Math.max(0,ggInd-notti-i561-i312);   // giorni lavorati senza notte: indennità diurna
+  const pAdd=n('d-addiz')/100, pContr=n('d-contr')/100;
+
+  const oreFerie=ferie*c.oreGg;
+  const ordinarie=Math.max(0,Math.min(ore,c.oreMese-oreFerie));
+  const strEff=Math.min(strOre,Math.max(0,ore-ordinarie));
+  const oreTrasf=Math.max(0,ore-ordinarie-strEff-festOre);
+
+  const vOrd=ordinarie*oraria;
+  const vFerie=oreFerie*oraria;
+  const vStr=strEff*oraria*(1+strP/100);
+  const vFest=festOre*oraria*(1+c.festPerc/100);
+  const vInd=notti*c.iNott + i561*c.iStrad + i312*c.iRisc + diurni*c.iDiur;
+  const vNottOre=c.nottPerc>0 ? c.nottOre*oraria*(c.nottPerc/100) : 0;   // contratti che pagano il notturno a ore
+  const ratei=(oraria*c.oreMese)*Math.max(0,c.mens-12)/12;
+  const vTrasf=oreTrasf*valTra;                 // esente
+  const buoni=ggInd*c.buono;                    // i buoni si fermano alle giornate del mese
+
+  const imponibile=vOrd+vFerie+vStr+vFest+vInd+vNottOre+ratei;
+  const contributi=imponibile*pContr;
+  const baseFisc=imponibile-contributi;
+  const ra=baseFisc*12;
+  const irLorda=irpefLorda(ra)/12;
+  const detraz=(detrLavDip(ra)+ulteriore(ra))/12;
+  const irNetta=Math.max(0,irLorda-detraz);
+  const addiz=baseFisc*pAdd;
+  const bonus=bonusEsente(ra)/12;
+
+  const trattenute=Math.max(0,n('quinto'))+Math.max(0,n('presti'))+Math.max(0,n('sind'))+Math.max(0,n('altre'));
+  const nettoBusta=baseFisc-irNetta-addiz+vTrasf+bonus-trattenute;
+  const auu=calcolaAUU();
+  const inCasa=nettoBusta+auu.tot;
+
+  render({ore,ordinarie,strEff,oreTrasf,festOre,oreFerie,gg,ggInd,notti,i561,i312,diurni,oraria,
+    vOrd,vFerie,vStr,vFest,vInd,vNottOre,ratei,vTrasf,buoni,imponibile,contributi,irNetta,addiz,bonus,
+    trattenute,nettoBusta,auu,inCasa,valTra,c});
+}
+
+function render(m){
+  $('netto').innerHTML = eur(Math.max(0,m.nettoBusta))+' <small>€</small>';
+  const pa=$('pill-auu');
+  if(m.auu.tot>0){ pa.hidden=false; pa.textContent='+ '+eur(m.auu.tot)+' € assegno unico → '+eur(m.inCasa)+' € in casa'; }
+  else pa.hidden=true;
+
+  // barra: da cosa è fatto il lordo
+  const parti=[
+    ['Ordinarie',m.vOrd,'var(--ink-2)'],
+    ['Ferie e permessi',m.vFerie,'#7d8ea6'],
+    ['Straordinario',m.vStr,'var(--accent)'],
+    ['Festivo',m.vFest,'#b8862f'],
+    ['Trasferta',m.vTrasf,'var(--accent-2)'],
+    ['Indennità',m.vInd,'#5c8a6e'],
+    ['Notturno',m.vNottOre,'#4f7d94'],
+    ['Ratei 13ª/14ª',m.ratei,'#8aa0bd']
+  ].filter(p=>p[1]>0.5);
+  const tot=parti.reduce((s,p)=>s+p[1],0)||1;
+  $('bar').innerHTML=parti.map(p=>`<i style="width:${p[1]/tot*100}%;background:${p[2]}"></i>`).join('');
+  $('legend').innerHTML=parti.map(p=>`<span><b style="background:${p[2]}"></b>${p[0]} <em>${eur(p[1])} €</em></span>`).join('');
+
+  const r=(l,v,q='')=>`<tr><td>${l}${q?` <span class="q">${q}</span>`:''}</td><td>${v}</td></tr>`;
+  const rs=(l,v)=>`<tr class="sub"><td>${l}</td><td>${v}</td></tr>`;
+  let h='';
+  h+=r('Retribuzione ordinaria',eur2(m.vOrd)+' €',f1(m.ordinarie)+' h');
+  if(m.vFerie>0) h+=r('Ferie e permessi',eur2(m.vFerie)+' €',f1(m.oreFerie)+' h');
+  if(m.vStr>0) h+=r('Straordinario',eur2(m.vStr)+' €',f1(m.strEff)+' h');
+  if(m.vFest>0) h+=r('Lavoro festivo',eur2(m.vFest)+' €',f1(m.festOre)+' h × +'+m.c.festPerc+'%');
+  h+=r('Indennità giornaliere',eur2(m.vInd)+' €',(m.notti+m.i561+m.i312+m.diurni)+' gg'+(m.gg>m.c.ggMese?' su '+m.gg:''));
+  if(m.vNottOre>0) h+=r('Maggiorazione notturna',eur2(m.vNottOre)+' €',f1(m.c.nottOre)+' h × '+m.c.nottPerc+'%');
+  if(m.ratei>0) h+=r(m.c.mens>=14?'Ratei 13ª e 14ª':'Rateo 13ª',eur2(m.ratei)+' €');
+  h+=`<tr class="tot"><td>Totale imponibile</td><td>${eur2(m.imponibile)} €</td></tr>`;
+  h+=rs('Contributi a tuo carico','−'+eur2(m.contributi)+' €');
+  h+=rs('IRPEF dopo le detrazioni','−'+eur2(m.irNetta)+' €');
+  h+=rs('Addizionali','−'+eur2(m.addiz)+' €');
+  if(m.bonus>0) h+=rs('Bonus in busta (taglio del cuneo)','+'+eur2(m.bonus)+' €');
+  if(m.vTrasf>0) h+=r('Trasferta o disponibilità <span class="q">esente</span>','+'+eur2(m.vTrasf)+' €',f1(m.oreTrasf)+' h × '+eur2(m.valTra)+' €');
+  if(m.trattenute>0) h+=r('Trattenute e rate','−'+eur2(m.trattenute)+' €');
+  h+=`<tr class="tot"><td>Netto in busta</td><td>${eur2(Math.max(0,m.nettoBusta))} €</td></tr>`;
+  if(m.auu.tot>0){
+    h+=r('Assegno unico <span class="q">accredito INPS</span>','+'+eur2(m.auu.tot)+' €',(m.auu.fm+m.auu.fM)+' figli');
+    h+=`<tr class="tot"><td>Totale che entra in casa</td><td>${eur2(m.inCasa)} €</td></tr>`;
+  }
+  h+=rs('Buoni pasto sulla card (fuori busta)','+'+eur2(m.buoni)+' € <span class="q">'+m.ggInd+' × '+eur2(m.c.buono)+' €</span>');
+  $('break').innerHTML=h;
+  const av=$('avviso26');
+  if(m.gg>m.c.ggMese){
+    av.hidden=false;
+    av.innerHTML=`Hai lavorato <strong>${m.gg} giorni</strong>, ma il mese contrattuale ne conta ${m.c.ggMese}: indennità e
+      buoni pasto si fermano lì. I ${m.gg-m.c.ggMese} giorni in più portano solo le ore, che finiscono fra straordinario
+      e trasferta. Sono circa <strong>${eur2((m.gg-m.c.ggMese)*(m.c.iNott+m.c.buono))} €</strong> fra indennità e buoni
+      che non maturano.`;
+  } else av.hidden=true;
+
+  $('sum-fam').textContent = m.auu.tot>0 ? (m.auu.fm+m.auu.fM)+' figli · '+eur(m.auu.tot)+' €/mese' : 'nessun figlio';
+  $('sum-tra').textContent = m.trattenute>0 ? '−'+eur(m.trattenute)+' €/mese' : 'nessuna';
+
+  const q=Math.max(0,n('quinto')), lim=Math.max(0,m.nettoBusta+q)/5;
+  const w=$('warn-quinto');
+  if(q>0 && q>lim+1){ w.hidden=false; w.innerHTML=`La cessione supera il limite: su questo netto il massimo cedibile è circa <strong>${eur(lim)} €</strong>.`; }
+  else w.hidden=true;
+
+  // paga oraria contro il minimo tabellare del livello scelto
+  const lv=parseFloat($('liv').value)||0, wm=$('warn-min');
+  if(lv>0 && Math.abs(m.oraria-lv)>0.005){
+    wm.hidden=false;
+    wm.className = m.oraria<lv ? 'note rosso' : 'note';
+    wm.innerHTML = m.oraria<lv
+      ? `La paga oraria è <strong>sotto il minimo tabellare</strong> del livello scelto (${eur2(lv)} €): mancano ${eur2(lv-m.oraria)} € l'ora, circa <strong>${eur((lv-m.oraria)*m.c.oreMese)} €</strong> al mese sulle sole ore ordinarie. Controlla la voce «paga base» in busta.`
+      : `Paga oraria sopra il minimo tabellare di ${eur2(m.oraria-lv)} € l'ora: scatti di anzianità o superminimo.`;
+  } else wm.hidden=true;
+
+  const vn=n('v-netto');
+  const ve=$('v-esito');
+  if(vn>0){
+    const d=m.nettoBusta-vn, ad=Math.abs(d), pc=ad/vn*100;
+    ve.innerHTML = pc<3
+      ? `La stima è <strong>${eur2(m.nettoBusta)} €</strong> contro i ${eur2(vn)} € della busta: scarto di ${eur2(ad)} € (${pc.toFixed(1)}%). Rientra nel margine normale della stima.`
+      : d>0
+        ? `La stima dà <strong>${eur2(ad)} € in più</strong> della busta (${pc.toFixed(1)}%). Di solito è una trattenuta non inserita qui, un conguaglio, o meno ore riconosciute di quelle che hai contato.`
+        : `La busta ti ha dato <strong>${eur2(ad)} € in più</strong> della stima (${pc.toFixed(1)}%). Spesso sono arretrati, premi, o un conguaglio a tuo favore.`;
+  } else ve.textContent='Inserisci il netto della tua busta per vedere quanto si discosta dalla stima.';
+
+  aggiornaEncomio(m);
+  aggiornaHintRuolino();
+  const st={}; CAMPI.forEach(id=>{ st[id]=$(id).value; }); lsSet('gpg',JSON.stringify(st));
+}
+
+/* ---- encomio: oltre le ore di contratto il Comando si complimenta ---- */
+const FRASI=[
+  "Camus scrisse che bisogna immaginare Sisifo felice. Tu gli hai risparmiato la fatica di immaginarlo.",
+  "Boxer, nella Fattoria degli animali, rispondeva a ogni problema con «lavorerò di più». I maiali lo stimavano moltissimo, fino all’ultimo viaggio in furgone.",
+  "Benjamin, l’asino della Fattoria degli animali, diceva che gli asini vivono a lungo: era l’unico a non fare un’ora più del dovuto. Tu hai scelto il modello di Boxer, che è più apprezzato.",
+  "Keynes nel 1930 previde per il 2030 la settimana lavorativa di quindici ore. Tu le fai in un giorno solo: sei avanti sulla tabella di marcia.",
+  "Bertrand Russell scrisse l’Elogio dell’ozio. Non l’hai letto, e hai fatto bene: sono quaranta minuti di turno.",
+  "Il genero di Marx scrisse Il diritto alla pigrizia. Tu ne hai fatto un dovere, e con una coerenza che a lui mancava.",
+  "Labor omnia vicit improbus, scrive Virgilio nelle Georgiche. Improbus lo traducono con «tenace». Il dizionario dà anche altri significati, ma non serve controllare.",
+  "Beatus ille qui procul negotiis, canta Orazio. A dirlo, nella poesia, è un usuraio che alla fine torna a contare i soldi. Tu almeno non fingi.",
+  "Seneca sosteneva che la vita non è breve: siamo noi a sprecarla. La tua è impiegata fino all’ultimo quarto d’ora, senza il minimo spreco.",
+  "Il Qoelet chiede quale vantaggio abbia l’uomo da tutta la fatica che fa sotto il sole. Tu lavori di notte: la domanda non ti riguarda.",
+  "Nell’Asino d’oro, Lucio gira la macina di un mulino finché non trova le rose che lo fanno tornare uomo. Il tuo buono pasto vale sette euro: qualche rosa ci esce.",
+  "Collodi trasformava in somari i ragazzi che non volevano lavorare. Non aveva previsto il caso opposto, ma il risultato è sorprendentemente simile.",
+  "Titania, in Shakespeare, si innamora di Bottom con la testa d’asino. C’è sempre qualcuno che ti trova bellissimo: di solito chi compila i turni.",
+  "L’asino di Buridano morì di fame fra due mucchi di fieno perché non sapeva quale scegliere. Tu prendi tutti e due i turni: problema risolto alla radice.",
+  "L’asina di Balaam fu l’unica a vedere l’angelo, e per questo prese le bastonate. Anche tu vedi cose che gli altri non vedono, per esempio il giorno 31.",
+  "Asinus asinum fricat, dicevano i latini: l’asino strofina l’asino. Il gruppo dei turni su WhatsApp lo conferma ogni sera.",
+  "Ocno, agli inferi, intreccia una corda che un’asina mangia man mano. Polignoto ne fece un affresco a Delfi. A te hanno fatto un cedolino.",
+  "Issione fu legato a una ruota che gira in eterno. Nel tuo istituto la chiamano rotazione, ed è considerata un vantaggio.",
+  "Le Danaidi riempivano per sempre una botte senza fondo. Tu hai lo stesso ritmo e una botte più moderna: si chiama conto corrente.",
+  "Il fegato di Prometeo ricresceva ogni notte per l’aquila del mattino dopo. La tua capacità di recupero fra un turno e l’altro è dello stesso livello.",
+  "Achille, secondo Zenone, non raggiunge mai la tartaruga. Tu la quattordicesima. Ma il paradosso è elegante.",
+  "La legge di Parkinson dice che il lavoro si espande fino a riempire il tempo disponibile. Il tuo ha finito il tempo disponibile e ha continuato lo stesso: un caso da manuale.",
+  "Gli psicologi lo chiamano tapis roulant edonico: si corre, si resta fermi. Tu almeno il tapis roulant te lo fai pagare.",
+  "Cipolla definisce sprovveduto chi produce un vantaggio per gli altri rimettendoci di suo. Nella sua classificazione è la categoria più generosa: complimenti per il piazzamento.",
+  "Weber ci vedeva una vocazione, Beruf, che viene da rufen, chiamare. Ti hanno chiamato alle cinque e sei andato: Weber sarebbe commosso.",
+  "Taylor chiamava Schmidt «un uomo di alto valore» mentre gli faceva caricare quarantasette tonnellate di ghisa al giorno. Anche tu sei un uomo di alto valore.",
+  "Stachanov in una notte fece quattordici volte la norma. Il mese dopo alzarono la norma a tutti. I tuoi colleghi ti sono grati allo stesso modo.",
+  "Charlot, in Tempi moderni, continuava a stringere bulloni anche fuori dalla fabbrica. Tu controlli il tabellone anche in ferie: stessa dedizione, più aggiornata.",
+  "«Com’è umano lei.» Fantozzi lo diceva al suo direttore. Il tuo direttore lo pensa di te, che è meglio.",
+  "Lulù Massa, ne La classe operaia va in paradiso, faceva i pezzi a cottimo con orgoglio. Il titolo, te lo confermo, era ironico.",
+  "Ivan Denisovič a fine giornata era quasi felice: aveva murato bene. Solženicyn lo scrisse come una tragedia, ma ognuno legge ciò che vuole.",
+  "Thoreau scrisse che la massa degli uomini conduce vite di quieta disperazione. La tua almeno non è quieta: c’è la radio.",
+  "Diogene chiese ad Alessandro di scansarsi dal sole. Tu il sole non lo vedi da marzo: nessun conflitto con nessuno.",
+  "Candido, alla fine, coltiva il suo giardino. Tu piantoni quello di un altro, con la stessa serenità.",
+  "Cincinnato lasciò il comando e tornò all’aratro dopo pochi giorni. Tu dall’aratro non ti sei mai alzato, il che semplifica la biografia.",
+  "Le fatiche di Ercole erano dodici, e poi finivano. Le tue hanno un numero più alto e un calendario aperto.",
+  "Atlante regge il cielo perché condannato. Tu ti sei offerto volontario, che è la forma più alta di virtù.",
+  "Gregor Samsa, svegliandosi insetto, si preoccupò prima di tutto del treno delle cinque. Kafka ti avrebbe capito al volo.",
+  "Bartleby rispondeva «preferirei di no». Tu quella frase non l’hai mai pronunciata, ed è per questo che ti chiamano sempre.",
+  "Primo Levi scrisse che amare il proprio lavoro è la migliore approssimazione concreta alla felicità sulla terra, e aggiunse: privilegio di pochi. Tu sei nel privilegio dodici ore al giorno.",
+  "Marx chiamava plusvalore assoluto l’allungamento della giornata lavorativa. Nel tuo istituto lo chiamano «puoi coprire?», e tu copri.",
+  "La cicala cantava e la formica lavorava. La Fontaine stava dalla parte della formica, ma non aveva mai visto una formica fare seicento ore.",
+  "Il lavoro nobilita l’uomo, dice il proverbio, e lo rende simile alle bestie. Tu hai raggiunto la seconda parte con un anticipo notevole.",
+  "Ora et labora, dicevano i benedettini. Avevano anche il vespro, però, e la notte dormivano.",
+  "Il paradosso di Easterlin dice che oltre una certa soglia il reddito non aggiunge felicità. Tu quella soglia non la rischi: la felicità è al sicuro."
+];
+const GRADI=[[250,'Elogio'],[350,'Encomio semplice'],[500,'Encomio solenne'],[Infinity,'Medaglia d’oro al valor somaro']];
+const ENC={tier:0,idx:-1};
+function fraseNuova(){
+  let i; do{ i=Math.floor(Math.random()*FRASI.length); }while(FRASI.length>1&&i===ENC.idx);
+  ENC.idx=i; return FRASI[i];
+}
+function aggiornaEncomio(m){
+  const card=$('encomio');
+  if(!(m.ore>m.c.oreMese)){ card.hidden=true; ENC.tier=0; return; }
+  let tier=GRADI.length; for(let i=0;i<GRADI.length;i++){ if(m.ore<=GRADI[i][0]){ tier=i+1; break; } }
+  card.hidden=false;
+  if(tier!==ENC.tier){ ENC.tier=tier; $('enc-frase').textContent=fraseNuova(); }
+  $('enc-grado').textContent=GRADI[tier-1][1];
+  const oltre=Math.max(0,m.ore-m.ordinarie);
+  let d=`${f1(oltre)} ore oltre le ${f1(m.ordinarie)} ordinarie`;
+  const pezzi=[];
+  if(m.strEff>0) pezzi.push(`${f1(m.strEff)} a straordinario`);
+  if(m.festOre>0) pezzi.push(`${f1(m.festOre)} festive`);
+  if(m.oreTrasf>0) pezzi.push(`${f1(m.oreTrasf)} in trasferta a ${eur2(m.valTra)} € l’una, esenti`);
+  d+=pezzi.length?': '+pezzi.join(', ')+'.':'.';
+  $('enc-dati').textContent=d;
+}
+$('enc-altro').onclick=()=>{ $('enc-frase').textContent=fraseNuova(); };
+
+/* ---- tabs ---- */
+const TABS=[['t-r','p-r'],['t-d','p-d'],['t-c','p-c'],['t-p','p-p']];
+function mostraTab(t){ TABS.forEach(([t2,p2])=>{ $(t2).setAttribute('aria-selected', t2===t?'true':'false'); $(p2).hidden = t2!==t; }); }
+TABS.forEach(([t])=>$(t).onclick=()=>mostraTab(t));
+function inCima(){ try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); } }
+
+/* ---- livello ---- */
+$('liv').onchange=()=>{ const v=parseFloat($('liv').value); if(v>0){ $('oraria').value=v; } calcola(); };
+document.querySelectorAll('#p-r .quick button').forEach(b=>b.onclick=()=>{ $('ore').value=b.dataset.ore; staccaRuolino(); calcola(); });
+
+/* ---- inflate: nativo dove c'è, altrimenti in JavaScript (così i PDF si leggono su qualsiasi browser) ---- */
+/*INFLATE-BEGIN*/
+const LBASE=[3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
+const LEXT=[0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
+const DBASE=[1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
+const DEXT=[0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
+const CLORDER=[16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
+function inflateJS(src){
+  let pos=0, bitBuf=0, bitCnt=0;
+  if(src.length>=2 && (src[0]&0x0f)===8 && (((src[0]<<8)|src[1])%31)===0) pos=2;   // intestazione zlib
+  let out=new Uint8Array(Math.max(4096,src.length*4)), outLen=0;
+  const ensure=k=>{ if(outLen+k>out.length){ const nb=new Uint8Array(Math.max(out.length*2,outLen+k)); nb.set(out.subarray(0,outLen)); out=nb; } };
+  const bits=k=>{ while(bitCnt<k){ if(pos>=src.length) throw new Error('fine inattesa'); bitBuf|=src[pos++]<<bitCnt; bitCnt+=8; } const v=bitBuf&((1<<k)-1); bitBuf>>>=k; bitCnt-=k; return v; };
+  const build=(len,nn)=>{ const count=new Uint16Array(16), offs=new Uint16Array(16), sym=new Uint16Array(nn);
+    for(let i=0;i<nn;i++) count[len[i]]++; count[0]=0;
+    for(let i=1;i<16;i++) offs[i]=offs[i-1]+count[i-1];
+    for(let i=0;i<nn;i++) if(len[i]) sym[offs[len[i]]++]=i;
+    return {count,sym}; };
+  const decode=h=>{ let code=0, first=0, index=0;
+    for(let l=1;l<16;l++){ code|=bits(1); const c=h.count[l]; if(code-c<first) return h.sym[index+(code-first)]; index+=c; first+=c; first<<=1; code<<=1; }
+    throw new Error('codice non valido'); };
+  let FIX=null;
+  try{
+    let last;
+    do{
+      last=bits(1); const type=bits(2);
+      if(type===0){
+        bitBuf=0; bitCnt=0;
+        if(pos+4>src.length) throw new Error('fine inattesa');
+        const len=src[pos]|(src[pos+1]<<8), nlen=src[pos+2]|(src[pos+3]<<8); pos+=4;
+        if((len^0xffff)!==nlen) throw new Error('blocco non valido');
+        if(pos+len>src.length) throw new Error('fine inattesa');
+        ensure(len); out.set(src.subarray(pos,pos+len),outLen); outLen+=len; pos+=len;
+        continue;
+      }
+      let lit, dist;
+      if(type===1){
+        if(!FIX){ const l=new Uint8Array(288); let i=0; for(;i<144;i++) l[i]=8; for(;i<256;i++) l[i]=9; for(;i<280;i++) l[i]=7; for(;i<288;i++) l[i]=8;
+          const d=new Uint8Array(30); for(i=0;i<30;i++) d[i]=5; FIX={lit:build(l,288),dist:build(d,30)}; }
+        lit=FIX.lit; dist=FIX.dist;
+      } else if(type===2){
+        const nlen=bits(5)+257, ndist=bits(5)+1, ncode=bits(4)+4;
+        const lens=new Uint8Array(320); let i;
+        for(i=0;i<ncode;i++) lens[CLORDER[i]]=bits(3);
+        const lc=build(lens,19);
+        i=0;
+        while(i<nlen+ndist){
+          const s=decode(lc);
+          if(s<16) lens[i++]=s;
+          else{ let v=0, rep;
+            if(s===16){ if(i===0) throw new Error('ripetizione senza base'); v=lens[i-1]; rep=3+bits(2); }
+            else if(s===17) rep=3+bits(3); else rep=11+bits(7);
+            if(i+rep>nlen+ndist) throw new Error('lunghezze eccedenti');
+            while(rep--) lens[i++]=v; }
+        }
+        lit=build(lens,nlen); dist=build(lens.subarray(nlen),ndist);
+      } else throw new Error('tipo di blocco non valido');
+      for(;;){
+        let s=decode(lit);
+        if(s<256){ ensure(1); out[outLen++]=s; }
+        else if(s===256) break;
+        else{ s-=257; if(s>=29) throw new Error('lunghezza non valida');
+          let len=LBASE[s]+bits(LEXT[s]);
+          const ds=decode(dist); if(ds>=30) throw new Error('distanza non valida');
+          const d=DBASE[ds]+bits(DEXT[ds]); if(d>outLen) throw new Error('distanza eccedente');
+          ensure(len); while(len--){ out[outLen]=out[outLen-d]; outLen++; } }
+      }
+    }while(!last);
+  }catch(e){ if(!outLen) throw e; }   // dati troncati: si tiene quello che è uscito
+  return out.subarray(0,outLen);
+}
+/*INFLATE-END*/
+async function inflateNativo(data){
+  for(const fmt of ['deflate','deflate-raw']){
+    const chunks=[];
+    try{
+      const ds=new DecompressionStream(fmt), w=ds.writable.getWriter(), r=ds.readable.getReader();
+      w.write(data).catch(()=>{}); w.close().catch(()=>{});
+      try{ for(;;){ const {done,value}=await r.read(); if(done) break; chunks.push(value); } }catch(e){}
+    }catch(e){}
+    const len=chunks.reduce((s,c)=>s+c.length,0);
+    if(len){ const out=new Uint8Array(len); let o=0; for(const c of chunks){ out.set(c,o); o+=c.length; } return out; }
+  }
+  return null;
+}
+async function inflateBytes(bytes){
+  let end=bytes.length;
+  while(end>0 && (bytes[end-1]===10||bytes[end-1]===13||bytes[end-1]===32)) end--;
+  const data=bytes.subarray(0,end);
+  if(typeof DecompressionStream==='function'){ try{ const r=await inflateNativo(data); if(r) return r; }catch(e){} }
+  try{ const r=inflateJS(data); return r&&r.length?r:null; }catch(e){ return null; }
+}
+
+/* ---- lettore PDF turni ---- */
+const latin1=u8=>{let s='';for(let i=0;i<u8.length;i++)s+=String.fromCharCode(u8[i]);return s};
+async function frammenti(ab){
+  const u8=new Uint8Array(ab), s=latin1(u8); let idx=0, parts=[];
+  while(true){
+    const a=s.indexOf('stream',idx); if(a<0) break;
+    let st=a+6; if(s[st]==='\r')st++; if(s[st]==='\n')st++;
+    const b=s.indexOf('endstream',st); if(b<0) break;
+    idx=b+9;
+    const raw=await inflateBytes(u8.subarray(st,b)); if(raw) parts.push(latin1(raw));
+  }
+  const t=parts.join('\n'), items=[];
+  const re=/([\d.\-]+)\s+([\d.\-]+)\s+Td|([\d.\-]+)\s+([\d.\-]+)\s+([\d.\-]+)\s+([\d.\-]+)\s+([\d.\-]+)\s+([\d.\-]+)\s+Tm|\(((?:[^()\\]|\\.)*)\)\s*Tj/g;
+  let x=0,y=0,mm;
+  while((mm=re.exec(t))){
+    if(mm[1]!==undefined){x+=parseFloat(mm[1]);y+=parseFloat(mm[2]);}
+    else if(mm[3]!==undefined){x=parseFloat(mm[7]);y=parseFloat(mm[8]);}
+    else if(mm[9]!==undefined){const txt=mm[9].replace(/\\([()\\])/g,'$1'); if(txt.trim()) items.push({x:+x.toFixed(1),y:+y.toFixed(1),s:txt});}
+  }
+  const md=s.match(/CreationDate\s*\(D:(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})/);
+  return {items, ver: md?`${md[1]}-${md[2]}-${md[3]} ${md[4]}:${md[5]}`:null};
+}
+const GG_RE=/(Luned[ìi]|Marted[ìi]|Mercoled[ìi]|Gioved[ìi]|Venerd[ìi]|Sabato|Domenica)\s+(\d{2}\/\d{2}\/\d{4})/i;
+function foglio(items,ver){
+  const cols=[];
+  for(const it of items){ const mm=it.s.match(GG_RE); if(mm) cols.push({x:it.x,y:it.y,data:mm[2]}); }
+  if(!cols.length) return null;
+  cols.sort((a,b)=>a.x-b.x);
+  const headY=cols[0].y;
+  const noteIt=items.filter(i=>/^Note turni/i.test(i.s))[0]; const noteY=noteIt?noteIt.y:-1e6;
+  const giorni={}; cols.forEach(c=>giorni[c.data]={turni:[],stato:''});
+  const bordi=cols.map((c,i)=>({lo:i===0?-1e6:(cols[i-1].x+c.x)/2, hi:i===cols.length-1?1e6:(c.x+cols[i+1].x)/2, data:c.data}));
+  const ORA=/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/g;
+  for(const it of items){
+    if(it.y>=headY||it.y<=noteY) continue;
+    const col=bordi.filter(b=>it.x>=b.lo&&it.x<b.hi)[0]; if(!col) continue;
+    let mm; ORA.lastIndex=0;
+    while((mm=ORA.exec(it.s))) giorni[col.data].turni.push([mm[1],mm[2]]);
+    const st=it.s.match(/\b(Riposo|Ferie|Malattia|Permesso|Festivit[àa])\b/i);
+    if(st&&!giorni[col.data].stato) giorni[col.data].stato=st[1];
+  }
+  return {sett:cols[0].data+'→'+cols[cols.length-1].data, ver, giorni};
+}
+const oreTurno=(a,b)=>{const p=t=>{let[h,mi]=t.split(':').map(Number);let d=0;if(h>=24){h-=24;d=1}return d*1440+h*60+mi};
+  let x=p(a),y=p(b); if(y<x)y+=1440; return (y-x)/60;};   // fine prima dell'inizio = passa la mezzanotte; stesso minuto = zero
+const oraOk=v=>{ const m=String(v||'').trim().match(/^(\d{1,2})[:.](\d{2})$/); if(!m) return null; const h=+m[1], mi=+m[2]; if(h>23||mi>59) return null; return pad(h)+':'+pad(mi); };
+
+/* ---- registro delle ore ---- */
+const KEY_REG='gpg_reg', KEY_APERTO='gpg_aperto', KEY_LINK='gpg_link', KEY_OB='gpg_ob';
+const NM=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+const GN=['lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica'];
+let REG=jGet(KEY_REG,{}); if(typeof REG!=='object'||Array.isArray(REG)) REG={};
+const salvaReg=()=>lsSet(KEY_REG,JSON.stringify(REG));
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const daYmd=s=>{const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);};
+const oggi=()=>ymd(new Date());
+const wd=d=>(d.getDay()+6)%7;                     // 0 = lunedì
+function pasqua(y){ const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),
+  h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),
+  mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1; return new Date(y,mo-1,da); }
+const FISSE=['1-1','1-6','4-25','5-1','6-2','8-15','11-1','12-8','12-25','12-26'];
+function festivo(s){ const d=daYmd(s); if(FISSE.indexOf((d.getMonth()+1)+'-'+d.getDate())>=0) return true;
+  const p=pasqua(d.getFullYear()); return ymd(new Date(p.getFullYear(),p.getMonth(),p.getDate()+1))===s; }   // lunedì dell'Angelo
+const isFest=s=>{ const r=REG[s]; return r&&typeof r.fest==='boolean'?r.fest:festivo(s); };
+const giorno=s=>REG[s]||(REG[s]={t:[],s:'',ob:'',src:'man'});
+const oreGiorno=r=>r.t.reduce((a,t)=>a+(t.f?oreTurno(t.i,t.f):0),0);
+const notteGiorno=r=>r.t.some(t=>{ if(!t.f) return false; const h=+t.i.split(':')[0], h2=+t.f.split(':')[0]; return h>=20||h<6||h2<=8; });
+function riepilogo(ym){
+  const R={ore:0,gg:0,notti:0,i561:0,i312:0,diurni:0,fest:0,ferie:0,turni:0};
+  Object.keys(REG).forEach(s=>{
+    if(s.slice(0,7)!==ym) return; const r=REG[s]; const o=oreGiorno(r);
+    if(o>0){ R.ore+=o; R.gg++; R.turni+=r.t.filter(t=>t.f).length;
+      if(r.t.some(t=>t.k==='s')) R.i561++; else if(r.t.some(t=>t.k==='r')) R.i312++; else if(notteGiorno(r)) R.notti++; else R.diurni++;
+      if(isFest(s)) R.fest+=o; }
+    if(r.s==='ferie'||r.s==='permesso') R.ferie++;
+  });
+  return R;
+}
+const CAL={ym:oggi().slice(0,7), sel:oggi()};
+function renderCal(){
+  const y=+CAL.ym.slice(0,4), m=+CAL.ym.slice(5,7);
+  $('cal-titolo').textContent=NM[m-1]+' '+y;
+  const first=new Date(y,m-1,1), start=wd(first), nG=new Date(y,m,0).getDate();
+  const cells=[];
+  for(let i=0;i<start;i++) cells.push({s:ymd(new Date(y,m-1,1-start+i)),out:true});
+  for(let g=1;g<=nG;g++) cells.push({s:ymd(new Date(y,m-1,g)),out:false});
+  for(let i=1;cells.length%7;i++) cells.push({s:ymd(new Date(y,m,i)),out:true});
+  const t=oggi();
+  let h=GN.map(g=>`<div class="wd">${g.charAt(0).toUpperCase()}</div>`).join('');
+  h+=cells.map(c=>{
+    const r=REG[c.s], cls=['d']; if(c.out) cls.push('out'); if(c.s===t) cls.push('today'); if(c.s===CAL.sel) cls.push('sel'); if(isFest(c.s)) cls.push('fest');
+    let chips='';
+    if(r){ r.t.forEach(x=>{ chips+=`<span class="chip ${x.k||'p'}${x.f?'':' open'}">${x.i.slice(0,2)}–${x.f?x.f.slice(0,2):'…'}</span>`; });
+      if(r.s) chips+=`<span class="chip st ${r.s}">${({riposo:'rip.',ferie:'ferie',permesso:'perm.',malattia:'mal.'})[r.s]||r.s}</span>`; }
+    return `<button type="button" class="${cls.join(' ')}" data-d="${c.s}" aria-label="${+c.s.slice(8)} ${NM[+c.s.slice(5,7)-1]}"><span class="n">${+c.s.slice(8)}</span>${chips}</button>`;
+  }).join('');
+  $('cal').innerHTML=h;
+  $('cal').querySelectorAll('.d').forEach(b=>b.onclick=()=>{ CAL.sel=b.getAttribute('data-d'); CAL.ym=CAL.sel.slice(0,7); renderCal(); });
+  renderEd(); renderStat();
+}
+function renderEd(){
+  const ed=$('ed'); if(!CAL.sel){ ed.hidden=true; return; } ed.hidden=false;
+  const s=CAL.sel, d=daYmd(s), r=REG[s];
+  $('ed-titolo').textContent=GN[wd(d)]+' '+d.getDate()+' '+NM[d.getMonth()]+' '+d.getFullYear();
+  $('ed-fonte').textContent=r?(r.src==='pdf'?'dal foglio di servizio':'segnato a mano'):'';
+  const ul=$('ed-turni'); ul.innerHTML='';
+  (r?r.t:[]).forEach((t,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<div class="riga"><span class="mono">${esc(t.i)}–${t.f?esc(t.f):'…'}</span><span class="mono">${t.f?f1(oreTurno(t.i,t.f))+' h':'in corso'}</span><button type="button" data-x="${i}" aria-label="Togli il turno">×</button></div>
+      <select data-i="${i}" aria-label="Tipo di servizio"><option value="p"${(t.k||'p')==='p'?' selected':''}>Piantonamento</option><option value="s"${t.k==='s'?' selected':''}>Zona stradale</option><option value="r"${t.k==='r'?' selected':''}>Rischio</option></select>`;
+    ul.appendChild(li);
+  });
+  ul.querySelectorAll('select').forEach(sel=>sel.onchange=()=>{ giorno(s).t[+sel.getAttribute('data-i')].k=sel.value; toccaGiorno(s); });
+  ul.querySelectorAll('button').forEach(b=>b.onclick=()=>{ giorno(s).t.splice(+b.getAttribute('data-x'),1); toccaGiorno(s); });
+  $('ed-stato').value=r?(r.s||''):'';
+  $('ed-ob').value=r?(r.ob||''):'';
+  $('ed-fest').checked=isFest(s);
+}
+function toccaGiorno(s){
+  const r=giorno(s); r.src='man';
+  if(APERTO&&APERTO.d===s&&!r.t.some(x=>!x.f)){ APERTO=null; lsSet(KEY_APERTO,'null'); renderTb(); }
+  if(!r.t.length&&!r.s&&!r.ob&&typeof r.fest!=='boolean') delete REG[s];
+  salvaReg(); renderCal(); collegaSeServe();
+}
+function aggiungiTurno(s,i,f){ const r=giorno(s); r.t.push({i:i,f:f,k:'p'}); if(r.s) r.s=''; toccaGiorno(s); }
+document.querySelectorAll('#ed .quick button[data-t]').forEach(b=>b.onclick=()=>{ const p=b.getAttribute('data-t').split('-'); aggiungiTurno(CAL.sel,p[0],p[1]); });
+$('ed-altro').onclick=()=>{ $('ed-custom').hidden=!$('ed-custom').hidden; };
+$('ed-add').onclick=()=>{ const i=oraOk($('ed-i').value), f=oraOk($('ed-f').value); if(!i||!f) return msgCal('Scrivi le ore come 06:00.'); aggiungiTurno(CAL.sel,i,f); $('ed-custom').hidden=true; };
+$('ed-stato').onchange=()=>{ const r=giorno(CAL.sel); r.s=$('ed-stato').value; if(r.s) r.t=r.t.filter(x=>!x.f); toccaGiorno(CAL.sel); };
+$('ed-ob').oninput=()=>{ const r=giorno(CAL.sel); r.ob=$('ed-ob').value; salvaReg(); };
+$('ed-ob').onchange=()=>{ toccaGiorno(CAL.sel); };
+$('ed-fest').onchange=()=>{ const r=giorno(CAL.sel); r.fest=$('ed-fest').checked; toccaGiorno(CAL.sel); };
+$('ed-settimana').onclick=()=>{
+  const d=daYmd(CAL.sel), lun=new Date(d.getFullYear(),d.getMonth(),d.getDate()-wd(d)); let nCop=0, nSalt=0;
+  for(let i=0;i<7;i++){
+    const a=ymd(new Date(lun.getFullYear(),lun.getMonth(),lun.getDate()+i)), b=ymd(new Date(lun.getFullYear(),lun.getMonth(),lun.getDate()+7+i));
+    const ra=REG[a]; if(!ra||(!ra.t.length&&!ra.s)) continue;
+    const rb=REG[b]; if(rb&&(rb.t.length||rb.s)){ nSalt++; continue; }
+    REG[b]={t:ra.t.filter(t=>t.f).map(t=>({i:t.i,f:t.f,k:t.k||'p'})),s:ra.s||'',ob:ra.ob||'',src:'man'}; nCop++;
+  }
+  salvaReg(); renderCal(); collegaSeServe();
+  msgCal(nCop?`Copiati ${nCop} giorni nella settimana dopo`+(nSalt?`, ${nSalt} lasciati perché avevano già qualcosa.`:'.'):'La settimana dopo ha già i suoi turni: non ho toccato niente.');
+};
+$('ed-svuota').onclick=()=>{ if(!REG[CAL.sel]) return; if(!confirm('Tolgo tutto quello che c’è in questo giorno?')) return; delete REG[CAL.sel]; if(APERTO&&APERTO.d===CAL.sel){ APERTO=null; lsSet(KEY_APERTO,'null'); renderTb(); } salvaReg(); renderCal(); collegaSeServe(); };
+$('cal-prev').onclick=()=>{ const y=+CAL.ym.slice(0,4), m=+CAL.ym.slice(5,7); CAL.ym=ymd(new Date(y,m-2,1)).slice(0,7); CAL.sel=null; renderCal(); };
+$('cal-next').onclick=()=>{ const y=+CAL.ym.slice(0,4), m=+CAL.ym.slice(5,7); CAL.ym=ymd(new Date(y,m,1)).slice(0,7); CAL.sel=null; renderCal(); };
+function renderStat(){
+  const R=riepilogo(CAL.ym);
+  $('stat').innerHTML=[['Ore',f1(R.ore)],['Giorni',R.gg],['Turni',R.turni],['Notti',R.notti],['Stradale',R.i561],['Rischio',R.i312],
+    ['Festive',f1(R.fest)+' h'],['Ferie/perm.',R.ferie],['Oltre le '+(n('c-ore')||173),f1(Math.max(0,R.ore-(n('c-ore')||173)))+' h']]
+    .map(p=>`<div><b>${p[1]}</b><span>${p[0]}</span></div>`).join('');
+  $('cal-usa').disabled=!(R.ore>0||R.ferie>0);
+  const y=CAL.ym.slice(0,4), m=+CAL.ym.slice(5,7);
+  $('cal-link').textContent = lsGet(KEY_LINK,'')===CAL.ym ? `Il calcolo segue ${NM[m-1]} ${y}: ogni modifica qui aggiorna la stima.` : '';
+}
+function msgCal(t){ $('cal-msg').textContent=t; clearTimeout(msgCal.t); msgCal.t=setTimeout(()=>{ $('cal-msg').textContent=''; },6000); }
+function usaNelCalcolo(ym,quiet){
+  const R=riepilogo(ym);
+  $('ore').value=R.ore.toFixed(1); $('gg').value=R.gg; $('ferie').value=R.ferie; $('d-notti').value=R.notti;
+  $('d-i561').value=R.i561; $('d-i312').value=R.i312; $('d-fest').value=R.fest.toFixed(1);
+  lsSet(KEY_LINK,ym); calcola(); renderStat();
+  if(!quiet){ mostraTab('t-r'); inCima(); }
+}
+$('cal-usa').onclick=()=>usaNelCalcolo(CAL.ym,false);
+function collegaSeServe(){ const l=lsGet(KEY_LINK,''); if(l&&l===CAL.ym) usaNelCalcolo(CAL.ym,true); }
+const CAMPI_ORE=['ore','gg','ferie','d-notti','d-i561','d-i312','d-fest'];
+function staccaRuolino(){ lsSet(KEY_LINK,''); }
+function aggiornaHintRuolino(){
+  const el=$('ore-ruolino'), link=lsGet(KEY_LINK,'');
+  if(link){ el.hidden=false; el.textContent=`Numeri presi dal ruolino di ${NM[+link.slice(5,7)-1]} ${link.slice(0,4)}. Se li cambi a mano, il collegamento si stacca.`; return; }
+  const ym=oggi().slice(0,7), R=riepilogo(ym);
+  if(R.ore>0||R.ferie>0){ el.hidden=false; el.innerHTML=`Nel ruolino di ${NM[+ym.slice(5,7)-1]} ${ym.slice(0,4)} hai ${f1(R.ore)} h su ${R.gg} giorni. <button type="button" class="lnk" id="ore-usa">Usa quei numeri</button>`;
+    $('ore-usa').onclick=()=>usaNelCalcolo(ym,true); }
+  else el.hidden=true;
+}
+function testoRiepilogo(ym){
+  const R=riepilogo(ym), y=ym.slice(0,4), m=+ym.slice(5,7);
+  let t=`RUOLINO · ${NM[m-1]} ${y}\nOre ${f1(R.ore)} · giorni ${R.gg} · turni ${R.turni}\nNotti ${R.notti} · stradale ${R.i561} · rischio ${R.i312} · diurni ${R.diurni}\nFestive ${f1(R.fest)} h · ferie/permessi ${R.ferie} gg`;
+  if(lsGet(KEY_LINK,'')===ym) t+=`\nNetto stimato ${$('netto').textContent.replace(/\s+/g,' ')}`;
+  return t;
+}
+async function copiaTesto(t){
+  try{ await navigator.clipboard.writeText(t); return true; }catch(e){}
+  try{ const ta=document.createElement('textarea'); ta.value=t; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.left='-9999px';
+    document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); document.body.removeChild(ta); return ok; }catch(e){ return false; }
+}
+$('cal-copia').onclick=async()=>{ msgCal((await copiaTesto(testoRiepilogo(CAL.ym)))?'Riepilogo copiato: incollalo dove vuoi.':'Non riesco a copiare da qui: tieni premuto sul riepilogo e copia a mano.'); };
+
+/* ---- turno di oggi: inizio, fine, condivisione ---- */
+let APERTO=jGet(KEY_APERTO,null); if(APERTO&&(!APERTO.d||!APERTO.i)) APERTO=null;
+const TB={tipo:'',ora:'',d:'',pos:null,foto:null};
+function renderTb(){
+  const st=$('tb-stato');
+  if(APERTO){ const d=daYmd(APERTO.d); st.textContent=`Turno in corso dalle ${APERTO.i} di ${GN[wd(d)]} ${d.getDate()}/${pad(d.getMonth()+1)}.`; $('tb-fine').disabled=false; $('tb-inizio').disabled=true; }
+  else { st.textContent='Nessun turno in corso.'; $('tb-fine').disabled=true; $('tb-inizio').disabled=false; }
+}
+$('tb-inizio').onclick=()=>{
+  const now=new Date(), i=pad(now.getHours())+':'+pad(now.getMinutes());
+  APERTO={d:ymd(now),i:i}; lsSet(KEY_APERTO,JSON.stringify(APERTO));
+  const r=giorno(APERTO.d); r.t.push({i:i,f:null,k:'p'}); r.src='man'; if(r.s) r.s=''; salvaReg();
+  CAL.ym=APERTO.d.slice(0,7); CAL.sel=APERTO.d; renderTb(); renderCal();
+  preparaCondivisione('Inizio turno',i,APERTO.d);
+};
+$('tb-fine').onclick=()=>{
+  if(!APERTO) return;
+  const now=new Date(), f=pad(now.getHours())+':'+pad(now.getMinutes());
+  const r=giorno(APERTO.d); const ap=r.t.filter(x=>!x.f).pop();
+  if(ap) ap.f=f; else r.t.push({i:APERTO.i,f:f,k:'p'});
+  r.src='man'; salvaReg(); const d=APERTO.d; APERTO=null; lsSet(KEY_APERTO,'null');
+  CAL.ym=d.slice(0,7); CAL.sel=d; renderTb(); renderCal(); collegaSeServe();
+  preparaCondivisione('Fine turno',f,ymd(now));
+};
+function preparaCondivisione(tipo,ora,d){
+  TB.tipo=tipo; TB.ora=ora; TB.d=d; TB.pos=null; TB.foto=null;
+  $('tb-share').hidden=false; $('tb-ob').value=lsGet(KEY_OB,''); $('tb-gpsmsg').textContent=''; $('tb-foto-t').textContent='Aggiungi foto'; $('tb-foto').value='';
+  aggiornaTesto(); if($('tb-gps').checked) prendiPosizione();
+}
+function prendiPosizione(){
+  if(!navigator.geolocation){ $('tb-gpsmsg').textContent='Questo browser non dà la posizione.'; return; }
+  $('tb-gpsmsg').textContent='Cerco la posizione…';
+  navigator.geolocation.getCurrentPosition(p=>{
+    TB.pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:Math.round(p.coords.accuracy||0)};
+    $('tb-gpsmsg').textContent=`Posizione presa, precisione ±${TB.pos.acc} m.`; aggiornaTesto();
+  },e=>{
+    TB.pos=null; $('tb-gpsmsg').textContent='Posizione non disponibile: '+(e&&e.code===1?'permesso negato dal telefono.':'il telefono non la trova, riprova all’aperto.'); aggiornaTesto();
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:30000});
+}
+$('tb-gps').onchange=()=>{ if($('tb-gps').checked) prendiPosizione(); else { TB.pos=null; $('tb-gpsmsg').textContent=''; aggiornaTesto(); } };
+$('tb-ob').oninput=()=>{ lsSet(KEY_OB,$('tb-ob').value); const r=REG[TB.d]; if(r){ r.ob=$('tb-ob').value; salvaReg(); } aggiornaTesto(); };
+$('tb-foto').onchange=e=>{ TB.foto=(e.target.files&&e.target.files[0])||null; $('tb-foto-t').textContent=TB.foto?'Foto pronta ✓':'Aggiungi foto'; aggiornaTesto(); };
+function codice(s){ let h=0x811c9dc5; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return ('00000000'+h.toString(16).toUpperCase()).slice(-6); }
+function testoTurno(){
+  const d=daYmd(TB.d), ob=$('tb-ob').value.trim();
+  let t=`🛡️ RUOLINO PAGA\n${TB.tipo} · ${GN[wd(d)].slice(0,3)} ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} · ore ${TB.ora}`;
+  if(ob) t+=`\nPosto: ${ob}`;
+  if(TB.pos) t+=`\nPosizione (±${TB.pos.acc} m): https://maps.google.com/?q=${TB.pos.lat.toFixed(5)},${TB.pos.lon.toFixed(5)}`;
+  t+=`\nCod. ${codice(TB.tipo+TB.d+TB.ora+ob+(TB.pos?TB.pos.lat.toFixed(5)+','+TB.pos.lon.toFixed(5):''))}`;
+  return t;
+}
+const puoCondividereFile=()=>!!(navigator.share&&navigator.canShare&&TB.foto&&navigator.canShare({files:[TB.foto]}));
+function aggiornaTesto(){
+  const t=testoTurno(); $('tb-testo').textContent=t;
+  $('tb-wa').href='https://wa.me/?text='+encodeURIComponent(t);
+  $('tb-fotomsg').textContent = TB.foto&&!puoCondividereFile() ? 'Da questo browser la foto non parte insieme al testo: la alleghi tu in WhatsApp.' : '';
+}
+$('tb-manda').onclick=()=>{
+  const t=testoTurno(); const data={text:t}; if(puoCondividereFile()) data.files=[TB.foto];
+  navigator.share(data).catch(e=>{ if(e&&e.name==='AbortError') return; $('tb-manda').hidden=true; $('tb-wa').hidden=false; $('tb-msg').textContent='Il telefono non ha aperto il menu di condivisione: usa «Apri WhatsApp», parte il testo e la foto la alleghi lì.'; });
+};
+$('tb-copia').onclick=async()=>{ $('tb-msg').textContent=(await copiaTesto(testoTurno()))?'Testo copiato.':'Non riesco a copiare da qui: tieni premuto sul testo e copia a mano.'; };
+if(!navigator.share){ $('tb-manda').hidden=true; $('tb-wa').hidden=false; }
+
+/* ---- fogli PDF → registro ---- */
+async function leggiPDF(files){
+  const sett=new Map(); let ok=0; $('flist').innerHTML='';
+  for(const f of files){
+    let info=null;
+    try{ const fr=await frammenti(await leggiArrayBuffer(f)); info=foglio(fr.items,fr.ver); }catch(e){}
+    const li=document.createElement('li');
+    li.innerHTML=`<span>${esc(f.name.slice(0,26))}</span><span>${info?info.sett.replace('→',' → '):'non letto'}</span>`;
+    $('flist').appendChild(li);
+    if(!info) continue; ok++;
+    const p=sett.get(info.sett);
+    if(!p||(info.ver||'')>(p.ver||'')) sett.set(info.sett,info);
+  }
+  const mesi={}; let nPdf=0, nMan=0;
+  sett.forEach(info=>{ Object.keys(info.giorni).forEach(d=>{
+    const v=info.giorni[d], p=d.split('/'), s=`${p[2]}-${p[1]}-${p[0]}`; mesi[s.slice(0,7)]=true;
+    const cur=REG[s]; if(cur&&cur.src==='man'){ nMan++; return; }
+    const stato=(v.stato||'').toLowerCase();
+    const rec={t:v.turni.map(t=>({i:oraOk(t[0])||t[0],f:oraOk(t[1])||t[1],k:'p'})),s:'',ob:cur?(cur.ob||''):'',src:'pdf'};
+    if(/ferie/.test(stato)) rec.s='ferie'; else if(/permesso/.test(stato)) rec.s='permesso'; else if(/malattia/.test(stato)) rec.s='malattia';
+    else if(/riposo/.test(stato)) rec.s='riposo'; else if(/festiv/.test(stato)) rec.fest=true;
+    if(cur&&typeof cur.fest==='boolean') rec.fest=cur.fest;
+    if(!rec.t.length&&!rec.s&&typeof rec.fest!=='boolean'){ if(cur) delete REG[s]; return; }
+    REG[s]=rec; nPdf++;
+  }); });
+  salvaReg();
+  const chiavi=Object.keys(mesi).sort();
+  $('pmsg').innerHTML = ok
+    ? `Letti <strong>${ok}</strong> fogli su ${files.length}: ${sett.size} settimane senza doppioni, <strong>${nPdf}</strong> giorni scritti nel registro`+(nMan?`, ${nMan} lasciati come li avevi segnati a mano.`:'.')
+    : 'Nessun foglio turni riconosciuto in questi file. Puoi segnare i turni a mano nel registro qui sopra.';
+  if(chiavi.length){
+    $('mesi').innerHTML=chiavi.map(k=>{ const R=riepilogo(k);
+      return `<tr><td><button type="button" class="btn" style="padding:6px 10px;min-height:0;font-size:13px;margin-right:6px" data-usa="${k}">usa</button><button type="button" class="lnk" data-apri="${k}">${NM[+k.slice(5)-1]} ${k.slice(0,4)}</button></td><td>${f1(R.ore)} h · ${R.gg} gg</td></tr>`; }).join('');
+    $('mesi-card').hidden=false;
+    $('mesi').querySelectorAll('[data-usa]').forEach(b=>b.onclick=()=>usaNelCalcolo(b.getAttribute('data-usa'),false));
+    $('mesi').querySelectorAll('[data-apri]').forEach(b=>b.onclick=()=>{ CAL.ym=b.getAttribute('data-apri'); CAL.sel=null; renderCal(); });
+    const ult=chiavi[chiavi.length-1]; CAL.ym=ult; CAL.sel=null; renderCal();
+    if(!lsGet(KEY_LINK,'')) usaNelCalcolo(ult,true); else collegaSeServe();
+  } else renderCal();
+}
+const leggiArrayBuffer=f=>new Promise((res,rej)=>{ const rd=new FileReader(); rd.onload=()=>res(rd.result); rd.onerror=()=>rej(rd.error); rd.readAsArrayBuffer(f); });
+const drop=$('drop');
+drop.onclick=()=>$('file').click();
+drop.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();$('file').click();} };
+$('file').onchange=e=>{ leggiPDF(Array.prototype.slice.call(e.target.files)); e.target.value=''; };
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>leggiPDF(Array.prototype.slice.call(e.dataTransfer.files).filter(f=>/pdf$/i.test(f.name))));
+
+/* ---- copia di sicurezza ---- */
+$('bk-esporta').onclick=()=>{
+  const data={app:'ruolino-paga',v:1,quando:new Date().toISOString(),campi:statoCampi(),profili:leggiProfili(),registro:REG,aperto:APERTO,link:lsGet(KEY_LINK,''),ob:lsGet(KEY_OB,'')};
+  try{
+    const blob=new Blob([JSON.stringify(data)],{type:'application/json'}), a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download='ruolino-paga-'+oggi()+'.json'; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); document.body.removeChild(a); },3000);
+    $('bk-msg').textContent='File salvato fra i download: tienilo da parte.';
+  }catch(e){ $('bk-msg').textContent='Questo browser non fa scaricare il file.'; }
+};
+$('bk-file').onchange=e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const data=JSON.parse(rd.result); if(!data||data.app!=='ruolino-paga') throw new Error('non è un file del Ruolino');
+      if(!confirm('Sostituisco registro, profili e valori con quelli del file?')) return;
+      REG=data.registro||{}; salvaReg(); if(data.profili) scriviProfili(data.profili); if(data.campi) applicaCampi(data.campi);
+      APERTO=data.aperto||null; lsSet(KEY_APERTO,JSON.stringify(APERTO)); lsSet(KEY_LINK,data.link||''); lsSet(KEY_OB,data.ob||'');
+      aggiornaSelect(lsGet('gpg_ultimo','')); renderTb(); renderCal(); calcola(); $('bk-msg').textContent='Copia di sicurezza caricata.';
+    }catch(err){ $('bk-msg').textContent='Questo file non è una copia di sicurezza del Ruolino.'; }
+  };
+  rd.readAsText(f); e.target.value='';
+};
+
+/* ---- profili salvati sul telefono ---- */
+const KEY_P='gpg_profili', KEY_ULT='gpg_ultimo';
+const leggiProfili=()=>{ const p=jGet(KEY_P,{}); return (p&&typeof p==='object')?p:{}; };
+const scriviProfili=o=>lsSet(KEY_P,JSON.stringify(o));
+const statoCampi=()=>{ const o={}; CAMPI.forEach(id=>{ o[id]=$(id)?$(id).value:''; }); return o; };
+function applicaCampi(v){ for(const k in v) if($(k)&&v[k]!==''&&v[k]!==undefined&&v[k]!==null) $(k).value=v[k]; }
+function aggiornaSelect(sel){
+  const pr=leggiProfili(), nomi=Object.keys(pr).sort();
+  $('prof-sel').innerHTML='<option value="">— non salvato —</option>'+nomi.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  if(sel&&pr[sel]) $('prof-sel').value=sel;
+}
+$('prof-save').onclick=()=>{
+  const box=$('prof-nome-box');
+  if(box.hidden){                       // primo tocco: chiede il nome
+    box.hidden=false;
+    $('prof-nome').value=$('prof-sel').value||'';
+    $('prof-nome').focus();
+    msgProf('Dai un nome al profilo, poi tocca Salva.');
+    return;
+  }
+  const nome=$('prof-nome').value.trim();
+  if(!nome){ $('prof-nome').focus(); return msgProf('Serve un nome per salvare.'); }
+  const pr=leggiProfili(); pr[nome]=statoCampi(); scriviProfili(pr);
+  box.hidden=true; aggiornaSelect(nome); lsSet(KEY_ULT,nome);
+  msgProf(`Profilo "${nome}" salvato sul telefono.`);
+};
+$('prof-nome').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('prof-save').click(); } });
+$('prof-sel').onchange=()=>{
+  const nome=$('prof-sel').value; if(!nome) return;
+  const pr=leggiProfili(); if(!pr[nome]) return;
+  applicaCampi(pr[nome]); lsSet(KEY_ULT,nome);
+  msgProf(`Caricato "${nome}".`); calcola();
+};
+$('prof-del').onclick=()=>{
+  const nome=$('prof-sel').value; if(!nome) return msgProf('Scegli prima un profilo da eliminare.');
+  const pr=leggiProfili(); delete pr[nome]; scriviProfili(pr); aggiornaSelect();
+  msgProf(`Profilo "${nome}" eliminato.`);
+};
+function msgProf(t){ $('prof-msg').textContent=t; clearTimeout(msgProf.t);
+  msgProf.t=setTimeout(()=>$('prof-msg').textContent='I valori restano nel telefono anche se chiudi la pagina. Salva un profilo se calcoli per più persone.',5000); }
+
+$('c-reset').onclick=()=>{ for(const k in BASE_IST) if($(k)) $(k).value=BASE_IST[k];
+  msgProf('Valori predefiniti ripristinati.'); calcola(); };
+
+/* ---- avvio ---- */
+const CAMPI=['ore','oraria','liv','gg','ferie','fig-min','fig-mag','isee','duelav','quinto','presti','sind','altre',
+  'd-str','d-strp','d-val','d-notti','d-i561','d-i312','d-fest','d-addiz','d-contr','v-netto',
+  'c-ore','c-gg','c-buono','c-ggferie','c-festperc','c-nott','c-strad','c-risc','c-diur','c-nottperc','c-nottore','c-mens'];
+try{
+  const auto=jGet('gpg',null);
+  if(auto) applicaCampi(auto);
+  aggiornaSelect(lsGet(KEY_ULT,''));
+}catch(e){ aggiornaSelect(); }
+CAMPI.forEach(id=>{ const el=$(id); if(el) el.addEventListener('input',()=>{ if(CAMPI_ORE.indexOf(id)>=0) staccaRuolino(); calcola(); }); });
+calcola();
+renderTb();
+renderCal();
+window.RP={inflateJS,inflateBytes,frammenti,foglio,leggiPDF,riepilogo,FRASI,GRADI,pasqua,festivo,reg:()=>REG};
+/* installabile e utilizzabile senza rete: solo quando la pagina arriva da un indirizzo, non da un file */
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+</script>
+</body>
+</html>
