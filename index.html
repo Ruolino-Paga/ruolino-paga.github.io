@@ -1004,7 +1004,7 @@ function render(m){
     wm.hidden=false;
     wm.className = m.oraria<lv ? 'note rosso' : 'note';
     wm.innerHTML = m.oraria<lv
-      ? `La paga oraria è <strong>sotto il minimo tabellare</strong> del livello scelto (${eur2(lv)} €): mancano ${eur2(lv-m.oraria)} € l'ora, circa <strong>${eur((lv-m.oraria)*m.c.oreMese)} €</strong> al mese sulle sole ore ordinarie. Controlla la voce «paga base» in busta.`
+      ? `La paga oraria scritta qui è <strong>sotto la tabella</strong> del livello scelto (${eur2(lv)} €), di ${eur2(lv-m.oraria)} € l'ora. Di solito è il livello sbagliato o una tabella vecchia: confronta con la voce «paga base» della busta e con il livello scritto in alto.`
       : `Paga oraria sopra il minimo tabellare di ${eur2(m.oraria-lv)} € l'ora: scatti di anzianità o superminimo.`;
   } else wm.hidden=true;
 
@@ -1015,7 +1015,7 @@ function render(m){
     ve.innerHTML = pc<3
       ? `La stima è <strong>${eur2(m.nettoBusta)} €</strong> contro i ${eur2(vn)} € della busta: scarto di ${eur2(ad)} € (${pc.toFixed(1)}%). Rientra nel margine normale della stima.`
       : d>0
-        ? `La stima dà <strong>${eur2(ad)} € in più</strong> della busta (${pc.toFixed(1)}%). Di solito è una trattenuta non inserita qui, un conguaglio, o meno ore riconosciute di quelle che hai contato.`
+        ? `La stima dà <strong>${eur2(ad)} € in più</strong> della busta (${pc.toFixed(1)}%). Di solito è una trattenuta non inserita qui, un conguaglio, o ore contate in modo diverso: controlla i numeri di partenza.`
         : `La busta ti ha dato <strong>${eur2(ad)} € in più</strong> della stima (${pc.toFixed(1)}%). Spesso sono arretrati, premi, o un conguaglio a tuo favore.`;
   } else ve.textContent='Inserisci il netto della tua busta per vedere quanto si discosta dalla stima.';
 
@@ -1045,7 +1045,7 @@ const FRASI=[
   "L’asina di Balaam fu l’unica a vedere l’angelo, e per questo prese le bastonate. Anche tu vedi cose che gli altri non vedono, per esempio il giorno 31.",
   "Asinus asinum fricat, dicevano i latini: l’asino strofina l’asino. Il gruppo dei turni su WhatsApp lo conferma ogni sera.",
   "Ocno, agli inferi, intreccia una corda che un’asina mangia man mano. Polignoto ne fece un affresco a Delfi. A te hanno fatto un cedolino.",
-  "Issione fu legato a una ruota che gira in eterno. Nel tuo istituto la chiamano rotazione, ed è considerata un vantaggio.",
+  "Issione fu legato a una ruota che gira in eterno. Nel tuo calendario si chiama rotazione, e tu la accetti con entusiasmo.",
   "Le Danaidi riempivano per sempre una botte senza fondo. Tu hai lo stesso ritmo e una botte più moderna: si chiama conto corrente.",
   "Il fegato di Prometeo ricresceva ogni notte per l’aquila del mattino dopo. La tua capacità di recupero fra un turno e l’altro è dello stesso livello.",
   "Achille, secondo Zenone, non raggiunge mai la tartaruga. Tu la quattordicesima. Ma il paradosso è elegante.",
@@ -1068,7 +1068,7 @@ const FRASI=[
   "Gregor Samsa, svegliandosi insetto, si preoccupò prima di tutto del treno delle cinque. Kafka ti avrebbe capito al volo.",
   "Bartleby rispondeva «preferirei di no». Tu quella frase non l’hai mai pronunciata, ed è per questo che ti chiamano sempre.",
   "Primo Levi scrisse che amare il proprio lavoro è la migliore approssimazione concreta alla felicità sulla terra, e aggiunse: privilegio di pochi. Tu sei nel privilegio dodici ore al giorno.",
-  "Marx chiamava plusvalore assoluto l’allungamento della giornata lavorativa. Nel tuo istituto lo chiamano «puoi coprire?», e tu copri.",
+  "Marx chiamava plusvalore assoluto l’allungamento della giornata lavorativa. Tu lo chiami «tanto a casa che faccio», e la giornata si allunga da sola.",
   "La cicala cantava e la formica lavorava. La Fontaine stava dalla parte della formica, ma non aveva mai visto una formica fare seicento ore.",
   "Il lavoro nobilita l’uomo, dice il proverbio, e lo rende simile alle bestie. Tu hai raggiunto la seconda parte con un anticipo notevole.",
   "Ora et labora, dicevano i benedettini. Avevano anche il vespro, però, e la notte dormivano.",
@@ -1699,7 +1699,7 @@ function aggiornaVoci(m){
 }
 
 /* ---- stato di servizio: gradi e mostrine ---- */
-const GRADI_SERVIZIO=[[0,'Recluta'],[300,'Guardia'],[1000,'Guardia scelta'],[2000,'Caporale di garitta'],[3500,'Sergente del piantonamento'],[5000,'Maresciallo del cedolino'],[8000,'Colonnello della trasferta'],[12000,'Generale somaro']];
+const GRADI_SERVIZIO=[[0,'Recluta'],[300,'Guardia'],[1000,'Guardia scelta'],[2000,'Caporale di garitta'],[3500,'Sergente del piantonamento'],[5000,'Maresciallo del cedolino'],[8000,'Colonnello della ronda'],[12000,'Generale somaro']];
 function statoServizio(){
   const giorni=Object.keys(REG).filter(s=>/^\d{4}-\d{2}-\d{2}$/.test(s)).sort();
   const S={ore:0,notti:0,gg:0,mesi:{},maxGiorno:0,maxMese:0,streak:0,streakNotti:0,trentuno:0,festeLav:0,doppi:0,primo:null,ultimo:null};
