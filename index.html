@@ -254,6 +254,19 @@ header .titolo{flex:1 1 auto;min-width:0}
 #arr{border-top:3px solid var(--oro)}
 #arr .btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 #fm-img{width:100%;border-radius:10px;margin-top:10px;display:block}
+#bs-tab tr.clic{cursor:pointer}
+#bs-tab tr.clic:hover td,#bs-tab tr.sel td{background:var(--card-2)}
+#bs-tab td{padding-left:10px}
+#bs-tab td:first-child{padding-left:0;text-transform:capitalize}
+#bs-tab td.n{text-align:right;font-family:"IBM Plex Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+#bs-dett td:first-child{width:44%;padding-right:10px}
+#bs-dett td:last-child{white-space:normal}
+#bs-dett{margin-top:12px;border-top:1px solid var(--line-2);padding-top:10px}
+#bs-dett h4{margin:0 0 6px;font-family:Oswald,sans-serif;font-weight:500;font-size:16px;text-transform:capitalize}
+.spunte{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px;font-size:13.5px}
+.spunte li{display:flex;gap:8px;align-items:flex-start}
+.spunte li b{flex:0 0 auto;font-family:"IBM Plex Mono",Menlo,Consolas,monospace;color:var(--good)}
+.spunte li.no b{color:var(--warn)}
 /* modalità garitta: rosso scuro su nero, per la notte */
 html:root[data-garitta="1"]{color-scheme:dark;
   --ink:#ff6a5a; --ink-2:#d94c3f; --muted:#9c3a31; --bg:#000; --card:#0a0101; --card-2:#140303; --line:#3a0e0a; --line-2:#260806;
@@ -558,6 +571,20 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
 
   <!-- COMPETENZE -->
   <div id="p-d" role="tabpanel" aria-labelledby="t-d" hidden>
+    <div class="card" id="buste-card">
+      <h3>Le tue buste</h3>
+      <div class="b">
+        <div class="drop" id="bs-drop" tabindex="0" role="button">
+          <strong>Carica le buste paga in PDF</strong>
+          Anche tutte insieme. Il Ruolino le legge, le mette in archivio mese per mese e controlla che la stima torni.
+          <input type="file" id="bs-file" accept="application/pdf,.pdf" multiple hidden>
+        </div>
+        <div class="hint" id="bs-msg" style="margin-top:8px">Dalla busta prendo solo i numeri: nome, codice fiscale e indirizzo non vengono salvati. Per ora leggo le buste del programma paghe dell'istituto di riferimento.</div>
+        <table id="bs-tab" style="margin-top:10px"></table>
+        <div id="bs-dett" hidden></div>
+      </div>
+    </div>
+
     <div class="card">
       <h3>Voci del mese</h3>
       <div class="b">
@@ -1311,7 +1338,8 @@ function motore(I){
   const vTrasf=oreTrasf*valTra;                 // esente
   const buoni=ggInd*c.buono;                    // i buoni si fermano alle giornate del mese
 
-  const imponibile=vOrd+vFerie+vStr+vFest+vFestRet+vInd+vNottOre+ratei;
+  const vExtra=Math.max(0,I.extraImp||0);        // voci imponibili lette da una busta che il calcolo non prevede; di solito zero
+  const imponibile=vOrd+vFerie+vStr+vFest+vFestRet+vInd+vNottOre+ratei+vExtra;
   const contributi=imponibile*pContr;
   const reddito=imponibile-contributi;
   // aumento da rinnovo CCNL tassato al 5% (legge 199/2025): solo 2026, fino a 28.000 € l'anno, in proporzione alle ore pagate
@@ -1338,7 +1366,7 @@ function motore(I){
     const nettoAnnuo=x=>x-Math.max(0,irpefLorda(x)-detrLavDip(x)-ulteriore(x)-famA(x))+bonusEsente(x)+trattIntegrativo(x,famA(x));
     lumpTasse=(lump-lumpContr)-(nettoAnnuo(ra+lump-lumpContr)-nettoAnnuo(ra));
   }
-  const nettoBusta=reddito-irNetta-impSost-addiz+vTrasf+bonus+trattInt-trattenute+(lump-lumpContr-lumpTasse);
+  const nettoBusta=reddito-irNetta-impSost-addiz+vTrasf+bonus+trattInt-trattenute+(lump-lumpContr-lumpTasse)+Math.max(0,I.extraEsenti||0);
   const auu=calcolaAUU();
   const inCasa=nettoBusta+auu.tot;
 
@@ -1433,10 +1461,10 @@ function render(m){
     const d=m.nettoBusta-vn, ad=Math.abs(d), pc=ad/vn*100;
     if(pc<1) lsSet('gpg_ragioniere','1');   // mostrina del Ragioniere: busta che torna entro l'1%
     ve.innerHTML = pc<3
-      ? `La stima è <strong>${eur2(m.nettoBusta)} €</strong> contro i ${eur2(vn)} € della busta: scarto di ${eur2(ad)} € (${pc.toFixed(1)}%). Rientra nel margine normale della stima.`
+      ? `La stima è <strong>${eur2(m.nettoBusta)} €</strong> contro i ${eur2(vn)} € della busta: scarto di ${eur2(ad)} € (${pc.toFixed(1).replace('.',',')}%). Rientra nel margine normale della stima.`
       : d>0
-        ? `La stima dà <strong>${eur2(ad)} € in più</strong> della busta (${pc.toFixed(1)}%). Di solito è una trattenuta non inserita qui, un conguaglio, o ore contate in modo diverso: controlla i numeri di partenza.`
-        : `La busta ti ha dato <strong>${eur2(ad)} € in più</strong> della stima (${pc.toFixed(1)}%). Spesso sono arretrati, premi, o un conguaglio a tuo favore.`;
+        ? `La stima dà <strong>${eur2(ad)} € in più</strong> della busta (${pc.toFixed(1).replace('.',',')}%). Di solito è una trattenuta non inserita qui, un conguaglio, o ore contate in modo diverso: controlla i numeri di partenza.`
+        : `La busta ti ha dato <strong>${eur2(ad)} € in più</strong> della stima (${pc.toFixed(1).replace('.',',')}%). Spesso sono arretrati, premi, o un conguaglio a tuo favore.`;
   } else ve.textContent='Inserisci il netto della tua busta per vedere quanto si discosta dalla stima.';
 
   aggiornaEncomio(m);
@@ -1932,12 +1960,13 @@ if(!navigator.share){ $('tb-manda').hidden=true; $('tb-wa').hidden=false; }
 
 /* ---- fogli PDF → registro ---- */
 async function leggiPDF(files){
-  const sett=new Map(); let ok=0; $('flist').innerHTML='';
+  const sett=new Map(); let ok=0, nBuste=0; $('flist').innerHTML='';
   for(const f of files){
-    let info=null;
-    try{ const fr=await frammenti(await leggiArrayBuffer(f)); info=foglio(fr.items,fr.ver); }catch(e){}
+    let info=null, busta=null;
+    try{ const fr=await frammenti(await leggiArrayBuffer(f)); info=foglio(fr.items,fr.ver);
+      if(!info){ busta=leggiBusta(fr.items); if(busta&&busta.netto>0){ salvaBusta(busta); nBuste++; } else busta=null; } }catch(e){}
     const li=document.createElement('li');
-    li.innerHTML=`<span>${esc(f.name.slice(0,26))}</span><span>${info?info.sett.replace('→',' → '):'non letto'}</span>`;
+    li.innerHTML=`<span>${esc(f.name.slice(0,26))}</span><span>${info?info.sett.replace('→',' → '):busta?'busta di '+NM[busta.mese-1]+', nella scheda Busta':'non letto'}</span>`;
     $('flist').appendChild(li);
     if(!info) continue; ok++;
     const p=sett.get(info.sett);
@@ -1957,8 +1986,11 @@ async function leggiPDF(files){
   }); });
   salvaReg();
   const chiavi=Object.keys(mesi).sort();
+  const bustePrese=nBuste?` ${nBuste===1?'Una busta paga è finita':nBuste+' buste paga sono finite'} nell'archivio della scheda Busta.`:'';
+  if(nBuste) renderBuste();
   $('pmsg').innerHTML = ok
-    ? `Letti <strong>${ok}</strong> fogli su ${files.length}: ${sett.size} settimane senza doppioni, <strong>${nPdf}</strong> giorni scritti nel registro`+(nMan?`, ${nMan} lasciati come li avevi segnati a mano.`:'.')
+    ? `Letti <strong>${ok}</strong> fogli su ${files.length}: ${sett.size} settimane senza doppioni, <strong>${nPdf}</strong> giorni scritti nel registro`+(nMan?`, ${nMan} lasciati come li avevi segnati a mano.`:'.')+bustePrese
+    : nBuste ? 'Nessun foglio turni in questi file.'+bustePrese
     : 'Nessun foglio turni riconosciuto in questi file. Puoi segnare i turni a mano nel registro qui sopra.';
   if(chiavi.length){
     $('mesi').innerHTML=chiavi.map(k=>{ const R=riepilogo(k);
@@ -2050,7 +2082,7 @@ $('c-reset').onclick=()=>{ for(const k in BASE_IST) if($(k)) $(k).value=BASE_IST
   msgProf('Valori predefiniti ripristinati.'); calcola(); };
 
 /* ---- versione, indirizzo, contatore ---- */
-const VERSIONE='2026.09.28';
+const VERSIONE='2026.09.28-2';
 const SITO='https://ruolino-paga.github.io/';
 const CONTATORE='';   // codice GoatCounter; vuoto = nessun conteggio delle aperture
 const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -2161,7 +2193,7 @@ async function reclamo(){
 function aggiornaVoci(m){
   const VOCI=[['v-ord','Retribuzione ordinaria e ferie',m.vOrd+m.vFerie],['v-str','Straordinario',m.vStr],['v-ind','Indennità giornaliere',m.vInd],['v-trasf','Trasferta o disponibilità',m.vTrasf],
     ['v-imp','Totale imponibile',m.imponibile],['v-contr','Contributi',m.contributi],['v-irpef','IRPEF del mese',m.irNetta+m.impSost],['v-addiz','Addizionali',m.addiz]];
-  let h=''; VOCI.forEach(v=>{ const b=n(v[0]); if(b>0){ const d=v[2]-b; h+=`<tr><td>${v[1]} <span class="q">busta ${eur2(b)} €</span></td><td>${d>=0?'+':'−'}${eur2(Math.abs(d))} €</td></tr>`; } });
+  let h=''; VOCI.forEach(v=>{ const b=n(v[0]); if(b>0){ const d=Math.abs(v[2]-b)<0.005?0:v[2]-b; h+=`<tr><td>${v[1]} <span class="q">busta ${eur2(b)} €</span></td><td>${d>=0?'+':'−'}${eur2(Math.abs(d))} €</td></tr>`; } });
   $('v-voci').innerHTML=h?`<tr class="sub"><td>Stima meno busta, voce per voce</td><td></td></tr>`+h:'';
 }
 
@@ -2716,6 +2748,177 @@ $('arr-ok').onclick=()=>{
 };
 $('arr-salta').onclick=()=>{ lsSet('gpg_arruolato','1'); $('arr').hidden=true; };
 
+/* ---- le tue buste: lettura del PDF per posizione (programma paghe dell'istituto di riferimento) ---- */
+// il modulo ha le righe sempre alla stessa altezza (punti PDF dal basso) e le colonne allineate a spazi:
+// un numero si riconosce dal carattere in cui finisce
+const KEY_BUSTE='gpg_buste';
+const RE_MESE=/(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(20\d\d)/i;
+// voci che il calcolo conosce, coi codici del programma paghe di riferimento; straordinari e trasferta si riconoscono anche dal nome
+const VOCI_NOTE=[1,53,103,105,107,108,110,115,580,620,652,662,810,813,9025];
+const eStraord=v=>/STRAORD/i.test(v.nome), eTrasf=v=>v.cod===813||v.cod===115||/TRASFERT|DISPONIBILIT/i.test(v.nome);
+function numeriDi(s){ const out=[], re=/[+-]?\d{1,3}(?:\.\d{3})*,\d+/g; let m;
+  while((m=re.exec(s))) out.push({v:parseFloat(m[0].replace(/\./g,'').replace(',','.').replace('+','')),fine:m.index+m[0].length});
+  return out; }
+function leggiBusta(items){
+  const testo=items.map(x=>x.s).join('\n');
+  if(!/RETRIB\.\s*di\s*FATTO/i.test(testo)||!/LIVELLO\s+\S+/.test(testo)) return null;
+  const testa=items.filter(x=>Math.abs(x.y-769)<4&&RE_MESE.test(x.s))[0], mm=(testa?testa.s:testo).match(RE_MESE);
+  if(!mm) return null;
+  const righe={}; items.forEach(x=>{ const y=Math.round(x.y); (righe[y]=righe[y]||[]).push(x); });
+  const riga=y=>{ const L=[]; for(let d=-2;d<=2;d++) if(righe[y+d]) L.push(...righe[y+d]); return L; };
+  const num=y=>{ let o=[]; riga(y).forEach(it=>{ if(!/[A-Za-z]/.test(it.s)) o=o.concat(numeriDi(it.s)); }); return o; };
+  const col=(ns,lo,hi)=>{ const x=ns.filter(k=>k.fine>lo&&k.fine<=hi)[0]; return x?x.v:0; };
+  const voci=[];
+  Object.keys(righe).map(Number).filter(y=>y<=522&&y>=338).forEach(y=>{
+    const r=righe[y], lab=r.filter(it=>/^\s*(T\s+)?\d{1,5}\s+[A-Z]/.test(it.s))[0]; if(!lab) return;
+    const m=lab.s.trim().match(/^(T\s+)?(\d{1,5})\s+(.*)$/);
+    const v={cod:+m[2],nome:m[3].trim(),pct:0,qta:0,base:0,comp:0,tratt:0,fig:0};
+    r.forEach(it=>{ if(it===lab||/[A-Za-z]/.test(it.s)) return;
+      numeriDi(it.s).forEach(k=>{ v[k.fine<=44?'pct':k.fine<=55?'qta':k.fine<=64?'base':k.fine<=76?'comp':k.fine<=86?'tratt':'fig']=k.v; }); });
+    voci.push(v);
+  });
+  const ratei=ns=>({prec:col(ns,0,70),maturati:col(ns,70,80),goduti:col(ns,80,88),residui:col(ns,88,999)});
+  const date=testo.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2})\/(\d{2})\/(\d{4})/);
+  const sc=riga(649).map(it=>it.s.match(/^\s*(\d{2})\/(20\d\d)\s*$/)).filter(Boolean)[0];
+  const add=num(187), net=num(144), fis=num(259), con=num(283), det=num(235), t1=num(64), t2=num(55);
+  return pulisciBusta({
+    mese:NM.indexOf(mm[1].toLowerCase())+1, anno:+mm[2], liv:((testo.match(/LIVELLO\s+(\S+)/)||[])[1]||''),
+    assunz:date?`${date[6]}-${date[5]}-${date[4]}`:'', scatto:sc?`${sc[2]}-${sc[1]}`:'',
+    voci, netto:col(net,86,999), impContr:col(con,0,30), contributi:col(con,85,999),
+    irpefLorda:col(fis,45,56), detrazioni:col(fis,58,70), irpef:col(fis,85,999),
+    detassImp:col(det,0,22), detassImposta:col(det,22,34), addizionali:add.length?add[add.length-1].v:0,
+    ferie:ratei(num(661)), permessi:ratei(num(649)), exfest:ratei(num(625)),
+    tfrMese:col(t1,20,30), tfrSpettante:col(t2,34,44)
+  });
+}
+// quello che si salva e si mostra passa sempre da qui: tipi forzati, nessun testo libero oltre al nome della voce
+const num0=x=>{ const v=+x; return isFinite(v)?v:0; };
+function pulisciBusta(B){ if(!B||typeof B!=='object') return null;
+  const R=r=>({prec:num0(r&&r.prec),maturati:num0(r&&r.maturati),goduti:num0(r&&r.goduti),residui:num0(r&&r.residui)});
+  const mese=Math.round(num0(B.mese)), anno=Math.round(num0(B.anno));
+  if(!(mese>=1&&mese<=12&&anno>=2000&&anno<=2100)) return null;
+  return {mese, anno, liv:String(B.liv||'').replace(/[^0-9A-Za-z]/g,'').slice(0,3),
+    assunz:dataOk(B.assunz)?B.assunz:'', scatto:/^\d{4}-\d{2}$/.test(String(B.scatto||''))?B.scatto:'',
+    voci:(Array.isArray(B.voci)?B.voci:[]).slice(0,60).map(v=>({cod:Math.round(num0(v&&v.cod)),nome:String((v&&v.nome)||'').slice(0,40),
+      pct:num0(v&&v.pct),qta:num0(v&&v.qta),base:num0(v&&v.base),comp:num0(v&&v.comp),tratt:num0(v&&v.tratt),fig:num0(v&&v.fig)})),
+    netto:num0(B.netto), impContr:num0(B.impContr), contributi:num0(B.contributi), irpefLorda:num0(B.irpefLorda), detrazioni:num0(B.detrazioni),
+    irpef:num0(B.irpef), detassImp:num0(B.detassImp), detassImposta:num0(B.detassImposta), addizionali:num0(B.addizionali),
+    ferie:R(B.ferie), permessi:R(B.permessi), exfest:R(B.exfest), tfrMese:num0(B.tfrMese), tfrSpettante:num0(B.tfrSpettante)}; }
+// dalla busta agli ingressi del motore, nello stesso modo della taratura
+function inputDaBusta(B){
+  const V=c=>B.voci.filter(v=>v.cod===c), q=c=>V(c).reduce((a,v)=>a+v.qta,0);
+  const oreGg=n('c-ggferie')||6.66, valTra=n('d-val')||7;
+  const str=B.voci.filter(eStraord), strOre=str.reduce((a,v)=>a+v.qta,0), strComp=str.reduce((a,v)=>a+v.comp,0);
+  const trasf=B.voci.filter(eTrasf).reduce((a,v)=>a+v.comp,0);
+  const ord=q(1), ferieOre=q(580)+q(620), fest=q(53), orePagate=ord+ferieOre+q(103)+q(652)+q(662);
+  const I=leggiInput(), oraria=(V(1)[0]||{}).base||I.oraria;
+  I.oltre='misto'; I.oraria=oraria;                      // la busta dice già quali ore sono straordinario e quali trasferta
+  I.ore=ord+strOre+trasf/valTra+fest; I.gg=q(107)+q(108)+q(110)+q(105); I.ferie=ferieOre/oreGg;
+  I.notti=q(107); I.i561=q(108); I.i312=q(110); I.festOre=fest; I.festRet=Math.round(q(103)/oreGg);
+  I.strOre=strOre; I.strP=str.length===1?str[0].pct:strOre>0?+((strComp/(strOre*oraria)-1)*100).toFixed(2):I.strP;
+  I.trattenute=B.voci.reduce((a,v)=>a+v.tratt,0);
+  if(B.addizionali>10) I.addizIn=B.addizionali; else { I.addizIn=0; I.trattenute+=B.addizionali; }   // fino a 10 il motore la leggerebbe come percentuale
+  I.mese=B.mese; I.c=Object.assign({},I.c,{aum:B.detassImp>0&&orePagate>0?B.detassImp*I.c.oreMese/orePagate:0});
+  return I;
+}
+const altreVoci=B=>B.voci.filter(v=>VOCI_NOTE.indexOf(v.cod)<0&&!eStraord(v)&&!eTrasf(v)&&v.comp>0);
+// la stessa stima con dentro anche quelle voci: i rimborsi sono esenti, il resto imponibile
+function stimaConExtra(B){ const ex=altreVoci(B), I=inputDaBusta(B), rimb=v=>/RIMBORS/i.test(v.nome);
+  I.extraImp=ex.filter(v=>!rimb(v)).reduce((a,v)=>a+v.comp,0); I.extraEsenti=ex.filter(rimb).reduce((a,v)=>a+v.comp,0);
+  const st=motore(I).nettoBusta; return {st,scarto:B.netto?(st-B.netto)/B.netto*100:0}; }
+const leggiBuste=()=>{ const b=jGet(KEY_BUSTE,{}), o={}; if(b&&typeof b==='object'&&!Array.isArray(b)) Object.keys(b).forEach(k=>{
+  const B=pulisciBusta(b[k]); if(B&&k===B.anno+'-'+pad(B.mese)) o[k]=B; }); return o; };
+function salvaBusta(B){ const b=leggiBuste(); b[B.anno+'-'+pad(B.mese)]=B; lsSet(KEY_BUSTE,JSON.stringify(b));
+  if(!dataOk($('c-assunz').value)&&dataOk(B.assunz)){ $('c-assunz').value=B.assunz; aggiornaOraria(true); calcola(); } }
+function stimaBusta(B){ const st=motore(inputDaBusta(B)).nettoBusta; return {st,scarto:B.netto?(st-B.netto)/B.netto*100:0}; }
+const pct1=x=>(x>=0?'+':'−')+Math.abs(x).toFixed(1).replace('.',',')+'%';
+let BS_SEL=null;
+function renderBuste(){
+  const b=leggiBuste(), chiavi=Object.keys(b).sort().reverse();
+  if(!chiavi.length){ $('bs-tab').innerHTML=''; $('bs-dett').hidden=true; return; }
+  let ok=0;
+  $('bs-tab').innerHTML='<tr class="sub"><td>Mese</td><td class="n">busta</td><td class="n">stima</td><td>scarto</td></tr>'+chiavi.map(k=>{ const B=b[k], s=stimaBusta(B); if(Math.abs(s.scarto)<1) ok++;
+    return `<tr class="clic${k===BS_SEL?' sel':''}" data-k="${k}"><td>${NM[B.mese-1]} ${B.anno}</td><td class="n">${eur(B.netto)}</td><td class="n">${eur(s.st)}</td><td>${pct1(s.scarto)}</td></tr>`; }).join('');
+  if(ok) lsSet('gpg_ragioniere','1');
+  $('bs-tab').querySelectorAll('tr.clic').forEach(tr=>tr.onclick=()=>{ BS_SEL=tr.getAttribute('data-k'); renderBuste(); });
+  if(BS_SEL&&b[BS_SEL]) dettaglioBusta(b[BS_SEL]); else $('bs-dett').hidden=true;
+}
+function dettaglioBusta(B){
+  const V=c=>B.voci.filter(v=>v.cod===c), q=c=>V(c).reduce((a,v)=>a+v.qta,0);
+  const ym=B.anno+'-'+pad(B.mese), base=(V(1)[0]||{}).base||0, livB=String(B.liv||''), tb=tabella(livB,ym), s=stimaBusta(B);
+  const oreGg=n('c-ggferie')||6.66, nomeLiv=NOMI_LIV[livB]||'livello '+esc(livB), fmt5=x=>x.toFixed(5).replace('.',','), sp=[];
+  if(tb){ const t=tb.mese/(n('c-ore')||173);
+    sp.push(Math.abs(base-t)<0.0005?['ok',`Paga base ${fmt5(base)} € l'ora: è la tabella del ${nomeLiv} per quel mese.`]
+      :base>t?['ok',`Paga base ${fmt5(base)} € l'ora, sopra la tabella del ${nomeLiv} (${fmt5(t)}): ci sono scatti o un superminimo.`]
+      :['no',`Paga base ${fmt5(base)} € l'ora, la tabella del Ruolino per il ${nomeLiv} dice ${fmt5(t)}: forse è il Ruolino ad avere la tabella vecchia.`]); }
+  const fr=q(103), fl=q(53), fm=V(395).reduce((a,v)=>a+v.qta,0);
+  const h2=x=>x.toLocaleString('it-IT',{maximumFractionDigits:2}), nf=Math.round(fr/oreGg);
+  sp.push(['info',`Festività: ${festiviMese(B.anno,B.mese)} nel calendario del mese. In busta ${fr?nf+(nf===1?' pagata':' pagate')+' come festività ('+h2(fr)+' h)':'nessuna pagata come festività'}`
+    +(fl?`, ${h2(fl)} h di lavoro festivo`:'')+(fm?`, ${h2(fm)} h lavorate in festivo con la maggiorazione`:'')+'.']);
+  sp.push([Math.abs(s.scarto)<3?'ok':'no',`Il Ruolino, con le ore di questa busta, fa ${eur2(s.st)} €. La busta dice ${eur2(B.netto)} €: scarto ${pct1(s.scarto)}.`]);
+  const extra=altreVoci(B);
+  if(extra.length){ const se=stimaConExtra(B);
+    sp.push(['info','Voci che il Ruolino non calcola: '+extra.map(v=>`<span class="q">${esc(v.nome)}</span> ${eur2(v.comp)} €`).join(', ')
+      +`. Contandole, farebbe ${eur2(se.st)} €: scarto ${pct1(se.scarto)}.`]); }
+  const tr=B.voci.filter(v=>v.tratt>0);
+  const ind=[['notti',q(107)],['zona stradale',q(108)],['rischio',q(110)],['diurne',q(105)]].filter(x=>x[1]>0).map(x=>x[1]+' '+x[0]).join(', ');
+  const str=B.voci.filter(eStraord), trasf=B.voci.filter(eTrasf).reduce((a,v)=>a+v.comp,0);
+  $('bs-dett').innerHTML=`<h4>${NM[B.mese-1]} ${B.anno} · netto ${eur2(B.netto)} €</h4>
+    <ul class="spunte">${sp.map(x=>`<li class="${x[0]}"><b>${x[0]==='ok'?'✓':x[0]==='no'?'!':'·'}</b><span>${x[1]}</span></li>`).join('')}</ul>
+    <table style="margin-top:10px">
+      <tr><td>Ordinarie + ferie e permessi</td><td>${f1(q(1))} + ${f1(q(580)+q(620))} h</td></tr>
+      ${str.length?`<tr><td>Straordinario</td><td>${f1(str.reduce((a,v)=>a+v.qta,0))} h · ${eur2(str.reduce((a,v)=>a+v.comp,0))} €</td></tr>`:''}
+      ${trasf?`<tr><td>Trasferta o disponibilità</td><td>${eur2(trasf)} €</td></tr>`:''}
+      ${ind?`<tr><td>Indennità</td><td>${ind}</td></tr>`:''}
+      ${tr.length?`<tr><td>Trattenute in busta</td><td>${tr.map(v=>`<span class="q">${esc(v.nome)}</span> ${eur2(v.tratt)} €`).join(', ')}</td></tr>`:''}
+      <tr><td>Contributi · IRPEF · addizionali</td><td>${eur2(B.contributi)} · ${eur2(B.irpef+B.detassImposta)} · ${eur2(B.addizionali)} €</td></tr>
+      <tr><td>Ferie che ti restano</td><td>${f1(B.ferie.residui)} h · circa ${Math.max(0,Math.floor(B.ferie.residui/oreGg))} gg</td></tr>
+      <tr><td>Permessi · ex festività</td><td>${f1(B.permessi.residui)} · ${f1(B.exfest.residui)} h</td></tr>
+      ${B.tfrSpettante?`<tr><td>TFR spettante</td><td>${eur2(B.tfrSpettante)} €</td></tr>`:''}
+      ${B.scatto?`<tr><td>Prossimo scatto di anzianità</td><td>${NM[+B.scatto.slice(5)-1]} ${B.scatto.slice(0,4)}</td></tr>`:''}
+    </table>
+    <div class="btnrow"><button type="button" class="btn primary" id="bs-usa">Usa questo mese nel calcolo</button><button type="button" class="btn" id="bs-togli">Togli dall'archivio</button></div>`;
+  $('bs-dett').hidden=false;
+  $('bs-usa').onclick=()=>usaBusta(B);
+  $('bs-togli').onclick=()=>{ const b=leggiBuste(); delete b[ym]; lsSet(KEY_BUSTE,JSON.stringify(b)); BS_SEL=null; renderBuste(); };
+}
+// porta nel calcolo le ore del mese e i numeri personali della busta (addizionali, aumento, trattenute), e riempie il confronto voce per voce
+function usaBusta(B){
+  const I=inputDaBusta(B), V=c=>B.voci.filter(v=>v.cod===c), comp=c=>V(c).reduce((a,v)=>a+v.comp,0);
+  staccaRuolino(); ANNO=B.anno; $('anno').value=ANNO; $('mese').value=String(B.mese);
+  if(!dataOk($('c-inizio').value)&&TABELLE[B.liv]) $('liv').value=B.liv;
+  aggiornaOraria(true);
+  const metti=(id,v)=>{ $(id).value=v; }, r2=x=>Math.round(x*100)/100;
+  metti('oraria',I.oraria); metti('ore',r2(I.ore)); metti('gg',I.gg); metti('ferie',r2(I.ferie));
+  metti('d-notti',I.notti); metti('d-i561',I.i561); metti('d-i312',I.i312); metti('d-fest',I.festOre); metti('d-festret',I.festRet);
+  metti('d-str',I.strOre); metti('d-strp',I.strP); metti('d-addiz',r2(I.addizIn)); metti('c-aum',r2(I.c.aum)); metti('c-oltre','misto');
+  ['quinto','presti','sind'].forEach(id=>metti(id,0)); metti('altre',r2(I.trattenute)); metti('v-netto',B.netto);
+  metti('v-ord',r2(comp(1)+comp(580)+comp(620))); metti('v-str',r2(B.voci.filter(eStraord).reduce((a,v)=>a+v.comp,0)));
+  metti('v-ind',r2(comp(107)+comp(108)+comp(110)+comp(105))); metti('v-trasf',r2(B.voci.filter(eTrasf).reduce((a,v)=>a+v.comp,0)));
+  metti('v-imp',B.impContr); metti('v-contr',B.contributi); metti('v-irpef',r2(B.irpef+B.detassImposta)); metti('v-addiz',B.addizionali);
+  calcola();
+  const det=$('v-voci').closest('details'); if(det) det.open=true;
+  const card=$('v-netto').closest('.card'); if(card) try{ card.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){ card.scrollIntoView(); }
+  toast(`${NM[B.mese-1][0].toUpperCase()+NM[B.mese-1].slice(1)} ${B.anno} preso dalla busta: il Ruolino fa ${eur(motore(leggiInput()).nettoBusta)} €, la busta ${eur(B.netto)} €. Sotto, voce per voce.`);
+}
+async function caricaBuste(files){
+  let lette=0, scartate=0, ultima=null;
+  for(const f of files){
+    try{ const fr=await frammenti(await leggiArrayBuffer(f)); const B=leggiBusta(fr.items);
+      if(B&&B.netto>0){ salvaBusta(B); lette++; ultima=B.anno+'-'+pad(B.mese); } else scartate++; }
+    catch(e){ scartate++; }
+  }
+  BS_SEL=ultima||BS_SEL; renderBuste(); renderServizio();
+  $('bs-msg').textContent=lette?`Lette ${lette} ${lette===1?'busta':'buste'}`+(scartate?`, ${scartate} non riconosciute.`:'.')+' Tocca un mese per il dettaglio.'
+    :'Nessuna busta riconosciuta. Per ora leggo solo le buste del programma paghe dell’istituto di riferimento.';
+}
+$('bs-drop').onclick=()=>$('bs-file').click();
+$('bs-drop').onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $('bs-file').click(); } };
+$('bs-file').onchange=e=>{ caricaBuste(Array.prototype.slice.call(e.target.files)); e.target.value=''; };
+['dragenter','dragover'].forEach(ev=>$('bs-drop').addEventListener(ev,e=>{ e.preventDefault(); $('bs-drop').classList.add('over'); }));
+['dragleave','drop'].forEach(ev=>$('bs-drop').addEventListener(ev,e=>{ e.preventDefault(); $('bs-drop').classList.remove('over'); }));
+$('bs-drop').addEventListener('drop',e=>caricaBuste(Array.prototype.slice.call(e.dataTransfer.files).filter(f=>/pdf$/i.test(f.name))));
+
 /* ---- avvio ---- */
 const CAMPI=['ore','oraria','liv','gg','ferie','fig-min','fig-mag','isee','duelav','quinto','presti','sind','altre',
   'd-str','d-strp','d-val','d-notti','d-i561','d-i312','d-fest','d-festret','d-addiz','d-contr','v-netto','v-ord','v-str','v-ind','v-trasf','v-imp','v-contr','v-irpef','v-addiz',
@@ -2757,6 +2960,7 @@ preparaQuiz();
 if(!GIA_USATO&&lsGet('gpg_arruolato','')!=='1') $('arr').hidden=false;   // primo avvio: tre domande
 renderScadenze();
 renderUsuranti();
+renderBuste();
 avvisoIphone();
 controllaBackup();
 caricaBacheca();
@@ -2770,7 +2974,7 @@ caricaBacheca();
 window.RP={inflateJS,inflateBytes,frammenti,foglio,leggiPDF,riepilogo,FRASI,GRADI,pasqua,festivo,reg:()=>REG,
   motore,leggiInput,tabella,carriera,livelloAl,scattiAl,orariaPer,aggiornaOraria,nettoDaRegistro,valoreTurno,
   detrConiuge,detrFigli,statoScadenze,icsScadenze,oreNotturne,nottiUsuranti,testoRelazione,SCUSE,MOSTRINE,statoServizio,
-  leggiCiclo,QUIZ,statoAnno,foglioMatricolare};
+  leggiCiclo,QUIZ,statoAnno,foglioMatricolare,leggiBusta,inputDaBusta,stimaBusta,leggiBuste,renderBuste,caricaBuste,pulisciBusta,usaBusta,altreVoci,stimaConExtra};
 /* installabile e utilizzabile senza rete: solo quando la pagina arriva da un indirizzo, non da un file */
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
