@@ -1,6 +1,12 @@
 {
   "avvisi": [
     {
+      "id": "2026-09-28-concorso",
+      "data": "28/09/2026",
+      "testo": "Nella Caserma c'è il Concorso interno: una domanda al giorno, uguale per tutti, con la fonte accanto alla risposta. Nel Ruolino c'è la Rotazione H24: scrivi il tuo ciclo e il calendario si riempie da solo.",
+      "evidenza": true
+    },
+    {
       "id": "2026-09-28-caserma",
       "data": "28/09/2026",
       "testo": "Nuova scheda Caserma: scadenze di servizio con i promemoria, relazione di servizio in due minuti, stato di servizio, notti che contano per la pensione e il Frasario del cambio turno.",

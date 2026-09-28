@@ -245,6 +245,15 @@ header .titolo{flex:1 1 auto;min-width:0}
 .bacheca li small{display:block;color:var(--muted);font-size:11.5px;font-family:"IBM Plex Mono",Menlo,Consolas,monospace}
 .frasario{margin:0 0 4px;font-size:16px;line-height:1.5;font-style:italic;color:var(--ink)}
 #usu-anni{margin-bottom:10px}
+.qz-domanda{margin:2px 0 10px;font-size:16px;line-height:1.45;font-weight:500}
+.qz-risposte{display:grid;gap:8px}
+.qz-risposte button{font:inherit;font-size:14px;text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card-2);color:var(--ink);cursor:pointer;min-height:44px}
+.qz-risposte button.giusta{background:var(--good-bg);color:var(--good);border-color:var(--good);font-weight:600}
+.qz-risposte button.sbagliata{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+.qz-risposte button:disabled{cursor:default}
+#arr{border-top:3px solid var(--oro)}
+#arr .btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#fm-img{width:100%;border-radius:10px;margin-top:10px;display:block}
 /* modalità garitta: rosso scuro su nero, per la notte */
 html:root[data-garitta="1"]{color-scheme:dark;
   --ink:#ff6a5a; --ink-2:#d94c3f; --muted:#9c3a31; --bg:#000; --card:#0a0101; --card-2:#140303; --line:#3a0e0a; --line-2:#260806;
@@ -333,6 +342,40 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
 
   <!-- SERVIZIO -->
   <div id="p-r" role="tabpanel" aria-labelledby="t-r">
+    <div class="card" id="arr" hidden>
+      <h3>Arruolamento</h3>
+      <div class="b">
+        <p style="margin:0 0 10px;font-size:14px">Benvenuto. Tre domande e il Ruolino è tuo.</p>
+        <div class="f">
+          <label>Il tuo istituto</label>
+          <div class="btnrow" style="margin-top:0">
+            <button type="button" class="btn" id="arr-rif" aria-pressed="true">Quello di riferimento</button>
+            <button type="button" class="btn" id="arr-altro" aria-pressed="false">Un altro istituto</button>
+          </div>
+          <div class="hint" id="arr-ist-hint">Il Ruolino è tarato sulle buste di un istituto: se un collega ti ha mandato il link, di solito è anche il tuo.</div>
+        </div>
+        <div class="g2" style="margin-top:11px">
+          <div class="f">
+            <label for="arr-liv">Livello</label>
+            <select id="arr-liv">
+              <option value="6">6° livello</option><option value="5">5° livello</option><option value="4" selected>4° livello</option>
+              <option value="3">3° livello</option><option value="2">2° livello</option><option value="1">1° livello</option><option value="Q">Quadro</option>
+              <option value="D">Fiduciari, livello D</option><option value="E">Fiduciari, livello E</option>
+            </select>
+          </div>
+          <div class="f">
+            <label for="arr-inizio">Inizio servizio come guardia</label>
+            <input type="date" id="arr-inizio">
+            <div class="hint">Facoltativo: così il livello sale da solo.</div>
+          </div>
+        </div>
+        <div class="btnrow">
+          <button type="button" class="btn primary" id="arr-ok">Fatto</button>
+          <button type="button" class="btn" id="arr-salta">Salta</button>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="b">
         <div class="hero-field">
@@ -625,6 +668,24 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
         <p style="margin:0 0 12px;font-size:13.5px;color:var(--ink-2)">
           I valori di partenza sono quelli dell'istituto di riferimento. Cambia quello che serve:
           il calcolo si adegua subito e resta salvato.</p>
+        <div class="g2" style="margin-bottom:11px">
+          <div class="f">
+            <label for="c-oltre">Le ore oltre il mese sono pagate</label>
+            <select id="c-oltre">
+              <option value="misto" selected>Straordinario fisso, il resto a trasferta</option>
+              <option value="str">Tutte a straordinario</option>
+            </select>
+            <div class="hint">Nell'istituto di riferimento 20 ore di straordinario, il resto come trasferta esente. Ore e importi si cambiano nella scheda Busta.</div>
+          </div>
+          <div class="f">
+            <label for="c-ratei">Tredicesima e quattordicesima</label>
+            <select id="c-ratei">
+              <option value="mensili" selected>Un rateo ogni mese</option>
+              <option value="unica">A dicembre e a luglio</option>
+            </select>
+            <div class="hint">Nell'istituto di riferimento arrivano un po' ogni mese. Altrove si pagano tutte insieme.</div>
+          </div>
+        </div>
         <div class="g2">
           <div class="f">
             <label for="c-ore">Ore del mese contrattuale</label>
@@ -659,7 +720,7 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
               <option value="13">13 — tredicesima</option>
               <option value="14" selected>14 — tredicesima e quattordicesima</option>
             </select>
-            <div class="hint">I ratei vengono aggiunti a ogni mensilità.</div>
+            <div class="hint">Come arrivano lo scegli qui sopra.</div>
           </div>
         </div>
       </div>
@@ -869,6 +930,31 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
     </div>
 
     <div class="card">
+      <h3>Rotazione H24</h3>
+      <div class="b">
+        <label for="rt-ciclo">Il tuo ciclo, un giorno dopo l'altro</label>
+        <input type="text" id="rt-ciclo" placeholder="M M P P N N R R" autocomplete="off" autocapitalize="characters">
+        <div class="quick" id="rt-preset">
+          <button type="button" data-c="M M P P N N R R">Tre turni</button>
+          <button type="button" data-c="N N N N N N R R">Sei notti</button>
+          <button type="button" data-c="G G NN NN R R">Dodici ore</button>
+          <button type="button" data-c="M M M M M M R">Sei più uno</button>
+        </div>
+        <div class="hint">M mattina 06-14 · P pomeriggio 14-22 · N notte 22-06 · G giorno 08-20 · NN notte 20-08 · R riposo · oppure l'orario, come 07-15. Il primo del ciclo cade nel giorno «Dal».</div>
+        <div class="g2" style="margin-top:10px">
+          <div class="f"><label for="rt-dal">Dal</label><input type="date" id="rt-dal"></div>
+          <div class="f"><label for="rt-al">Fino al</label><input type="date" id="rt-al"></div>
+        </div>
+        <label class="chk"><input type="checkbox" id="rt-salva" checked> Non toccare i giorni già segnati</label>
+        <div class="btnrow">
+          <button type="button" class="btn primary" id="rt-stendi">Stendi nel calendario</button>
+          <button type="button" class="btn" id="rt-annulla" hidden>Annulla l'ultima</button>
+        </div>
+        <div class="hint" id="rt-msg" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <div class="card">
       <h3>Fogli di servizio</h3>
       <div class="b">
         <div class="drop" id="drop" tabindex="0" role="button">
@@ -940,6 +1026,18 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
       </div>
     </div>
 
+    <div class="card" id="quiz-card">
+      <h3>Il Concorso interno</h3>
+      <div class="b">
+        <div class="hint" id="qz-testa" style="margin:0 0 4px">Domanda del giorno, uguale per tutti</div>
+        <p class="qz-domanda" id="qz-domanda"></p>
+        <div class="qz-risposte" id="qz-risposte"></div>
+        <div class="note" id="qz-esito" hidden></div>
+        <div class="btnrow"><button type="button" class="btn" id="qz-altra" hidden>Un'altra domanda</button></div>
+        <div class="hint" id="qz-punti" style="margin-top:8px"></div>
+      </div>
+    </div>
+
     <div class="card" id="rel-card">
       <h3>Relazione di servizio</h3>
       <div class="b">
@@ -987,6 +1085,9 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
         <div class="hint" id="sv-riga" style="font-size:12.5px;color:var(--ink-2);margin-top:4px"></div>
         <div class="hint" id="sv-conto" style="margin-top:8px"></div>
         <div class="mostrine" id="sv-mostrine"></div>
+        <div class="btnrow"><button type="button" class="btn gold" id="fm-crea">Foglio matricolare dell'anno</button></div>
+        <div class="hint" id="fm-msg" style="margin-top:8px"></div>
+        <div id="fm-box" hidden><img id="fm-img" alt="Foglio matricolare dell'anno"><div class="hint">Tieni premuto sull'immagine per salvarla o mandarla nel gruppo. A dicembre è completo.</div></div>
       </div>
     </div>
     <div class="card" id="sv-anno-card" hidden>
@@ -1052,7 +1153,7 @@ const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catc
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 const jGet=(k,d)=>{try{const v=JSON.parse(lsGet(k,'null'));return v===null?d:v}catch(e){return d}};
 const BASE_IST={'c-ore':173,'c-gg':26,'c-buono':7,'c-ggferie':6.66,'c-festperc':35,'c-nott':4.18,'c-strad':5.61,
-  'c-risc':3.12,'c-diur':0.65,'c-nottperc':0,'c-nottore':0,'c-mens':14,'c-aum':126.34};
+  'c-risc':3.12,'c-diur':0.65,'c-nottperc':0,'c-nottore':0,'c-mens':14,'c-aum':126.34,'c-oltre':'misto','c-ratei':'mensili'};
 const P=()=>({oreMese:n('c-ore')||173, ggMese:n('c-gg')||26, buono:n('c-buono'), oreGg:n('c-ggferie')||6.66,
   festPerc:n('c-festperc'), aum:Math.max(0,n('c-aum')), iNott:n('c-nott'), iStrad:n('c-strad'), iRisc:n('c-risc'), iDiur:n('c-diur'),
   nottPerc:n('c-nottperc'), nottOre:n('c-nottore'), mens:parseFloat($('c-mens').value)||14});
@@ -1172,7 +1273,8 @@ function leggiInput(){
     i561:n('d-i561'), i312:n('d-i312'), notti:n('d-notti'), addizIn:Math.max(0,n('d-addiz')), pContr:n('d-contr')/100,
     festRet:Math.max(0,Math.round(n('d-festret'))),
     trattenute:Math.max(0,n('quinto'))+Math.max(0,n('presti'))+Math.max(0,n('sind'))+Math.max(0,n('altre')),
-    coniuge:con, figliDt:Math.max(0,Math.round(n('fig-dt'))), figliQuota:con?100:(n('fig-quota')||50), c:P() };
+    coniuge:con, figliDt:Math.max(0,Math.round(n('fig-dt'))), figliQuota:con?100:(n('fig-quota')||50),
+    oltre:$('c-oltre').value, rateiUnica:$('c-ratei').value==='unica', mese:+$('mese').value||1, c:P() };
 }
 function calcola(){ render(motore(leggiInput())); }
 function motore(I){
@@ -1189,8 +1291,10 @@ function motore(I){
 
   const oreFerie=ferie*c.oreGg;
   const ordinarie=Math.max(0,Math.min(ore,c.oreMese-oreFerie));
-  const strEff=Math.min(strOre,Math.max(0,ore-ordinarie));
-  const oreTrasf=Math.max(0,ore-ordinarie-strEff-festOre);
+  // ore oltre il mese: come nell'istituto di riferimento (straordinario fisso, il resto a trasferta), oppure tutte a straordinario
+  const tutteStr=I.oltre==='str';
+  const strEff=tutteStr ? Math.max(0,ore-ordinarie-festOre) : Math.min(strOre,Math.max(0,ore-ordinarie));
+  const oreTrasf=tutteStr ? 0 : Math.max(0,ore-ordinarie-strEff-festOre);
 
   const vOrd=ordinarie*oraria;
   const vFerie=oreFerie*oraria;
@@ -1199,7 +1303,11 @@ function motore(I){
   const vFestRet=festRet*c.oreGg*oraria;        // festività non lavorate: 6,66 ore l'una, dentro l'imponibile
   const vInd=notti*c.iNott + i561*c.iStrad + i312*c.iRisc + diurni*c.iDiur;
   const vNottOre=c.nottPerc>0 ? c.nottOre*oraria*(c.nottPerc/100) : 0;   // contratti che pagano il notturno a ore
-  const ratei=(oraria*c.oreMese)*Math.max(0,c.mens-12)/12;
+  const mensAgg=Math.max(0,c.mens-12);
+  const ratei=I.rateiUnica ? 0 : (oraria*c.oreMese)*mensAgg/12;
+  // in unica soluzione: la tredicesima a dicembre, la quattordicesima a luglio
+  const lumpNome=I.mese===12?'Tredicesima':'Quattordicesima';
+  const lump=I.rateiUnica ? ((I.mese===12&&c.mens>=13)||(I.mese===7&&c.mens>=14) ? oraria*c.oreMese : 0) : 0;
   const vTrasf=oreTrasf*valTra;                 // esente
   const buoni=ggInd*c.buono;                    // i buoni si fermano alle giornate del mese
 
@@ -1221,13 +1329,22 @@ function motore(I){
   const trattInt=trattIntegrativo(ra,fam)/12;
 
   const trattenute=I.trattenute;
-  const nettoBusta=reddito-irNetta-impSost-addiz+vTrasf+bonus+trattInt-trattenute;
+  // mensilità pagata tutta insieme: contributi, più quello che cambia sul netto dell'anno
+  // (IRPEF, detrazioni, bonus del cuneo e trattamento integrativo, che attorno ai 20.000 € si scambiano fra loro)
+  let lumpContr=0, lumpTasse=0;
+  if(lump>0){
+    lumpContr=lump*pContr;
+    const famA=x=>(I.coniuge?detrConiuge(x):0)+detrFigli(x,I.figliDt,I.figliQuota);
+    const nettoAnnuo=x=>x-Math.max(0,irpefLorda(x)-detrLavDip(x)-ulteriore(x)-famA(x))+bonusEsente(x)+trattIntegrativo(x,famA(x));
+    lumpTasse=(lump-lumpContr)-(nettoAnnuo(ra+lump-lumpContr)-nettoAnnuo(ra));
+  }
+  const nettoBusta=reddito-irNetta-impSost-addiz+vTrasf+bonus+trattInt-trattenute+(lump-lumpContr-lumpTasse);
   const auu=calcolaAUU();
   const inCasa=nettoBusta+auu.tot;
 
   return {ore,ordinarie,strEff,oreTrasf,festOre,festRet,oreFerie,gg,ggInd,notti,i561,i312,diurni,oraria,
     vOrd,vFerie,vStr,vFest,vFestRet,vInd,vNottOre,ratei,vTrasf,buoni,imponibile,contributi,detass,impSost,irNetta,addiz,addizIn,bonus,trattInt,
-    trattenute,nettoBusta,auu,inCasa,valTra,c,fam:fam/12};
+    trattenute,nettoBusta,auu,inCasa,valTra,c,fam:fam/12,lump,lumpNome,lumpContr,lumpTasse};
 }
 
 function render(m){
@@ -1246,7 +1363,8 @@ function render(m){
     ['Trasferta',m.vTrasf,'var(--accent-2)'],
     ['Indennità',m.vInd,'#5c8a6e'],
     ['Notturno',m.vNottOre,'#4f7d94'],
-    ['Ratei 13ª/14ª',m.ratei,'#8aa0bd']
+    ['Ratei 13ª/14ª',m.ratei,'#8aa0bd'],
+    [m.lumpNome,m.lump,'#8aa0bd']
   ].filter(p=>p[1]>0.5);
   const tot=parti.reduce((s,p)=>s+p[1],0)||1;
   $('bar').innerHTML=parti.map(p=>`<i style="width:${p[1]/tot*100}%;background:${p[2]}"></i>`).join('');
@@ -1273,6 +1391,8 @@ function render(m){
   if(m.trattInt>0) h+=rs('Trattamento integrativo','+'+eur2(m.trattInt)+' €');
   if(m.vTrasf>0) h+=r('Trasferta o disponibilità <span class="q">esente</span>','+'+eur2(m.vTrasf)+' €',f1(m.oreTrasf)+' h × '+eur2(m.valTra)+' €');
   if(m.trattenute>0) h+=r('Trattenute e rate','−'+eur2(m.trattenute)+' €');
+  if(m.lump>0){ h+=r(m.lumpNome+' <span class="q">tutta in questo mese</span>','+'+eur2(m.lump)+' €');
+    h+=rs('Contributi e imposte sulla '+m.lumpNome.toLowerCase(),(m.lumpContr+m.lumpTasse>=0?'−':'+')+eur2(Math.abs(m.lumpContr+m.lumpTasse))+' €'); }
   h+=`<tr class="tot"><td>Netto in busta</td><td>${eur2(Math.max(0,m.nettoBusta))} €</td></tr>`;
   if(m.auu.tot>0){
     h+=r('Assegno unico <span class="q">accredito INPS</span>','+'+eur2(m.auu.tot)+' €',(m.auu.fm+m.auu.fM)+' figli');
@@ -1589,6 +1709,7 @@ function riepilogo(ym,reg){
 function nettoDaRegistro(ym,reg){
   const R=riepilogo(ym,reg), I=leggiInput();
   I.ore=R.ore; I.gg=R.gg; I.ferie=R.ferie; I.notti=R.notti; I.i561=R.i561; I.i312=R.i312; I.festOre=R.fest; I.festRet=R.festret;
+  I.mese=+ym.slice(5,7);
   const o=orariaPer(ym); if(o) I.oraria=o.oraria;
   return motore(I).nettoBusta;
 }
@@ -1627,7 +1748,7 @@ function renderEd(){
   const ed=$('ed'); if(!CAL.sel){ ed.hidden=true; return; } ed.hidden=false;
   const s=CAL.sel, d=daYmd(s), r=REG[s];
   $('ed-titolo').textContent=GN[wd(d)]+' '+d.getDate()+' '+NM[d.getMonth()]+' '+d.getFullYear();
-  $('ed-fonte').textContent=r?(r.src==='pdf'?'dal foglio di servizio':'segnato a mano'):'';
+  $('ed-fonte').textContent=r?(r.src==='pdf'?'dal foglio di servizio':r.src==='rot'?'dalla rotazione':'segnato a mano'):'';
   const ul=$('ed-turni'); ul.innerHTML='';
   (r?r.t:[]).forEach((t,i)=>{
     const li=document.createElement('li');
@@ -1949,7 +2070,7 @@ function scarica(blob,nome){ try{ const a=document.createElement('a'); a.href=UR
   setTimeout(()=>{ URL.revokeObjectURL(a.href); document.body.removeChild(a); },3000); return true; }catch(e){ return false; } }
 
 /* ---- contratto via link ---- */
-const CAMPI_CONTRATTO=['c-ore','c-gg','c-buono','c-ggferie','c-festperc','c-nott','c-strad','c-risc','c-diur','c-nottperc','c-nottore','c-mens','c-aum','d-str','d-strp','d-val','d-contr','d-addiz'];
+const CAMPI_CONTRATTO=['c-ore','c-gg','c-buono','c-ggferie','c-festperc','c-nott','c-strad','c-risc','c-diur','c-nottperc','c-nottore','c-mens','c-aum','c-oltre','c-ratei','d-str','d-strp','d-val','d-contr','d-addiz'];
 function linkContratto(nome){ const v={}; CAMPI_CONTRATTO.forEach(id=>{ v[id]=$(id).value; }); return SITO+'#c='+b64e(JSON.stringify({n:nome,v:v})); }
 $('c-share').onclick=async()=>{
   const nome=(prompt('Che nome diamo a questo contratto? (es. Istituto Alfa, 4° livello)')||'').trim(); if(!nome) return;
@@ -2075,6 +2196,7 @@ function statoServizio(){
   S.scadOk=['decreto','porto','tiro'].every(id=>L.some(x=>x.s.id===id&&x.stato!=='ko'));
   S.backupOk=(Date.now()-(+lsGet(KEY_BK,'0')))<=31*86400000;
   S.ragioniere=lsGet('gpg_ragioniere','')==='1';
+  const qz=jGet('gpg_quiz',null); S.quiz=qz&&qz.giuste?qz.giuste:0;
   return S;
 }
 const MOSTRINE=[
@@ -2095,7 +2217,8 @@ const MOSTRINE=[
   ['Burocrate modello','decreto, porto e poligono in regola',S=>S.scadOk,'Il Prefetto ti manda i suoi saluti. Non è vero, ma è bello pensarlo.'],
   ['Ragioniere','busta che torna entro l’1%',S=>S.ragioniere,'Il centesimo è tornato a casa. Il Comando si commuove.'],
   ['Scrittore di caserma','prima relazione di servizio',S=>S.relazioni>=1,'Manzoni ci ha messo vent’anni per i Promessi sposi. A te sono bastati due minuti.'],
-  ['Previdente','copia di sicurezza nell’ultimo mese',S=>S.backupOk,'Hai fatto la copia. Noè, al confronto, improvvisava.']
+  ['Previdente','copia di sicurezza nell’ultimo mese',S=>S.backupOk,'Hai fatto la copia. Noè, al confronto, improvvisava.'],
+  ['Primo del corso','dieci risposte giuste al Concorso interno',S=>S.quiz>=10,'Il Concorso è tuo. Purtroppo non dà punti in graduatoria.']
 ];
 const KEY_MOS='gpg_mostrine';
 function renderServizio(){
@@ -2433,11 +2556,171 @@ async function caricaBacheca(){
   }catch(e){}
 }
 
+/* ---- rotazione H24 ---- */
+const KEY_ROT='gpg_rot_ultima', KEY_ROTC='gpg_rot_ciclo';
+const SIGLE={M:['06:00','14:00'],P:['14:00','22:00'],N:['22:00','06:00'],G:['08:00','20:00'],NN:['20:00','08:00']};
+function leggiCiclo(txt){
+  const out=[];
+  String(txt||'').toUpperCase().split(/[\s,;+\/]+/).filter(Boolean).forEach(tk=>{
+    if(['R','RIP','RIPOSO','L','LIBERO','S','SMONTO','-'].indexOf(tk)>=0){ out.push({r:true}); return; }
+    if(SIGLE[tk]){ out.push({i:SIGLE[tk][0],f:SIGLE[tk][1]}); return; }
+    const m=tk.match(/^(\d{1,2})(?:[:.](\d{2}))?-(\d{1,2})(?:[:.](\d{2}))?$/);
+    if(m){ const h1=+m[1],m1=m[2]?+m[2]:0,h2=+m[3],m2=m[4]?+m[4]:0;
+      if(h1<=24&&h2<=24&&m1<60&&m2<60){ out.push({i:pad(h1%24)+':'+pad(m1),f:pad(h2%24)+':'+pad(m2)}); return; } }
+    out.push({errore:tk});
+  });
+  return out;
+}
+const rtMsg=t=>{ $('rt-msg').textContent=t; };
+$('rt-stendi').onclick=()=>{
+  const C=leggiCiclo($('rt-ciclo').value);
+  if(!C.length) return rtMsg('Scrivi il ciclo, per esempio M M P P N N R R, o tocca uno dei cicli pronti.');
+  const err=C.filter(x=>x.errore); if(err.length) return rtMsg('Non capisco: '+err.map(x=>x.errore).join(', ')+'. Usa M, P, N, G, NN, R o un orario come 07-15.');
+  const dal=$('rt-dal').value, al=$('rt-al').value;
+  if(!dataOk(dal)||!dataOk(al)||al<dal) return rtMsg('Controlla le date: «Fino al» deve venire dopo «Dal».');
+  const d0=daYmd(dal), n=Math.round((daYmd(al)-d0)/86400000)+1; if(n>400) return rtMsg('Al massimo 400 giorni per volta.');
+  const salva=$('rt-salva').checked, prima={}; let scritti=0, lasciati=0;
+  for(let k=0;k<n;k++){
+    const d=ymd(new Date(d0.getFullYear(),d0.getMonth(),d0.getDate()+k)), r=REG[d];
+    if(salva&&r&&(r.t.length||r.o||r.s)){ lasciati++; continue; }
+    prima[d]=r?JSON.parse(JSON.stringify(r)):null;
+    const x=C[k%C.length], ob=r&&r.ob?r.ob:'';
+    REG[d]=x.r?{t:[],s:'riposo',ob:ob,src:'rot'}:{t:[{i:x.i,f:x.f,k:'p'}],s:'',ob:ob,src:'rot'};
+    if(r&&r.rel) REG[d].rel=r.rel;
+    scritti++;
+  }
+  lsSet(KEY_ROT,JSON.stringify(prima)); lsSet(KEY_ROTC,$('rt-ciclo').value);
+  salvaReg(); CAL.ym=dal.slice(0,7); CAL.sel=null; renderCal(); collegaSeServe();
+  $('rt-annulla').hidden=!scritti;
+  rtMsg(`Stesi ${scritti} giorni`+(lasciati?`, ${lasciati} lasciati com’erano.`:'.')+' I fogli di servizio in PDF, se li carichi, hanno la precedenza.');
+};
+$('rt-annulla').onclick=()=>{
+  const p=jGet(KEY_ROT,null); if(!p) return; let k=0;
+  Object.keys(p).forEach(d=>{ if(p[d]) REG[d]=p[d]; else delete REG[d]; k++; });
+  lsSet(KEY_ROT,'null'); salvaReg(); renderCal(); collegaSeServe(); $('rt-annulla').hidden=true;
+  rtMsg(`Rotazione annullata: ${k} giorni tornati come prima.`);
+};
+document.querySelectorAll('#rt-preset button').forEach(b=>b.onclick=()=>{ $('rt-ciclo').value=b.getAttribute('data-c'); lsSet(KEY_ROTC,$('rt-ciclo').value); });
+function preparaRotazione(){
+  const t=new Date(); $('rt-dal').value=oggi(); $('rt-al').value=ymd(new Date(t.getFullYear(),t.getMonth()+2,0));
+  $('rt-ciclo').value=lsGet(KEY_ROTC,''); const p=jGet(KEY_ROT,null); $('rt-annulla').hidden=!(p&&Object.keys(p).length);
+}
+
+/* ---- il Concorso interno: una domanda al giorno, con la fonte ---- */
+const QUIZ=[
+  {d:'Quanto vale il decreto di guardia particolare giurata?',r:['Un anno','Due anni','Cinque anni','Tutta la vita'],g:1,f:'Prefettura di Venezia',u:'https://prefettura.interno.gov.it/it/prefetture/venezia/guardia-particolare-giurata'},
+  {d:'Chi presenta la domanda di rinnovo del decreto?',r:['La guardia, di persona','Il datore di lavoro','Il Comune di residenza','La Questura, da sola'],g:1,f:'Prefettura di Venezia',u:'https://prefettura.interno.gov.it/it/prefetture/venezia/guardia-particolare-giurata'},
+  {d:'Con quanto anticipo va chiesto il rinnovo del decreto?',r:['Dieci giorni','Un mese','Almeno novanta giorni','Il giorno della scadenza'],g:2,f:'Prefettura di Venezia',u:'https://prefettura.interno.gov.it/it/prefetture/venezia/guardia-particolare-giurata'},
+  {d:'Quanto dura la licenza di porto di pistola della guardia giurata?',r:['Un anno','Due anni','Cinque anni','Sei anni'],g:0,f:'Prefettura di Palermo',u:'https://prefettura.interno.gov.it/it/prefetture/palermo/rinnovo-porto-pistola-guardia-giurata-armata'},
+  {d:'L’anamnestico del medico di famiglia per il porto di pistola, quanto può essere vecchio?',r:['Una settimana','Tre mesi','Un anno','Non ha scadenza'],g:1,f:'Prefettura di Palermo',u:'https://prefettura.interno.gov.it/it/prefetture/palermo/rinnovo-porto-pistola-guardia-giurata-armata'},
+  {d:'Ogni quanto vanno fatte le esercitazioni registrate sul libretto di tiro?',r:['Almeno ogni quattro mesi','Una volta l’anno','Ogni due anni','Quando capita'],g:0,f:'DM 269/2010, allegato D, punto 1.g',u:'https://www.poliziadistato.it/statics/50/allegato_d.pdf'},
+  {d:'Quanti colpi, come minimo, per ogni esercitazione sul libretto di tiro?',r:['Dieci','Venticinque','Cinquanta','Cento'],g:2,f:'DM 269/2010, allegato D, punto 1.g',u:'https://www.poliziadistato.it/statics/50/allegato_d.pdf'},
+  {d:'Quanto dura, come minimo, il corso di formazione prima di entrare in servizio?',r:['Otto ore','Ventiquattro ore','Quarantotto ore','Centoventi ore'],g:2,f:'DM 269/2010, allegato D',u:'https://www.poliziadistato.it/statics/50/allegato_d.pdf'},
+  {d:'Dal giugno 2023, quanti mesi si resta al 6° livello?',r:['Dodici','Diciotto','Ventiquattro','Trentasei'],g:1,f:'Accordo del 16 febbraio 2024, da FISCOeTASSE',u:'https://www.fiscoetasse.com/rassegna-stampa/25690-contratto-vigilanza-privata-nuovi-aumenti-e-quattordicesima.html'},
+  {d:'Quanto vale il 4° livello al mese dal 1° aprile 2026?',r:['1.418,88 €','1.468,88 €','1.528,88 €','1.293,87 €'],g:1,f:'ContrattiCCNL.it, tabelle 2026',u:'https://www.contratticcnl.it/vigilanza-privata/tabelle-retributive/'},
+  {d:'E da dicembre 2026, il 4° livello?',r:['1.468,88 €','1.500,00 €','1.528,88 €','1.655,66 €'],g:2,f:'ContrattiCCNL.it, tabelle 2026',u:'https://www.contratticcnl.it/vigilanza-privata/tabelle-retributive/'},
+  {d:'La maggiorazione dello straordinario feriale nel contratto della vigilanza?',r:['15%','25%','30%','50%'],g:2,f:'ilCCNL, vigilanza privata',u:'https://ilccnl.it/contratto/ccnl/vigilanza-privata'},
+  {d:'La maggiorazione per le ore normali lavorate in una festività nazionale?',r:['30%','35%','40%','100%'],g:1,f:'ilCCNL, vigilanza privata',u:'https://ilccnl.it/contratto/ccnl/vigilanza-privata'},
+  {d:'Se per la stessa ora spettano due maggiorazioni diverse?',r:['Si sommano','La maggiore assorbe la minore','Si fa la media','Si pagano tutte e due, a mesi alterni'],g:1,f:'ilCCNL, vigilanza privata',u:'https://ilccnl.it/contratto/ccnl/vigilanza-privata'},
+  {d:'Quante notti l’anno servono per la pensione anticipata a 61 anni e 7 mesi, da lavoro notturno?',r:['Cinquanta','Sessantaquattro','Settantotto','Cento'],g:2,f:'PensioniOggi, lavori usuranti',u:'https://www.pensionioggi.it/dizionario/la-pensione-nei-lavori-usuranti'},
+  {d:'Entro quando va chiesto il riconoscimento del lavoro usurante?',r:['Il 31 dicembre','Il 1° maggio dell’anno prima di quello in cui si maturano i requisiti','Il giorno della pensione','Non serve chiederlo'],g:1,f:'PensioniOggi, lavori usuranti',u:'https://www.pensionioggi.it/dizionario/la-pensione-nei-lavori-usuranti'},
+  {d:'Che cos’è l’EBINVIP?',r:['Il fondo pensione','L’ente bilaterale della vigilanza privata','Un sindacato','La cassa integrazione'],g:1,f:'Sito dell’EBINVIP',u:'https://www.ebinvip.it/'},
+  {d:'Di che cosa si occupa il FASIV?',r:['Di pensioni','Di assistenza sanitaria integrativa','Di armi e munizioni','Di corsi di tiro'],g:1,f:'Vigilanza Privata Online',u:'https://www.vigilanzaprivataonline.com/primapagina/fasiv-assistenza-sanitaria-integrativa-nella-vigilanza-privata-6866.html'},
+  {d:'In flagranza di un delitto per cui l’arresto è obbligatorio e che si persegue d’ufficio, un privato cittadino…',r:['Non può fare niente','Può arrestare, e consegnare subito l’arrestato alla polizia','Può solo fotografare','Deve aspettare l’ordine del giudice'],g:1,f:'Art. 383 del codice di procedura penale, spiegato da La Legge per Tutti',u:'https://www.laleggepertutti.it/269140_guardia-giurata-cosa-puo-fare'},
+  {d:'L’assegno unico per i figli arriva…',r:['In busta paga','Dall’INPS, a parte','Dal Comune','A fine anno, con il 730'],g:1,f:'Circolare INPS n. 7 del 2026',u:'https://www.studiocom.it/2026/02/27/circolare-n-7-2026-assegno-unico-e-universale/'},
+  {d:'Il coniuge è fiscalmente a carico se nell’anno guadagna al massimo…',r:['2.840,51 €','4.000 €','8.000 €','12.000 €'],g:0,f:'Detrazione per il coniuge a carico 2026',u:'https://www.avvocatoandreani.it/servizi/calcolo-detrazione-coniuge-a-carico.php'},
+  {d:'Da che età del figlio si torna ad avere la detrazione per figli a carico?',r:['Dalla nascita','Da 18 anni','Da 21 anni','Da 25 anni'],g:2,f:'Fiscomania, familiari a carico 2026',u:'https://fiscomania.com/familiari-a-carico-limiti-detrazione/'},
+  {d:'L’aliquota IRPEF 2026 fra 28.000 e 50.000 € di reddito?',r:['23%','33%','35%','43%'],g:1,f:'Quotidianopiù, IRPEF 2026',u:'https://www.quotidianopiu.it/dettaglio/13312445/irpef-aliquota-al-33-percento-per-redditi-tra-28000-e-50000-euro'},
+  {d:'Chi rispondeva sempre «preferirei di no»?',r:['Bartleby lo scrivano','Fantozzi','Sisifo','Il capoturno'],g:0,f:'Herman Melville, «Bartleby lo scrivano»',u:'https://it.wikipedia.org/wiki/Bartleby_lo_scrivano'},
+  {d:'Nella Fattoria degli animali, il cavallo che diceva «lavorerò di più» si chiamava…',r:['Boxer','Napoleon','Benjamin','Palla di Neve'],g:0,f:'George Orwell, «La fattoria degli animali»',u:'https://it.wikipedia.org/wiki/La_fattoria_degli_animali'},
+  {d:'Keynes, nel 1930, prevedeva per il 2030 una settimana lavorativa di…',r:['Quindici ore','Quaranta ore','Sessanta ore','Cento ore'],g:0,f:'J. M. Keynes, «Prospettive economiche per i nostri nipoti»',u:'https://it.wikipedia.org/wiki/John_Maynard_Keynes'}
+];
+const KEY_QZ='gpg_quiz';
+const LODI=['Promosso con lode. Il Comando è quasi commosso.','Esatto. Stasera doppia razione di caffè della macchinetta.','Giusto: il Prefetto annuisce, da lontano.','Risposta esatta. Qualcuno avvisi l’ufficio formazione.','Esatto. Ne sai più del manuale, e il manuale non è contento.'];
+const BIASIMI=['Somaro d’onore.','Rimandato a settembre.','Il Comando sospira.','Bocciato, ma con stile.','Il manuale piange in un angolo.'];
+let QZ_IDX=null, QZ_EXTRA=false;
+const qzStato=()=>{ const s=jGet(KEY_QZ,null); return (s&&typeof s==='object')?s:{giuste:0,totali:0,giorno:'',esito:null}; };
+function qzDelGiorno(){ const t=daYmd(oggi()); return Math.floor(Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())/86400000)%QUIZ.length; }
+function mostraDomanda(i,giaData){
+  QZ_IDX=i; const q=QUIZ[i], box=$('qz-risposte'); $('qz-domanda').textContent=q.d; $('qz-esito').hidden=true; box.innerHTML='';
+  q.r.forEach((t,k)=>{ const b=document.createElement('button'); b.type='button'; b.textContent=t; b.onclick=()=>rispondi(k); box.appendChild(b); });
+  if(giaData!==undefined&&giaData!==null) segnaRisposta(giaData,false);
+  $('qz-testa').textContent=QZ_EXTRA?'Domanda di ripasso':'Domanda del giorno, uguale per tutti';
+  renderPunti();
+}
+function segnaRisposta(k,nuova){
+  const q=QUIZ[QZ_IDX], giusta=k===q.g;
+  [...$('qz-risposte').children].forEach((b,j)=>{ b.disabled=true; if(j===q.g) b.classList.add('giusta'); else if(j===k) b.classList.add('sbagliata'); });
+  const frase=giusta?LODI[Math.floor(Math.random()*LODI.length)]:BIASIMI[Math.floor(Math.random()*BIASIMI.length)]+' La risposta giusta era: '+q.r[q.g]+'.';
+  $('qz-esito').innerHTML=`${esc(frase)} <span class="q">Fonte: <a href="${esc(q.u)}" target="_blank" rel="noopener">${esc(q.f)}</a></span>`;
+  $('qz-esito').hidden=false; $('qz-altra').hidden=false;
+  if(nuova){ const s=qzStato(); s.totali++; if(giusta) s.giuste++; if(!QZ_EXTRA){ s.giorno=oggi(); s.esito=k; } lsSet(KEY_QZ,JSON.stringify(s)); renderPunti(); renderServizio(); }
+}
+function rispondi(k){ segnaRisposta(k,true); }
+function renderPunti(){ const s=qzStato(); $('qz-punti').textContent=s.totali?`Risposte giuste: ${s.giuste} su ${s.totali}.`:'Le domande vengono da prefetture, contratto e leggi, con la fonte accanto alla risposta.'; }
+$('qz-altra').onclick=()=>{ QZ_EXTRA=true; let i; do{ i=Math.floor(Math.random()*QUIZ.length); }while(QUIZ.length>1&&i===QZ_IDX); mostraDomanda(i); };
+function preparaQuiz(){ const s=qzStato(), i=qzDelGiorno(); QZ_EXTRA=false; mostraDomanda(i, s.giorno===oggi()?s.esito:null); if(s.giorno!==oggi()) $('qz-altra').hidden=true; }
+
+/* ---- foglio matricolare dell'anno ---- */
+function statoAnno(y){
+  const A={turni:0,notti:0,giorni:0,feste:0,relazioni:0};
+  Object.keys(REG).forEach(s=>{ if(s.slice(0,4)!==String(y)) return; const r=REG[s]; if(!r) return;
+    if(oreGiorno(r)>0){ A.giorni++; A.turni+=r.t.filter(t=>t.f).length+(r.o>0?1:0); if(notteGiorno(r)) A.notti++; if(isFest(s)) A.feste++; }
+    if(r.rel) A.relazioni+=r.rel.length; });
+  return A;
+}
+async function foglioMatricolare(y){
+  const A=statoAnno(y), S=statoServizio(), mostrine=MOSTRINE.filter(x=>x[2](S)).length;
+  const W=1080, H=1350, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const g=cv.getContext('2d');
+  try{ await Promise.all([document.fonts.load('64px "Archivo Black"'),document.fonts.load('500 44px Oswald'),document.fonts.load('italic 40px "IBM Plex Sans"'),document.fonts.load('400 38px "IBM Plex Sans"')]); }catch(e){}
+  const grad=g.createLinearGradient(0,0,0,H); grad.addColorStop(0,'#1a2430'); grad.addColorStop(1,'#0d131b'); g.fillStyle=grad; g.fillRect(0,0,W,H);
+  g.fillStyle='#c9a227'; g.fillRect(0,0,W,10); g.strokeStyle='rgba(201,162,39,.45)'; g.lineWidth=2; g.strokeRect(40,40,W-80,H-80);
+  await new Promise(res=>{ const im=new Image(); im.onload=()=>{ try{ g.drawImage(im,W/2-72,78,144,164); }catch(e){} res(); }; im.onerror=()=>res(); im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(SCUDO_SVG); });
+  g.textAlign='center';
+  g.fillStyle='#ffffff'; g.font='58px "Archivo Black", Impact, "Arial Black", sans-serif'; g.fillText('FOGLIO MATRICOLARE',W/2,318);
+  g.fillStyle='#e8cd7f'; g.font='500 96px Oswald, "Arial Narrow", sans-serif'; g.fillText(String(y),W/2,430);
+  g.fillStyle='#9db0c6'; g.font='500 32px Oswald, "Arial Narrow", sans-serif'; g.fillText(('Grado: '+S.grado).toUpperCase(),W/2,484);
+  g.fillStyle='#c9a227'; g.fillRect(W/2-240,512,480,3);
+  const voci=[['TURNI',A.turni],['NOTTI',A.notti],['GIORNI DI SERVIZIO',A.giorni],['FESTIVITÀ IN SERVIZIO',A.feste],['RELAZIONI SCRITTE',A.relazioni],['MOSTRINE',mostrine]];
+  voci.forEach((v,i)=>{ const col=i%2, riga=Math.floor(i/2), x=col?W*0.72:W*0.28, yy=620+riga*150;
+    g.fillStyle='#ffffff'; g.font='500 84px Oswald, "Arial Narrow", sans-serif'; g.fillText(String(v[1]),x,yy);
+    g.fillStyle='#9db0c6'; g.font='500 26px Oswald, "Arial Narrow", sans-serif'; g.fillText(v[0],x,yy+40); });
+  g.fillStyle='#eef2f8'; g.font='italic 36px "IBM Plex Sans", Georgia, serif'; scriviRighe(g,fraseNuova(),W/2,1060,900,50,3);
+  g.fillStyle='#9db0c6'; g.font='400 28px "IBM Plex Sans", system-ui, sans-serif'; g.fillText('Il Comando prende atto e ringrazia.',W/2,1236);
+  g.fillStyle='#e8cd7f'; g.font='500 32px Oswald, "Arial Narrow", sans-serif'; g.fillText('ruolino-paga.github.io',W/2,1284);
+  return cv;
+}
+$('fm-crea').onclick=async()=>{
+  const y=new Date().getFullYear(); $('fm-msg').textContent='Preparo il foglio…';
+  let cv; try{ cv=await foglioMatricolare(y); }catch(e){ $('fm-msg').textContent='Non riesco a disegnarlo su questo browser.'; return; }
+  $('fm-img').src=cv.toDataURL('image/png'); $('fm-box').hidden=false; $('fm-msg').textContent='Foglio pronto qui sotto.';
+  cv.toBlob(async blob=>{ if(!blob) return;
+    const r=await condividi({title:'Foglio matricolare '+y,text:`Foglio matricolare ${y} · Ruolino Paga ${SITO}`,files:[new File([blob],`foglio-matricolare-${y}.png`,{type:'image/png'})]});
+    if(r==='share') $('fm-msg').textContent='Foglio condiviso.'; },'image/png');
+};
+
+/* ---- arruolamento: tre domande al primo avvio ---- */
+let ARR_ALTRO=false;
+function sceltaIstituto(altro){ ARR_ALTRO=altro;
+  $('arr-rif').setAttribute('aria-pressed',altro?'false':'true'); $('arr-altro').setAttribute('aria-pressed',altro?'true':'false');
+  $('arr-ist-hint').textContent=altro
+    ? 'Per un altro istituto parto dal contratto nazionale: ore oltre il mese a straordinario, tredicesima a dicembre e quattordicesima a luglio. Se un collega del tuo istituto ha già i parametri giusti, fatti mandare il suo link dalla scheda Contratto.'
+    : 'Il Ruolino è tarato sulle buste di un istituto: se un collega ti ha mandato il link, di solito è anche il tuo.'; }
+$('arr-rif').onclick=()=>sceltaIstituto(false);
+$('arr-altro').onclick=()=>sceltaIstituto(true);
+$('arr-ok').onclick=()=>{
+  if(ARR_ALTRO){ $('c-oltre').value='str'; $('c-ratei').value='unica'; }
+  $('liv').value=$('arr-liv').value; if(dataOk($('arr-inizio').value)) $('c-inizio').value=$('arr-inizio').value;
+  lsSet('gpg_arruolato','1'); $('arr').hidden=true; aggiornaOraria(true); calcola(); renderStat();
+  toast('Arruolato. Il Comando ti dà il benvenuto e ti ricorda che il caffè non è compreso.');
+};
+$('arr-salta').onclick=()=>{ lsSet('gpg_arruolato','1'); $('arr').hidden=true; };
+
 /* ---- avvio ---- */
 const CAMPI=['ore','oraria','liv','gg','ferie','fig-min','fig-mag','isee','duelav','quinto','presti','sind','altre',
   'd-str','d-strp','d-val','d-notti','d-i561','d-i312','d-fest','d-festret','d-addiz','d-contr','v-netto','v-ord','v-str','v-ind','v-trasf','v-imp','v-contr','v-irpef','v-addiz',
   'c-ore','c-gg','c-buono','c-ggferie','c-festperc','c-nott','c-strad','c-risc','c-diur','c-nottperc','c-nottore','c-mens','c-aum',
-  'coniuge','fig-dt','fig-quota','c-inizio','c-assunz','c-superm','sc-decreto','sc-porto','sc-tiro','sc-altro-nome','sc-altro'];
+  'coniuge','fig-dt','fig-quota','c-inizio','c-assunz','c-superm','sc-decreto','sc-porto','sc-tiro','sc-altro-nome','sc-altro','c-oltre','c-ratei'];
 const CAMPI_ORARIA=['liv','c-inizio','c-assunz','c-superm','c-ore'];
 var GIA_USATO=lsGet('gpg',null)!==null;   // chi aveva già usato il Ruolino prima di questa apertura
 applicaGaritta(lsGet(KEY_GAR,'0')==='1');
@@ -2469,6 +2752,9 @@ if(CONTATORE && /^https?:$/.test(location.protocol)){ const s=document.createEle
 leggiHash();
 caricaRel();
 nuovaScusa();
+preparaRotazione();
+preparaQuiz();
+if(!GIA_USATO&&lsGet('gpg_arruolato','')!=='1') $('arr').hidden=false;   // primo avvio: tre domande
 renderScadenze();
 renderUsuranti();
 avvisoIphone();
@@ -2483,7 +2769,8 @@ caricaBacheca();
     else if(az==='caserma') mostraTab('t-k'); } }
 window.RP={inflateJS,inflateBytes,frammenti,foglio,leggiPDF,riepilogo,FRASI,GRADI,pasqua,festivo,reg:()=>REG,
   motore,leggiInput,tabella,carriera,livelloAl,scattiAl,orariaPer,aggiornaOraria,nettoDaRegistro,valoreTurno,
-  detrConiuge,detrFigli,statoScadenze,icsScadenze,oreNotturne,nottiUsuranti,testoRelazione,SCUSE,MOSTRINE,statoServizio};
+  detrConiuge,detrFigli,statoScadenze,icsScadenze,oreNotturne,nottiUsuranti,testoRelazione,SCUSE,MOSTRINE,statoServizio,
+  leggiCiclo,QUIZ,statoAnno,foglioMatricolare};
 /* installabile e utilizzabile senza rete: solo quando la pagina arriva da un indirizzo, non da un file */
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
