@@ -2909,7 +2909,7 @@ async function caricaBuste(files){
     catch(e){ scartate++; }
   }
   BS_SEL=ultima||BS_SEL; renderBuste(); renderServizio();
-  $('bs-msg').textContent=lette?`Lette ${lette} ${lette===1?'busta':'buste'}`+(scartate?`, ${scartate} non riconosciute.`:'.')+' Tocca un mese per il dettaglio.'
+  $('bs-msg').textContent=lette?(lette===1?'Letta una busta':`Lette ${lette} buste`)+(scartate?`, ${scartate===1?'una non riconosciuta':scartate+' non riconosciute'}.`:'.')+' Tocca un mese per il dettaglio.'
     :'Nessuna busta riconosciuta. Per ora leggo solo le buste del programma paghe dell’istituto di riferimento.';
 }
 $('bs-drop').onclick=()=>$('bs-file').click();
