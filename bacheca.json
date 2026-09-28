@@ -1,0 +1,15 @@
+{
+  "avvisi": [
+    {
+      "id": "2026-09-28-caserma",
+      "data": "28/09/2026",
+      "testo": "Nuova scheda Caserma: scadenze di servizio con i promemoria, relazione di servizio in due minuti, stato di servizio, notti che contano per la pensione e il Frasario del cambio turno.",
+      "evidenza": true
+    },
+    {
+      "id": "2026-09-28-tabelle",
+      "data": "28/09/2026",
+      "testo": "Le tabelle del contratto ora vanno per data: da dicembre 2026 il 4° livello sale a 1.528,88 € al mese e la paga oraria cambia da sola col mese scelto. Nella scheda Servizio, alla voce Carriera, metti l'inizio del servizio e il livello si aggiorna da solo."
+    }
+  ]
+}
