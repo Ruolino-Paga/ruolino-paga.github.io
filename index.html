@@ -1002,7 +1002,7 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
     <div class="card">
       <h3>Copia di sicurezza</h3>
       <div class="b">
-        <p style="margin:0 0 10px;font-size:13px;color:var(--ink-2)">Registro, profili e valori stanno solo in questo browser. Se cambi telefono o pulisci i dati, li perdi: salvati un file ogni tanto.</p>
+        <p style="margin:0 0 10px;font-size:13px;color:var(--ink-2)">Registro, profili, valori e buste stanno solo in questo browser. Se cambi telefono o pulisci i dati, li perdi: salvati un file ogni tanto.</p>
         <div class="btnrow" style="margin-top:0">
           <button type="button" class="btn" id="bk-esporta">Salva file</button>
           <button type="button" class="btn" id="bk-manda">Manda a te stesso</button>
@@ -2023,10 +2023,13 @@ $('bk-file').onchange=e=>{
   rd.onload=()=>{
     try{
       const data=JSON.parse(rd.result); if(!data||data.app!=='ruolino-paga') throw new Error('non è un file del Ruolino');
-      if(!confirm('Sostituisco registro, profili e valori con quelli del file?')) return;
+      const conBuste=!!(data.buste&&typeof data.buste==='object'&&!Array.isArray(data.buste));   // le copie vecchie non hanno le buste: l'archivio resta com'è
+      if(!confirm(conBuste?'Sostituisco registro, profili, valori e buste con quelli del file?':'Sostituisco registro, profili e valori con quelli del file?')) return;
       REG=data.registro||{}; salvaReg(); if(data.profili) scriviProfili(data.profili); if(data.campi) applicaCampi(data.campi);
       APERTO=data.aperto||null; lsSet(KEY_APERTO,JSON.stringify(APERTO)); lsSet(KEY_LINK,data.link||''); lsSet(KEY_OB,data.ob||'');
-      aggiornaSelect(lsGet('gpg_ultimo','')); aggiornaOraria(true); renderTb(); renderCal(); calcola(); renderScadenze(); caricaRel(); $('bk-msg').textContent='Copia di sicurezza caricata.';
+      aggiornaSelect(lsGet('gpg_ultimo','')); aggiornaOraria(true); renderTb(); renderCal(); calcola(); renderScadenze(); caricaRel();
+      if(conBuste){ lsSet(KEY_BUSTE,JSON.stringify(data.buste)); BS_SEL=null; renderBuste(); }
+      $('bk-msg').textContent='Copia di sicurezza caricata.';
     }catch(err){ $('bk-msg').textContent='Questo file non è una copia di sicurezza del Ruolino.'; }
   };
   rd.readAsText(f); e.target.value='';
@@ -2173,7 +2176,7 @@ $('cal-ics').onclick=async()=>{
 };
 
 /* ---- copia di sicurezza e reclami ---- */
-function backupJSON(){ return JSON.stringify({app:'ruolino-paga',v:1,quando:new Date().toISOString(),campi:statoCampi(),profili:leggiProfili(),registro:REG,aperto:APERTO,link:lsGet(KEY_LINK,''),ob:lsGet(KEY_OB,'')}); }
+function backupJSON(){ return JSON.stringify({app:'ruolino-paga',v:1,quando:new Date().toISOString(),campi:statoCampi(),profili:leggiProfili(),registro:REG,buste:leggiBuste(),aperto:APERTO,link:lsGet(KEY_LINK,''),ob:lsGet(KEY_OB,'')}); }
 $('bk-manda').onclick=async()=>{
   const nome='ruolino-paga-'+oggi()+'.json'; let r=null;
   try{ r=await condividi({title:'Copia di sicurezza Ruolino Paga',files:[new File([backupJSON()],nome,{type:'application/json'})]}); }catch(e){}
