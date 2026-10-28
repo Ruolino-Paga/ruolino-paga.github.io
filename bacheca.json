@@ -1,27 +1,26 @@
 {
   "avvisi": [
     {
+      "id": "2026-10-28-seria",
+      "data": "28/10/2026",
+      "testo": "Il Ruolino cambia tono: via encomi, medaglie, gradi, concorso e frasario. Restano il calcolo, il registro dei turni, le buste, le scadenze, la relazione di servizio e le notti per la pensione. La scheda Ruolino si chiama Turni, la Caserma si chiama Pratiche.",
+      "evidenza": true
+    },
+    {
+      "id": "2026-10-28-trasferta",
+      "data": "28/10/2026",
+      "testo": "Trasferta a 8 € l'ora: nella scheda Busta, sotto il valore della trasferta, c'è la spunta «8 € l'ora già da questo mese». Da gennaio 2027 il Ruolino applica gli 8 € da solo; i mesi passati restano a 7 €.",
+      "evidenza": true
+    },
+    {
       "id": "2026-09-28-buste",
       "data": "28/09/2026",
-      "testo": "Nella scheda Busta ora carichi i PDF delle buste paga, anche tutti insieme: il Ruolino li legge, li mette in archivio mese per mese e ti dice se la stima torna. Dal dettaglio del mese vedi ferie e permessi che restano, il TFR e il prossimo scatto. Dalla busta prende solo i numeri.",
-      "evidenza": true
-    },
-    {
-      "id": "2026-09-28-concorso",
-      "data": "28/09/2026",
-      "testo": "Nella Caserma c'è il Concorso interno: una domanda al giorno, uguale per tutti, con la fonte accanto alla risposta. Nel Ruolino c'è la Rotazione H24: scrivi il tuo ciclo e il calendario si riempie da solo.",
-      "evidenza": true
-    },
-    {
-      "id": "2026-09-28-caserma",
-      "data": "28/09/2026",
-      "testo": "Nuova scheda Caserma: scadenze di servizio con i promemoria, relazione di servizio in due minuti, stato di servizio, notti che contano per la pensione e il Frasario del cambio turno.",
-      "evidenza": true
+      "testo": "Nella scheda Busta carichi i PDF delle buste paga, anche tutti insieme: il Ruolino li legge, li mette in archivio mese per mese e ti dice se la stima torna. Dal dettaglio del mese vedi ferie e permessi che restano, il TFR e il prossimo scatto. Dalla busta prende solo i numeri."
     },
     {
       "id": "2026-09-28-tabelle",
       "data": "28/09/2026",
-      "testo": "Le tabelle del contratto ora vanno per data: da dicembre 2026 il 4° livello sale a 1.528,88 € al mese e la paga oraria cambia da sola col mese scelto. Nella scheda Servizio, alla voce Carriera, metti l'inizio del servizio e il livello si aggiorna da solo."
+      "testo": "Le tabelle del contratto vanno per data: da dicembre 2026 il 4° livello sale a 1.528,88 € al mese e la paga oraria cambia da sola col mese scelto. Nella scheda Servizio, alla voce Carriera, metti l'inizio del servizio e il livello si aggiorna da solo."
     }
   ]
 }

@@ -1,8 +1,8 @@
 # Ruolino Paga
 
-Registro di servizio e stima della retribuzione per guardie particolari giurate: ore del mese, indennità, assegno unico, trattenute, lettura dei fogli turni in PDF, registro delle ore con calendario, timbratura di inizio e fine turno da mandare su WhatsApp.
+Registro dei turni e stima della retribuzione per guardie particolari giurate: ore del mese, indennità, assegno unico, trattenute, lettura dei fogli turni in PDF, registro delle ore con calendario, timbratura di inizio e fine turno da mandare su WhatsApp.
 
-Tutto gira nel browser del telefono: nessun server, nessun dato inviato. Il registro e i profili restano sul dispositivo; dal fondo della scheda Ruolino si salva una copia di sicurezza.
+Tutto gira nel browser del telefono: nessun server, nessun dato inviato. Il registro e i profili restano sul dispositivo; dal fondo della scheda Turni si salva una copia di sicurezza.
 
 I valori di partenza sono quelli di un solo istituto. Nella scheda Contratto ognuno li adatta al proprio; il risultato è una stima da confrontare con la busta.
 
@@ -10,4 +10,6 @@ Tarato su otto buste paga 2026 dello stesso istituto, da gennaio ad agosto: scar
 
 Apri la pagina e scegli «Aggiungi a schermata Home» per usarla come un'app, su Android e su iPhone.
 
-Nella scheda Servizio: tabelle del contratto per data, carriera con livelli a 18 mesi e scatti di anzianità, detrazioni per coniuge e figli a carico. Nella scheda Ruolino: registro dei turni, valore del turno e netto del mese, medaglia del mese da mandare nel gruppo, turni incollati da un messaggio, esportazione nel calendario del telefono, cambio turno via link. Nella scheda Caserma: scadenze di servizio con i promemoria, relazione di servizio, stato di servizio con gradi e mostrine, notti che contano per la pensione, enti del settore, bacheca e Frasario del cambio turno. Nella scheda Contratto: il proprio contratto si condivide con un link. Nella scheda Busta: archivio delle buste paga in PDF (il Ruolino legge i numeri, non nome né codice fiscale, e confronta ogni mese con la stima) e confronto voce per voce. C'è anche la modalità garitta, rosso scuro per la notte.
+Nella scheda Servizio: tabelle del contratto per data, carriera con livelli a 18 mesi e scatti di anzianità, detrazioni per coniuge e figli a carico. Nella scheda Busta: archivio delle buste paga in PDF (il Ruolino legge i numeri, non nome né codice fiscale, e confronta ogni mese con la stima), confronto voce per voce, trasferta a 8 € l'ora da gennaio 2027. Nella scheda Turni: registro dei turni, valore del turno e netto del mese, turni incollati da un messaggio, rotazione H24, esportazione nel calendario del telefono, cambio turno via link. Nella scheda Pratiche: scadenze di servizio con i promemoria, relazione di servizio, riepilogo dell'anno, notti che contano per la pensione, enti del settore, novità. Nella scheda Contratto: il proprio contratto si condivide con un link. C'è anche la modalità garitta, rosso scuro per la notte.
+
+La sorgente `index.html` contiene anche le parti a tono leggero (encomio, medaglia del mese, gradi e mostrine, concorso, frasario): sono spente dall'attributo `data-edizione="istituzionale"` sull'elemento `html` e il calcolo non cambia.

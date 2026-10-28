@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="it" data-edizione="istituzionale">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -304,7 +304,7 @@ html[data-edizione="istituzionale"] [data-goliardia]{display:none!important}
       <path d="M12.5 33.5h19M14.5 37.4h15M16.5 41.2h11" stroke="#c9a227" stroke-width="1.9" stroke-linecap="round" opacity=".9"/>
     </svg>
     <div class="titolo">
-      <h1 data-serio="Ruolino">Ruolino Paga</h1>
+      <h1>Ruolino Paga</h1>
       <p data-serio="Turni, ore e retribuzione · Guardie Particolari Giurate">Registro di servizio e retribuzione · Guardie Particolari Giurate</p>
     </div>
     <button type="button" class="garitta-btn" id="garitta" aria-pressed="false" title="Modalità garitta: rosso scuro per la notte">Garitta</button>
@@ -359,7 +359,7 @@ html[data-edizione="istituzionale"] [data-goliardia]{display:none!important}
   <!-- SERVIZIO -->
   <div id="p-r" role="tabpanel" aria-labelledby="t-r">
     <div class="card" id="arr" hidden>
-      <h3 data-serio="Impostazione">Arruolamento</h3>
+      <h3 data-serio="Per iniziare">Arruolamento</h3>
       <div class="b">
         <p style="margin:0 0 10px;font-size:14px" data-serio="Tre domande per impostare il calcolo.">Benvenuto. Tre domande e il Ruolino è tuo.</p>
         <div class="f">
@@ -404,7 +404,7 @@ html[data-edizione="istituzionale"] [data-goliardia]{display:none!important}
             <button type="button" data-ore="350">350</button>
             <button type="button" data-ore="400">400</button>
           </div>
-          <div class="hint">Solo ore di servizio effettivo. Se non le hai contate, metti una cifra tonda: la stima si muove di conseguenza. Se le segni nel Ruolino, arrivano da sole.</div>
+          <div class="hint">Solo ore di servizio effettivo. Se non le hai contate, metti una cifra tonda: la stima si muove di conseguenza. Se le segni nella scheda <span data-serio="Turni">Ruolino</span>, arrivano da sole.</div>
           <div class="hint" id="ore-ruolino" hidden style="margin-top:6px;color:var(--ink-2)"></div>
         </div>
         <div class="g2" style="margin-top:13px">
@@ -1021,8 +1021,8 @@ html[data-edizione="istituzionale"] [data-goliardia]{display:none!important}
 
   <!-- CASERMA -->
   <div id="p-k" role="tabpanel" aria-labelledby="t-k" hidden>
-    <div class="card" id="bacheca-card" hidden data-goliardia>
-      <h3>Bacheca del Comando</h3>
+    <div class="card" id="bacheca-card" hidden>
+      <h3 data-serio="Novità">Bacheca del Comando</h3>
       <div class="b"><ul class="bacheca" id="bacheca"></ul></div>
     </div>
 
@@ -1796,7 +1796,7 @@ function renderEd(){
   const ed=$('ed'); if(!CAL.sel){ ed.hidden=true; return; } ed.hidden=false;
   const s=CAL.sel, d=daYmd(s), r=REG[s];
   $('ed-titolo').textContent=GN[wd(d)]+' '+d.getDate()+' '+NM[d.getMonth()]+' '+d.getFullYear();
-  $('ed-fonte').textContent=r?(r.src==='pdf'?'dal foglio di servizio':r.src==='rot'?'dalla rotazione':'segnato a mano'):'';
+  $('ed-fonte').textContent=r?(r.src==='pdf'?'dal foglio di servizio':r.src==='portale'?'dal portale dei turni':r.src==='rot'?'dalla rotazione':'segnato a mano'):'';
   const ul=$('ed-turni'); ul.innerHTML='';
   (r?r.t:[]).forEach((t,i)=>{
     const li=document.createElement('li');
@@ -1959,7 +1959,7 @@ $('tb-foto').onchange=e=>{ TB.foto=(e.target.files&&e.target.files[0])||null; $(
 function codice(s){ let h=0x811c9dc5; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return ('00000000'+h.toString(16).toUpperCase()).slice(-6); }
 function testoTurno(){
   const d=daYmd(TB.d), ob=$('tb-ob').value.trim();
-  let t=`🛡️ RUOLINO PAGA\n${TB.tipo} · ${GN[wd(d)].slice(0,3)} ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} · ore ${TB.ora}`;
+  let t=`${SERIO?'RUOLINO PAGA':'🛡️ RUOLINO PAGA'}\n${TB.tipo} · ${GN[wd(d)].slice(0,3)} ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} · ore ${TB.ora}`;
   if(ob) t+=`\nPosto: ${ob}`;
   if(TB.pos) t+=`\nPosizione (±${TB.pos.acc} m): https://maps.google.com/?q=${TB.pos.lat.toFixed(5)},${TB.pos.lon.toFixed(5)}`;
   t+=`\nCod. ${codice(TB.tipo+TB.d+TB.ora+ob+(TB.pos?TB.pos.lat.toFixed(5)+','+TB.pos.lon.toFixed(5):''))}`;
@@ -2027,7 +2027,7 @@ function regDaTurniPortale(turni){
   const perData={}, out={};
   (Array.isArray(turni)?turni:[]).forEach(t=>{ const d=String(t&&t.data||''); if(/^\d{4}-\d{2}-\d{2}$/.test(d)) (perData[d]=perData[d]||[]).push(t); });
   Object.keys(perData).forEach(d=>{
-    const rec={t:[],s:'',ob:'',src:'pdf'};
+    const rec={t:[],s:'',ob:'',src:'portale'};
     perData[d].forEach(t=>{
       const tipo=String(t.tipoGiornata||'').toUpperCase();
       if(tipo==='TURNO'){ const i=oraOk(t.oraInizio), f=oraOk(t.oraFine); if(i&&f&&i!==f) rec.t.push({i,f,k:'p'}); }
@@ -2143,7 +2143,7 @@ $('c-reset').onclick=()=>{ for(const k in BASE_IST) if($(k)) $(k).value=BASE_IST
   msgProf('Valori predefiniti ripristinati.'); calcola(); };
 
 /* ---- versione, indirizzo, contatore ---- */
-const VERSIONE='2026.10.28-1';
+const VERSIONE='2026.10.28-2';
 const SERIO=document.documentElement.getAttribute('data-edizione')==='istituzionale';
 if(SERIO) document.querySelectorAll('[data-serio]').forEach(el=>{ el.textContent=el.getAttribute('data-serio'); });
 const SITO=SERIO?location.origin+location.pathname.replace(/index\.html$/,''):'https://ruolino-paga.github.io/';
@@ -2247,9 +2247,9 @@ $('bk-manda').onclick=async()=>{
   if(ok) segnaBackup();
 };
 async function reclamo(){
-  const t=`${SERIO?'Segnalazione · Ruolino':'Reclamo al Comando · Ruolino Paga'} v${VERSIONE} · ${(navigator.userAgent.match(/\(([^)]+)\)/)||['',''])[1].slice(0,60)}\nCosa non va: `;
+  const t=`${SERIO?'Segnalazione · Ruolino Paga':'Reclamo al Comando · Ruolino Paga'} v${VERSIONE} · ${(navigator.userAgent.match(/\(([^)]+)\)/)||['',''])[1].slice(0,60)}\nCosa non va: `;
   const r=await condividi({title:SERIO?'Segnalazione':'Reclamo al Comando',text:t}); if(r==='share'||r==='abort') return;
-  msgProf((await copiaTesto(t))?'Testo del reclamo copiato: incollalo nel gruppo.':'Non riesco a copiare da qui.');
+  msgProf((await copiaTesto(t))?(SERIO?'Testo copiato: incollalo nel gruppo.':'Testo del reclamo copiato: incollalo nel gruppo.'):'Non riesco a copiare da qui.');
 }
 
 /* ---- busta voce per voce ---- */
@@ -2497,7 +2497,7 @@ function renderScadenze(){
     const pill=x.stato==='ko'?`<span class="pill ko">scaduta da ${-x.g} gg</span>`:x.stato==='att'?`<span class="pill att">fra ${x.g} gg</span>`:'<span class="pill ok">in regola</span>';
     return `<li><span>${esc(x.nome)}<small>${x.s.mesi?'prossima entro il ':'scade il '}${dataIt(x.d)}${x.stato!=='ok'?' · '+x.s.consiglio:''}</small></span>${pill}</li>`; }).join('');
   const tutte=['decreto','porto','tiro'].every(id=>L.some(x=>x.s.id===id)), ok=L.length&&L.every(x=>x.stato==='ok');
-  $('sc-msg').textContent=!L.length?'Metti le date che trovi sul decreto, sul porto e sul libretto di tiro.':(tutte&&ok?'Tutto in regola. Il Prefetto dorme sonni tranquilli, tu un po’ meno.':'');
+  $('sc-msg').textContent=!L.length?'Metti le date che trovi sul decreto, sul porto e sul libretto di tiro.':(tutte&&ok?(SERIO?'Tutto in regola.':'Tutto in regola. Il Prefetto dorme sonni tranquilli, tu un po’ meno.'):'');
   // in cima all'app, quello che scade entro un mese o è già scaduto
   const vivi=[];
   L.forEach(x=>{ if(!(x.stato==='ko'||x.g<=30)) return; const id='scad-'+x.s.id+'-'+ymd(x.d); vivi.push(id);
@@ -2634,12 +2634,12 @@ function renderUsuranti(){
   const fascia=v=>v>=78?'<span class="pill ok">78 o più</span>':v>=72?'<span class="pill att">da 72 a 77</span>':v>=64?'<span class="pill att">da 64 a 71</span>':'<span class="pill">sotto 64</span>';
   $('usu-anni').innerHTML=anni.length
     ? '<tr class="sub"><td>Anno</td><td>Notti valide</td></tr>'+anni.map(y=>`<tr><td>${y}${y===attuale?' <span class="q">in corso</span>':''}</td><td>${A[y].notti} ${fascia(A[y].notti)}</td></tr>`).join('')
-    : '<tr><td>Ancora nessun turno: segna i turni con l’orario nel Ruolino.</td><td></td></tr>';
+    : `<tr><td>Ancora nessun turno: segna i turni con l’orario nella scheda ${SERIO?'Turni':'Ruolino'}.</td><td></td></tr>`;
 }
 
 /* ---- bacheca del Comando: avvisi scritti nel file bacheca.json del sito ---- */
 async function caricaBacheca(){
-  if(SERIO||!/^https?:$/.test(location.protocol)) return;
+  if(!/^https?:$/.test(location.protocol)) return;
   try{
     const r=await fetch('bacheca.json',{cache:'no-cache'}); if(!r.ok) return;
     const b=await r.json(), L=(b&&Array.isArray(b.avvisi))?b.avvisi.slice(0,8):[]; if(!L.length) return;
@@ -2647,7 +2647,7 @@ async function caricaBacheca(){
     $('bacheca-card').hidden=false;
     const primo=L[0], id='bacheca-'+(primo.id||primo.data||'');
     if(!GIA_USATO){ if(!avvisoChiuso(id,3650)) chiudiAvviso(id); return; }   // a chi arriva adesso le novità non servono
-    if(primo.evidenza&&!avvisoChiuso(id,3650)) mostraAvviso(id,'Bacheca del Comando: '+esc(primo.testo||''),[{t:'Vedi',f:()=>{ chiudiAvviso(id); mostraTab('t-k'); inCima(); }},{t:'Chiudi',f:()=>chiudiAvviso(id)}]);
+    if(primo.evidenza&&!avvisoChiuso(id,3650)) mostraAvviso(id,(SERIO?'Novità: ':'Bacheca del Comando: ')+esc(primo.testo||''),[{t:'Vedi',f:()=>{ chiudiAvviso(id); mostraTab('t-k'); inCima(); }},{t:'Chiudi',f:()=>chiudiAvviso(id)}]);
   }catch(e){}
 }
 
@@ -3014,8 +3014,7 @@ calcola();
 renderTb();
 renderCal();
 { const l=lsGet(KEY_LINK,''); if(l&&/^\d{4}-\d{2}$/.test(l)) usaNelCalcolo(l,true); }   // se il calcolo segue il ruolino, riparte da lì
-$('versione').innerHTML=SERIO?`Ruolino · versione ${VERSIONE} · <button type="button" class="lnk" id="reclami" style="color:inherit">Segnala un problema</button>`
-  :`Ruolino Paga · versione ${VERSIONE} · <a href="${SITO}" style="color:inherit">ruolino-paga.github.io</a> · <button type="button" class="lnk" id="reclami" style="color:inherit">Reclami al Comando</button>`;
+$('versione').innerHTML=`Ruolino Paga · versione ${VERSIONE} · <a href="${SITO}" style="color:inherit">${esc(SITO.replace(/^https?:\/\//,'').replace(/\/$/,''))}</a> · <button type="button" class="lnk" id="reclami" style="color:inherit">${SERIO?'Segnala un problema':'Reclami al Comando'}</button>`;
 $('reclami').onclick=reclamo;
 if(CONTATORE && !SERIO && /^https?:$/.test(location.protocol)){ const s=document.createElement('script'); s.async=true; s.src='https://gc.zgo.at/count.js'; s.setAttribute('data-goatcounter','https://'+CONTATORE+'.goatcounter.com/count'); document.head.appendChild(s); $('nota-contatore').hidden=false; }
 leggiHash();
