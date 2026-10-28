@@ -410,6 +410,8 @@ html[data-edizione="istituzionale"] [data-goliardia]{display:none!important}
           <div class="hint">Solo ore di servizio effettivo. Se non le hai contate, metti una cifra tonda: la stima si muove di conseguenza. Se le segni nella scheda <span data-serio="Turni">Ruolino</span>, arrivano da sole.</div>
           <div class="hint" id="ore-ruolino" hidden style="margin-top:6px;color:var(--ink-2)"></div>
         </div>
+        <label class="spunta-8"><input type="checkbox" id="d-val8"><span><b>Trasferta a 8 € l'ora già da questo mese</b><small id="d-val8-hint">Nell'istituto di riferimento da gennaio 2027 la trasferta passa a 8 € l'ora: il Ruolino lo applica da solo.</small></span></label>
+        <input type="hidden" id="d-val8dal" value="">
         <div class="g2" style="margin-top:13px">
           <div class="f">
             <label for="liv">Livello</label>
@@ -609,7 +611,7 @@ html[data-edizione="istituzionale"] [data-goliardia]{display:none!important}
           <div class="f">
             <label for="d-val">Valore ora di trasferta (€)</label>
             <input type="number" id="d-val" inputmode="decimal" step="0.5" value="7">
-            <div class="hint">Le ore oltre ordinarie e straordinario vengono pagate così.</div>
+            <div class="hint">Le ore oltre ordinarie e straordinario vengono pagate così. La spunta degli 8 € l'ora sta nella scheda Servizio, sotto le ore del mese.</div>
           </div>
           <div class="f">
             <label for="d-notti">Giorni con servizio notturno</label>
@@ -617,8 +619,6 @@ html[data-edizione="istituzionale"] [data-goliardia]{display:none!important}
             <div class="hint">−1 = come i giorni lavorati. I giorni senza notte prendono l'indennità diurna.</div>
           </div>
         </div>
-        <label class="spunta-8"><input type="checkbox" id="d-val8"><span><b>Trasferta a 8 € l'ora già da questo mese</b><small id="d-val8-hint">Nell'istituto di riferimento da gennaio 2027 la trasferta passa a 8 € l'ora: il Ruolino lo applica da solo.</small></span></label>
-        <input type="hidden" id="d-val8dal" value="">
         <div class="g3" style="margin-top:11px">
           <div class="f">
             <label for="d-i561">Giorni zona stradale</label>
@@ -2155,7 +2155,7 @@ $('c-reset').onclick=()=>{ for(const k in BASE_IST) if($(k)) $(k).value=BASE_IST
   msgProf('Valori predefiniti ripristinati.'); calcola(); };
 
 /* ---- versione, indirizzo, contatore ---- */
-const VERSIONE='2026.10.28-5';
+const VERSIONE='2026.10.28-6';
 const SERIO=document.documentElement.getAttribute('data-edizione')==='istituzionale';
 if(SERIO) document.querySelectorAll('[data-serio]').forEach(el=>{ el.textContent=el.getAttribute('data-serio'); });
 const SITO=SERIO?location.origin+location.pathname.replace(/index\.html$/,''):'https://ruolino-paga.github.io/';
