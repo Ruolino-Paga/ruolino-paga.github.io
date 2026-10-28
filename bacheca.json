@@ -3,7 +3,7 @@
     {
       "id": "2026-10-28-portale",
       "data": "28/10/2026",
-      "testo": "Turni dal portale: nella scheda Turni, in cima, colleghi il portale dei turni con codice e password. Il Ruolino scarica i turni, li segna nel registro, tiene una copia di ogni versione con data e ora e confronta le ore del portale, del registro e della busta. I giorni che segni a mano restano tuoi.",
+      "testo": "Turni dal portale: nella scheda Turni, in cima, colleghi il portale dei turni con codice e password, una volta sola. Da lì il Ruolino fa da solo: scarica i turni e li segna nel registro con il posto di servizio, tiene una copia di ogni versione con data e ora, confronta le ore del portale, del registro e della busta e a mese finito prepara il PDF del mese. I giorni che segni a mano restano tuoi.",
       "evidenza": true
     },
     {

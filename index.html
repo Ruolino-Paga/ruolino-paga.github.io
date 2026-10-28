@@ -2027,9 +2027,10 @@ function regDaTurniPortale(turni){
   const perData={}, out={};
   (Array.isArray(turni)?turni:[]).forEach(t=>{ const d=String(t&&t.data||''); if(/^\d{4}-\d{2}-\d{2}$/.test(d)) (perData[d]=perData[d]||[]).push(t); });
   Object.keys(perData).forEach(d=>{
-    const rec={t:[],s:'',ob:'',src:'portale'};
+    const rec={t:[],s:'',ob:'',src:'portale'}, posti=[];
     perData[d].forEach(t=>{
-      const tipo=String(t.tipoGiornata||'').toUpperCase();
+      const tipo=String(t.tipoGiornata||'').toUpperCase(), sv=String(t.servizio||'').trim();
+      if(sv&&posti.indexOf(sv)<0) posti.push(sv);
       if(tipo==='TURNO'){ const i=oraOk(t.oraInizio), f=oraOk(t.oraFine), min=+t.minutiTurno||0;
         if(i&&f&&i!==f) rec.t.push({i,f,k:'p'});
         else if(min>=60){ rec.o=(rec.o||0)+Math.round(min/6)/10; if(min>=1440) rec.n=true; }   // senza orari distinti (24 ore) valgono i minuti dichiarati
@@ -2038,6 +2039,7 @@ function regDaTurniPortale(turni){
       else if(/PERMESS/.test(tipo)) rec.s='permesso'; else if(/MALATT/.test(tipo)) rec.s='malattia';
     });
     if(rec.t.length||rec.o>0) rec.s='';
+    rec.ob=posti.join(' · ').slice(0,60);
     if(rec.t.length||rec.o>0||rec.s) out[d]=rec;
   });
   return out;
@@ -2049,17 +2051,18 @@ function importaTurniPortale(turni){
   let scritti=0, cambiati=0, mano=0; const mesi={};
   Object.keys(nuovi).forEach(d=>{
     const cur=REG[d]; if(cur&&cur.src==='man'){ mano++; return; }
-    const rec=nuovi[d]; rec.ob=cur?(cur.ob||''):'';
+    const rec=nuovi[d]; if(!rec.ob&&cur&&cur.ob) rec.ob=cur.ob;   // se il portale non dice il posto, resta quello già scritto
     if(cur&&typeof cur.fest==='boolean') rec.fest=cur.fest;
-    const prima=cur?chiaveGiorno(cur):null;
-    if(prima===chiaveGiorno(rec)) return;
-    if(prima) cambiati++;
+    const prima=cur?chiaveGiorno(cur):null, dopo=chiaveGiorno(rec), posto=!!cur&&(cur.ob||'')!==(rec.ob||'');
+    if(prima===dopo&&!posto) return;
+    if(prima&&prima!==dopo) cambiati++;             // un posto diverso si scrive senza contarlo come orario cambiato
     REG[d]=rec; scritti++; mesi[d.slice(0,7)]=true;
   });
   if(scritti){
     salvaReg();
     const link=lsGet(KEY_LINK,''), meseOggi=oggi().slice(0,7);
-    if(link&&mesi[link]) usaNelCalcolo(link,true); else if(!link&&mesi[meseOggi]) usaNelCalcolo(meseOggi,true);
+    const segui=link&&link<meseOggi&&mesi[meseOggi]?meseOggi:(link||meseOggi);   // il calcolo segue il mese in corso appena arrivano i suoi turni
+    if(mesi[segui]) usaNelCalcolo(segui,true);
     renderCal();
   }
   return {scritti, cambiati, mano};
@@ -2150,7 +2153,7 @@ $('c-reset').onclick=()=>{ for(const k in BASE_IST) if($(k)) $(k).value=BASE_IST
   msgProf('Valori predefiniti ripristinati.'); calcola(); };
 
 /* ---- versione, indirizzo, contatore ---- */
-const VERSIONE='2026.10.28-3';
+const VERSIONE='2026.10.28-4';
 const SERIO=document.documentElement.getAttribute('data-edizione')==='istituzionale';
 if(SERIO) document.querySelectorAll('[data-serio]').forEach(el=>{ el.textContent=el.getAttribute('data-serio'); });
 const SITO=SERIO?location.origin+location.pathname.replace(/index\.html$/,''):'https://ruolino-paga.github.io/';
@@ -3048,7 +3051,7 @@ caricaBacheca();
 window.RP={inflateJS,inflateBytes,frammenti,foglio,leggiPDF,riepilogo,FRASI,GRADI,pasqua,festivo,reg:()=>REG,
   motore,leggiInput,tabella,carriera,livelloAl,scattiAl,orariaPer,aggiornaOraria,nettoDaRegistro,valoreTurno,
   detrConiuge,detrFigli,statoScadenze,icsScadenze,oreNotturne,nottiUsuranti,testoRelazione,SCUSE,MOSTRINE,statoServizio,
-  leggiCiclo,QUIZ,statoAnno,foglioMatricolare,leggiBusta,inputDaBusta,stimaBusta,leggiBuste,renderBuste,caricaBuste,pulisciBusta,usaBusta,altreVoci,stimaConExtra,importaTurniPortale,regDaTurniPortale,valTraPer,backupTesto};
+  leggiCiclo,QUIZ,statoAnno,foglioMatricolare,leggiBusta,inputDaBusta,stimaBusta,leggiBuste,renderBuste,caricaBuste,pulisciBusta,usaBusta,altreVoci,stimaConExtra,importaTurniPortale,regDaTurniPortale,valTraPer,backupTesto,usaNelCalcolo,oreGiorno,notteGiorno};
 /* installabile e utilizzabile senza rete: solo quando la pagina arriva da un indirizzo, non da un file */
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
