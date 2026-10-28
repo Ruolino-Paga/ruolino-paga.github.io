@@ -288,6 +288,7 @@ html:root[data-garitta="1"] .encomio .dati,html:root[data-garitta="1"] .encomio 
 html:root[data-garitta="1"] .encomio .foot button{color:#ff8a7d;border-color:#5c130d}
 html:root[data-garitta="1"] img{opacity:.55}
 html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
+html[data-edizione="istituzionale"] [data-goliardia]{display:none!important}
 @media (min-width:600px){.big{font-size:54px}.wrap{padding:0 20px}.cal .d{min-height:64px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -303,8 +304,8 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
       <path d="M12.5 33.5h19M14.5 37.4h15M16.5 41.2h11" stroke="#c9a227" stroke-width="1.9" stroke-linecap="round" opacity=".9"/>
     </svg>
     <div class="titolo">
-      <h1>Ruolino Paga</h1>
-      <p>Registro di servizio e retribuzione · Guardie Particolari Giurate</p>
+      <h1 data-serio="Ruolino">Ruolino Paga</h1>
+      <p data-serio="Turni, ore e retribuzione · Guardie Particolari Giurate">Registro di servizio e retribuzione · Guardie Particolari Giurate</p>
     </div>
     <button type="button" class="garitta-btn" id="garitta" aria-pressed="false" title="Modalità garitta: rosso scuro per la notte">Garitta</button>
   </div>
@@ -351,16 +352,16 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
     <button role="tab" id="t-r" aria-selected="true" aria-controls="p-r">Servizio</button>
     <button role="tab" id="t-d" aria-selected="false" aria-controls="p-d">Busta</button>
     <button role="tab" id="t-c" aria-selected="false" aria-controls="p-c">Contratto</button>
-    <button role="tab" id="t-p" aria-selected="false" aria-controls="p-p">Ruolino</button>
-    <button role="tab" id="t-k" aria-selected="false" aria-controls="p-k">Caserma</button>
+    <button role="tab" id="t-p" aria-selected="false" aria-controls="p-p" data-serio="Turni">Ruolino</button>
+    <button role="tab" id="t-k" aria-selected="false" aria-controls="p-k" data-serio="Pratiche">Caserma</button>
   </div>
 
   <!-- SERVIZIO -->
   <div id="p-r" role="tabpanel" aria-labelledby="t-r">
     <div class="card" id="arr" hidden>
-      <h3>Arruolamento</h3>
+      <h3 data-serio="Impostazione">Arruolamento</h3>
       <div class="b">
-        <p style="margin:0 0 10px;font-size:14px">Benvenuto. Tre domande e il Ruolino è tuo.</p>
+        <p style="margin:0 0 10px;font-size:14px" data-serio="Tre domande per impostare il calcolo.">Benvenuto. Tre domande e il Ruolino è tuo.</p>
         <div class="f">
           <label>Il tuo istituto</label>
           <div class="btnrow" style="margin-top:0">
@@ -563,7 +564,7 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
       </div>
     </div>
 
-    <div class="encomio" id="encomio" hidden>
+    <div class="encomio" id="encomio" hidden data-goliardia>
       <div class="h"><b>Encomio</b><span id="enc-grado"></span></div>
       <div class="frase" id="enc-frase"></div>
       <div class="dati" id="enc-dati"></div>
@@ -938,12 +939,12 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
           <button type="button" class="btn" id="cal-copia">Copia riepilogo</button>
         </div>
         <div class="btnrow" style="margin-top:8px">
-          <button type="button" class="btn gold" id="cal-medaglia">Medaglia del mese</button>
+          <button type="button" class="btn gold" id="cal-medaglia" data-goliardia>Medaglia del mese</button>
           <button type="button" class="btn" id="cal-ics">Nel calendario del telefono</button>
         </div>
         <div class="hint" id="cal-link" style="margin-top:8px"></div>
         <div class="hint" id="cal-msg"></div>
-        <div id="medaglia-box" hidden><img id="medaglia-img" alt="Medaglia del mese"><div class="hint">Tieni premuto sull'immagine per salvarla o mandarla nel gruppo.</div></div>
+        <div id="medaglia-box" hidden data-goliardia><img id="medaglia-img" alt="Medaglia del mese"><div class="hint">Tieni premuto sull'immagine per salvarla o mandarla nel gruppo.</div></div>
       </div>
     </div>
 
@@ -1020,7 +1021,7 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
 
   <!-- CASERMA -->
   <div id="p-k" role="tabpanel" aria-labelledby="t-k" hidden>
-    <div class="card" id="bacheca-card" hidden>
+    <div class="card" id="bacheca-card" hidden data-goliardia>
       <h3>Bacheca del Comando</h3>
       <div class="b"><ul class="bacheca" id="bacheca"></ul></div>
     </div>
@@ -1058,7 +1059,7 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
       </div>
     </div>
 
-    <div class="card" id="quiz-card">
+    <div class="card" id="quiz-card" data-goliardia>
       <h3>Il Concorso interno</h3>
       <div class="b">
         <div class="hint" id="qz-testa" style="margin:0 0 4px">Domanda del giorno, uguale per tutti</div>
@@ -1110,7 +1111,7 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" data-goliardia>
       <h3>Stato di servizio</h3>
       <div class="b">
         <div class="sv-grado" id="sv-grado">Recluta</div>
@@ -1150,7 +1151,7 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" data-goliardia>
       <h3>Frasario del cambio turno</h3>
       <div class="b">
         <p class="frasario" id="fr-frase"></p>
@@ -2021,14 +2022,12 @@ async function leggiPDF(files){
     if(!lsGet(KEY_LINK,'')) usaNelCalcolo(ult,true); else collegaSeServe();
   } else renderCal();
 }
-/* turni arrivati da un portale aziendale (lista con data, oraInizio, oraFine, tipoGiornata): i giorni segnati a mano non si toccano */
-function importaTurniPortale(turni){
-  const perData={};
+/* turni arrivati da un portale aziendale (lista con data, oraInizio, oraFine, tipoGiornata) → giorni del registro */
+function regDaTurniPortale(turni){
+  const perData={}, out={};
   (Array.isArray(turni)?turni:[]).forEach(t=>{ const d=String(t&&t.data||''); if(/^\d{4}-\d{2}-\d{2}$/.test(d)) (perData[d]=perData[d]||[]).push(t); });
-  let scritti=0, cambiati=0, mano=0; const mesi={};
   Object.keys(perData).forEach(d=>{
-    const cur=REG[d]; if(cur&&cur.src==='man'){ mano++; return; }
-    const rec={t:[],s:'',ob:cur?(cur.ob||''):'',src:'pdf'};
+    const rec={t:[],s:'',ob:'',src:'pdf'};
     perData[d].forEach(t=>{
       const tipo=String(t.tipoGiornata||'').toUpperCase();
       if(tipo==='TURNO'){ const i=oraOk(t.oraInizio), f=oraOk(t.oraFine); if(i&&f&&i!==f) rec.t.push({i,f,k:'p'}); }
@@ -2036,7 +2035,17 @@ function importaTurniPortale(turni){
       else if(/PERMESS/.test(tipo)) rec.s='permesso'; else if(/MALATT/.test(tipo)) rec.s='malattia';
     });
     if(rec.t.length) rec.s='';
-    if(!rec.t.length&&!rec.s) return;
+    if(rec.t.length||rec.s) out[d]=rec;
+  });
+  return out;
+}
+/* i giorni segnati a mano non si toccano */
+function importaTurniPortale(turni){
+  const nuovi=regDaTurniPortale(turni);
+  let scritti=0, cambiati=0, mano=0; const mesi={};
+  Object.keys(nuovi).forEach(d=>{
+    const cur=REG[d]; if(cur&&cur.src==='man'){ mano++; return; }
+    const rec=nuovi[d]; rec.ob=cur?(cur.ob||''):'';
     if(cur&&typeof cur.fest==='boolean') rec.fest=cur.fest;
     const prima=cur?JSON.stringify({t:cur.t,s:cur.s}):null;
     if(prima===JSON.stringify({t:rec.t,s:rec.s})) return;
@@ -2134,8 +2143,10 @@ $('c-reset').onclick=()=>{ for(const k in BASE_IST) if($(k)) $(k).value=BASE_IST
   msgProf('Valori predefiniti ripristinati.'); calcola(); };
 
 /* ---- versione, indirizzo, contatore ---- */
-const VERSIONE='2026.09.28-2';
-const SITO='https://ruolino-paga.github.io/';
+const VERSIONE='2026.10.28-1';
+const SERIO=document.documentElement.getAttribute('data-edizione')==='istituzionale';
+if(SERIO) document.querySelectorAll('[data-serio]').forEach(el=>{ el.textContent=el.getAttribute('data-serio'); });
+const SITO=SERIO?location.origin+location.pathname.replace(/index\.html$/,''):'https://ruolino-paga.github.io/';
 const CONTATORE='';   // codice GoatCounter; vuoto = nessun conteggio delle aperture
 const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const b64d=s=>{ s=s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; return decodeURIComponent(escape(atob(s))); };
@@ -2236,8 +2247,8 @@ $('bk-manda').onclick=async()=>{
   if(ok) segnaBackup();
 };
 async function reclamo(){
-  const t=`Reclamo al Comando · Ruolino Paga v${VERSIONE} · ${(navigator.userAgent.match(/\(([^)]+)\)/)||['',''])[1].slice(0,60)}\nCosa non va: `;
-  const r=await condividi({title:'Reclamo al Comando',text:t}); if(r==='share'||r==='abort') return;
+  const t=`${SERIO?'Segnalazione · Ruolino':'Reclamo al Comando · Ruolino Paga'} v${VERSIONE} · ${(navigator.userAgent.match(/\(([^)]+)\)/)||['',''])[1].slice(0,60)}\nCosa non va: `;
+  const r=await condividi({title:SERIO?'Segnalazione':'Reclamo al Comando',text:t}); if(r==='share'||r==='abort') return;
   msgProf((await copiaTesto(t))?'Testo del reclamo copiato: incollalo nel gruppo.':'Non riesco a copiare da qui.');
 }
 
@@ -2319,7 +2330,7 @@ function renderServizio(){
   if(!Array.isArray(viste)) lsSet(KEY_MOS,JSON.stringify(presi));
   else { const nuove=presi.filter(x=>viste.indexOf(x)<0);
     if(nuove.length){ const m=MOSTRINE.filter(x=>x[0]===nuove[0])[0];
-      toast(`Mostrina conquistata: <b>${esc(m[0])}</b>. ${m[3]?'«'+esc(m[3])+'»':'Il Comando prende atto.'}`,7000);
+      if(!SERIO) toast(`Mostrina conquistata: <b>${esc(m[0])}</b>. ${m[3]?'«'+esc(m[3])+'»':'Il Comando prende atto.'}`,7000);
       lsSet(KEY_MOS,JSON.stringify(viste.concat(nuove))); } }
   let rows='', tot=0;
   for(let m=1;m<=12;m++){ const M=S.mesi[ANNO+'-'+pad(m)]; if(!M||!(M.ore>0||M.ferie>0)) continue; tot+=M.ore;
@@ -2628,7 +2639,7 @@ function renderUsuranti(){
 
 /* ---- bacheca del Comando: avvisi scritti nel file bacheca.json del sito ---- */
 async function caricaBacheca(){
-  if(!/^https?:$/.test(location.protocol)) return;
+  if(SERIO||!/^https?:$/.test(location.protocol)) return;
   try{
     const r=await fetch('bacheca.json',{cache:'no-cache'}); if(!r.ok) return;
     const b=await r.json(), L=(b&&Array.isArray(b.avvisi))?b.avvisi.slice(0,8):[]; if(!L.length) return;
@@ -2796,7 +2807,7 @@ $('arr-ok').onclick=()=>{
   if(ARR_ALTRO){ $('c-oltre').value='str'; $('c-ratei').value='unica'; }
   $('liv').value=$('arr-liv').value; if(dataOk($('arr-inizio').value)) $('c-inizio').value=$('arr-inizio').value;
   lsSet('gpg_arruolato','1'); $('arr').hidden=true; aggiornaOraria(true); calcola(); renderStat();
-  toast('Arruolato. Il Comando ti dà il benvenuto e ti ricorda che il caffè non è compreso.');
+  toast(SERIO?'Impostazione salvata.':'Arruolato. Il Comando ti dà il benvenuto e ti ricorda che il caffè non è compreso.');
 };
 $('arr-salta').onclick=()=>{ lsSet('gpg_arruolato','1'); $('arr').hidden=true; };
 
@@ -3003,9 +3014,10 @@ calcola();
 renderTb();
 renderCal();
 { const l=lsGet(KEY_LINK,''); if(l&&/^\d{4}-\d{2}$/.test(l)) usaNelCalcolo(l,true); }   // se il calcolo segue il ruolino, riparte da lì
-$('versione').innerHTML=`Ruolino Paga · versione ${VERSIONE} · <a href="${SITO}" style="color:inherit">ruolino-paga.github.io</a> · <button type="button" class="lnk" id="reclami" style="color:inherit">Reclami al Comando</button>`;
+$('versione').innerHTML=SERIO?`Ruolino · versione ${VERSIONE} · <button type="button" class="lnk" id="reclami" style="color:inherit">Segnala un problema</button>`
+  :`Ruolino Paga · versione ${VERSIONE} · <a href="${SITO}" style="color:inherit">ruolino-paga.github.io</a> · <button type="button" class="lnk" id="reclami" style="color:inherit">Reclami al Comando</button>`;
 $('reclami').onclick=reclamo;
-if(CONTATORE && /^https?:$/.test(location.protocol)){ const s=document.createElement('script'); s.async=true; s.src='https://gc.zgo.at/count.js'; s.setAttribute('data-goatcounter','https://'+CONTATORE+'.goatcounter.com/count'); document.head.appendChild(s); $('nota-contatore').hidden=false; }
+if(CONTATORE && !SERIO && /^https?:$/.test(location.protocol)){ const s=document.createElement('script'); s.async=true; s.src='https://gc.zgo.at/count.js'; s.setAttribute('data-goatcounter','https://'+CONTATORE+'.goatcounter.com/count'); document.head.appendChild(s); $('nota-contatore').hidden=false; }
 leggiHash();
 caricaRel();
 nuovaScusa();
@@ -3028,7 +3040,7 @@ caricaBacheca();
 window.RP={inflateJS,inflateBytes,frammenti,foglio,leggiPDF,riepilogo,FRASI,GRADI,pasqua,festivo,reg:()=>REG,
   motore,leggiInput,tabella,carriera,livelloAl,scattiAl,orariaPer,aggiornaOraria,nettoDaRegistro,valoreTurno,
   detrConiuge,detrFigli,statoScadenze,icsScadenze,oreNotturne,nottiUsuranti,testoRelazione,SCUSE,MOSTRINE,statoServizio,
-  leggiCiclo,QUIZ,statoAnno,foglioMatricolare,leggiBusta,inputDaBusta,stimaBusta,leggiBuste,renderBuste,caricaBuste,pulisciBusta,usaBusta,altreVoci,stimaConExtra,importaTurniPortale,valTraPer};
+  leggiCiclo,QUIZ,statoAnno,foglioMatricolare,leggiBusta,inputDaBusta,stimaBusta,leggiBuste,renderBuste,caricaBuste,pulisciBusta,usaBusta,altreVoci,stimaConExtra,importaTurniPortale,regDaTurniPortale,valTraPer};
 /* installabile e utilizzabile senza rete: solo quando la pagina arriva da un indirizzo, non da un file */
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
