@@ -2030,15 +2030,19 @@ function regDaTurniPortale(turni){
     const rec={t:[],s:'',ob:'',src:'portale'};
     perData[d].forEach(t=>{
       const tipo=String(t.tipoGiornata||'').toUpperCase();
-      if(tipo==='TURNO'){ const i=oraOk(t.oraInizio), f=oraOk(t.oraFine); if(i&&f&&i!==f) rec.t.push({i,f,k:'p'}); }
+      if(tipo==='TURNO'){ const i=oraOk(t.oraInizio), f=oraOk(t.oraFine), min=+t.minutiTurno||0;
+        if(i&&f&&i!==f) rec.t.push({i,f,k:'p'});
+        else if(min>=60){ rec.o=(rec.o||0)+Math.round(min/6)/10; if(min>=1440) rec.n=true; }   // senza orari distinti (24 ore) valgono i minuti dichiarati
+      }
       else if(/RIPOSO/.test(tipo)) rec.s='riposo'; else if(/FERIE/.test(tipo)) rec.s='ferie';
       else if(/PERMESS/.test(tipo)) rec.s='permesso'; else if(/MALATT/.test(tipo)) rec.s='malattia';
     });
-    if(rec.t.length) rec.s='';
-    if(rec.t.length||rec.s) out[d]=rec;
+    if(rec.t.length||rec.o>0) rec.s='';
+    if(rec.t.length||rec.o>0||rec.s) out[d]=rec;
   });
   return out;
 }
+const chiaveGiorno=r=>JSON.stringify({t:r.t||[],s:r.s||'',o:r.o>0?r.o:0,n:!!r.n});
 /* i giorni segnati a mano non si toccano */
 function importaTurniPortale(turni){
   const nuovi=regDaTurniPortale(turni);
@@ -2047,8 +2051,8 @@ function importaTurniPortale(turni){
     const cur=REG[d]; if(cur&&cur.src==='man'){ mano++; return; }
     const rec=nuovi[d]; rec.ob=cur?(cur.ob||''):'';
     if(cur&&typeof cur.fest==='boolean') rec.fest=cur.fest;
-    const prima=cur?JSON.stringify({t:cur.t,s:cur.s}):null;
-    if(prima===JSON.stringify({t:rec.t,s:rec.s})) return;
+    const prima=cur?chiaveGiorno(cur):null;
+    if(prima===chiaveGiorno(rec)) return;
     if(prima) cambiati++;
     REG[d]=rec; scritti++; mesi[d.slice(0,7)]=true;
   });
@@ -2070,24 +2074,27 @@ $('file').onchange=e=>{ leggiPDF(Array.prototype.slice.call(e.target.files)); e.
 drop.addEventListener('drop',e=>leggiPDF(Array.prototype.slice.call(e.dataTransfer.files).filter(f=>/pdf$/i.test(f.name))));
 
 /* ---- copia di sicurezza ---- */
-$('bk-esporta').onclick=()=>{
-  const ok=scarica(new Blob([backupJSON()],{type:'application/json'}),'ruolino-paga-'+oggi()+'.json');
+$('bk-esporta').onclick=async()=>{
+  const ok=scarica(new Blob([await backupTesto()],{type:'application/json'}),'ruolino-paga-'+oggi()+'.json');
   $('bk-msg').textContent = ok ? 'File salvato fra i download: tienilo da parte.' : 'Questo browser non fa scaricare il file.';
   if(ok) segnaBackup();
 };
 $('bk-file').onchange=e=>{
   const f=e.target.files&&e.target.files[0]; if(!f) return;
   const rd=new FileReader();
-  rd.onload=()=>{
+  rd.onload=async()=>{
     try{
       const data=JSON.parse(rd.result); if(!data||data.app!=='ruolino-paga') throw new Error('non è un file del Ruolino');
       const conBuste=!!(data.buste&&typeof data.buste==='object'&&!Array.isArray(data.buste));   // le copie vecchie non hanno le buste: l'archivio resta com'è
-      if(!confirm(conBuste?'Sostituisco registro, profili, valori e buste con quelli del file?':'Sostituisco registro, profili e valori con quelli del file?')) return;
+      const conCopie=Array.isArray(data.copie_portale)&&!!(window.ContaOre&&ContaOre.aggiungi);
+      if(!confirm((conBuste?'Sostituisco registro, profili, valori e buste con quelli del file?':'Sostituisco registro, profili e valori con quelli del file?')+(conCopie?' Le copie del portale si aggiungono, non si cancellano.':''))) return;
       REG=data.registro||{}; salvaReg(); if(data.profili) scriviProfili(data.profili); if(data.campi) applicaCampi(data.campi);
       APERTO=data.aperto||null; lsSet(KEY_APERTO,JSON.stringify(APERTO)); lsSet(KEY_LINK,data.link||''); lsSet(KEY_OB,data.ob||'');
       aggiornaSelect(lsGet('gpg_ultimo','')); aggiornaSpunta8(); aggiornaOraria(true); renderTb(); renderCal(); calcola(); renderScadenze(); caricaRel();
       if(conBuste){ lsSet(KEY_BUSTE,JSON.stringify(data.buste)); BS_SEL=null; renderBuste(); }
-      $('bk-msg').textContent='Copia di sicurezza caricata.';
+      let nCopie=0;
+      if(conCopie){ for(const c of data.copie_portale){ if(c&&c.salvata_il&&c.html){ try{ if(await ContaOre.aggiungi(c)) nCopie++; }catch(err){} } } if(window.RuolinoPortale) RuolinoPortale.disegna(); }
+      $('bk-msg').textContent='Copia di sicurezza caricata.'+(nCopie?` Aggiunte ${nCopie} copie del portale.`:'');
     }catch(err){ $('bk-msg').textContent='Questo file non è una copia di sicurezza del Ruolino.'; }
   };
   rd.readAsText(f); e.target.value='';
@@ -2143,7 +2150,7 @@ $('c-reset').onclick=()=>{ for(const k in BASE_IST) if($(k)) $(k).value=BASE_IST
   msgProf('Valori predefiniti ripristinati.'); calcola(); };
 
 /* ---- versione, indirizzo, contatore ---- */
-const VERSIONE='2026.10.28-2';
+const VERSIONE='2026.10.28-3';
 const SERIO=document.documentElement.getAttribute('data-edizione')==='istituzionale';
 if(SERIO) document.querySelectorAll('[data-serio]').forEach(el=>{ el.textContent=el.getAttribute('data-serio'); });
 const SITO=SERIO?location.origin+location.pathname.replace(/index\.html$/,''):'https://ruolino-paga.github.io/';
@@ -2237,12 +2244,14 @@ $('cal-ics').onclick=async()=>{
 
 /* ---- copia di sicurezza e reclami ---- */
 function backupJSON(){ return JSON.stringify({app:'ruolino-paga',v:1,quando:new Date().toISOString(),campi:statoCampi(),profili:leggiProfili(),registro:REG,buste:leggiBuste(),aperto:APERTO,link:lsGet(KEY_LINK,''),ob:lsGet(KEY_OB,'')}); }
+/* nell'edizione collegata al portale la copia porta anche le copie delle pagine del portale */
+async function backupTesto(){ const d=JSON.parse(backupJSON()); if(window.ContaOre&&ContaOre.copie){ try{ d.copie_portale=await ContaOre.copie(); }catch(e){} } return JSON.stringify(d); }
 $('bk-manda').onclick=async()=>{
-  const nome='ruolino-paga-'+oggi()+'.json'; let r=null;
-  try{ r=await condividi({title:'Copia di sicurezza Ruolino Paga',files:[new File([backupJSON()],nome,{type:'application/json'})]}); }catch(e){}
+  const nome='ruolino-paga-'+oggi()+'.json', testo=await backupTesto(); let r=null;
+  try{ r=await condividi({title:'Copia di sicurezza Ruolino Paga',files:[new File([testo],nome,{type:'application/json'})]}); }catch(e){}
   if(r==='share'){ segnaBackup(); $('bk-msg').textContent='Copia inviata: mandala a te stesso su WhatsApp o su Drive.'; return; }
   if(r==='abort') return;
-  const ok=scarica(new Blob([backupJSON()],{type:'application/json'}),nome);
+  const ok=scarica(new Blob([testo],{type:'application/json'}),nome);
   $('bk-msg').textContent=ok?'Questo browser non condivide i file: l\'ho scaricato, mandalo tu.':'Questo browser non fa scaricare il file.';
   if(ok) segnaBackup();
 };
@@ -3039,7 +3048,7 @@ caricaBacheca();
 window.RP={inflateJS,inflateBytes,frammenti,foglio,leggiPDF,riepilogo,FRASI,GRADI,pasqua,festivo,reg:()=>REG,
   motore,leggiInput,tabella,carriera,livelloAl,scattiAl,orariaPer,aggiornaOraria,nettoDaRegistro,valoreTurno,
   detrConiuge,detrFigli,statoScadenze,icsScadenze,oreNotturne,nottiUsuranti,testoRelazione,SCUSE,MOSTRINE,statoServizio,
-  leggiCiclo,QUIZ,statoAnno,foglioMatricolare,leggiBusta,inputDaBusta,stimaBusta,leggiBuste,renderBuste,caricaBuste,pulisciBusta,usaBusta,altreVoci,stimaConExtra,importaTurniPortale,regDaTurniPortale,valTraPer};
+  leggiCiclo,QUIZ,statoAnno,foglioMatricolare,leggiBusta,inputDaBusta,stimaBusta,leggiBuste,renderBuste,caricaBuste,pulisciBusta,usaBusta,altreVoci,stimaConExtra,importaTurniPortale,regDaTurniPortale,valTraPer,backupTesto};
 /* installabile e utilizzabile senza rete: solo quando la pagina arriva da un indirizzo, non da un file */
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
