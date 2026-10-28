@@ -264,6 +264,8 @@ header .titolo{flex:1 1 auto;min-width:0}
 #bs-dett{margin-top:12px;border-top:1px solid var(--line-2);padding-top:10px}
 #bs-dett h4{margin:0 0 6px;font-family:Oswald,sans-serif;font-weight:500;font-size:16px;text-transform:capitalize}
 .spunte{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px;font-size:13.5px}
+.spunta-8{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;font-weight:600;cursor:pointer}
+.spunta-8 input{width:20px;height:20px;margin:0}
 .spunte li{display:flex;gap:8px;align-items:flex-start}
 .spunte li b{flex:0 0 auto;font-family:"IBM Plex Mono",Menlo,Consolas,monospace;color:var(--good)}
 .spunte li.no b{color:var(--warn)}
@@ -604,6 +606,9 @@ html:root[data-garitta="1"] .toast{background:#3a0c08;color:#ffb3aa}
             <label for="d-val">Valore ora di trasferta (€)</label>
             <input type="number" id="d-val" inputmode="decimal" step="0.5" value="7">
             <div class="hint">Le ore oltre ordinarie e straordinario vengono pagate così.</div>
+            <label class="spunta-8"><input type="checkbox" id="d-val8"> 8 € l'ora già da questo mese</label>
+            <input type="hidden" id="d-val8dal" value="">
+            <div class="hint" id="d-val8-hint">Nell'istituto di riferimento da gennaio 2027 la trasferta passa a 8 € l'ora: il Ruolino lo applica da solo.</div>
           </div>
           <div class="f">
             <label for="d-notti">Giorni con servizio notturno</label>
@@ -1292,11 +1297,25 @@ function aggiornaOraria(autoLivello){
   $('sum-car').textContent=(car||dataOk(assunz))?(NOMI_LIV[$('liv').value]||'impostata')+(sc.n?` · ${sc.n} ${sc.n===1?'scatto':'scatti'}`:''):'non impostata';
 }
 
+/* ---- trasferta per mese: nell'istituto di riferimento 7 € l'ora, 8 € da gennaio 2027 (o da prima, con la spunta) ---- */
+const TRASF_8_DAL='2027-01';
+function valTraPer(ym){
+  const v=n('d-val')||7; if(v!==7) return v;                    // un valore scritto a mano vale sempre
+  const spunta=$('d-val8dal').value, dal=/^\d{4}-\d{2}$/.test(spunta)&&spunta<TRASF_8_DAL?spunta:TRASF_8_DAL;
+  return ym>=dal?8:7;
+}
+function aggiornaSpunta8(){
+  const dal=$('d-val8dal').value; $('d-val8').checked=/^\d{4}-\d{2}$/.test(dal);
+  $('d-val8-hint').textContent=$('d-val8').checked
+    ? `A 8 € l'ora dal mese di ${NM[+dal.slice(5,7)-1]} ${dal.slice(0,4)}; i mesi prima restano a 7 €.`
+    : 'Nell\'istituto di riferimento da gennaio 2027 la trasferta passa a 8 € l\'ora: il Ruolino lo applica da solo.';
+}
+
 /* ---- motore ---- */
 function leggiInput(){
   const con=n('coniuge')===1;
   return { ore:n('ore'), oraria:n('oraria')||8.49064, ferie:Math.max(0,n('ferie')), gg:Math.max(0,n('gg')),
-    strOre:Math.max(0,n('d-str')), strP:n('d-strp'), valTra:n('d-val')||7, festOre:Math.max(0,n('d-fest')),
+    strOre:Math.max(0,n('d-str')), strP:n('d-strp'), valTra:valTraPer(ymSel()), festOre:Math.max(0,n('d-fest')),
     i561:n('d-i561'), i312:n('d-i312'), notti:n('d-notti'), addizIn:Math.max(0,n('d-addiz')), pContr:n('d-contr')/100,
     festRet:Math.max(0,Math.round(n('d-festret'))),
     trattenute:Math.max(0,n('quinto'))+Math.max(0,n('presti'))+Math.max(0,n('sind'))+Math.max(0,n('altre')),
@@ -1737,7 +1756,7 @@ function riepilogo(ym,reg){
 function nettoDaRegistro(ym,reg){
   const R=riepilogo(ym,reg), I=leggiInput();
   I.ore=R.ore; I.gg=R.gg; I.ferie=R.ferie; I.notti=R.notti; I.i561=R.i561; I.i312=R.i312; I.festOre=R.fest; I.festRet=R.festret;
-  I.mese=+ym.slice(5,7);
+  I.mese=+ym.slice(5,7); I.valTra=valTraPer(ym);
   const o=orariaPer(ym); if(o) I.oraria=o.oraria;
   return motore(I).nettoBusta;
 }
@@ -2002,6 +2021,36 @@ async function leggiPDF(files){
     if(!lsGet(KEY_LINK,'')) usaNelCalcolo(ult,true); else collegaSeServe();
   } else renderCal();
 }
+/* turni arrivati da un portale aziendale (lista con data, oraInizio, oraFine, tipoGiornata): i giorni segnati a mano non si toccano */
+function importaTurniPortale(turni){
+  const perData={};
+  (Array.isArray(turni)?turni:[]).forEach(t=>{ const d=String(t&&t.data||''); if(/^\d{4}-\d{2}-\d{2}$/.test(d)) (perData[d]=perData[d]||[]).push(t); });
+  let scritti=0, cambiati=0, mano=0; const mesi={};
+  Object.keys(perData).forEach(d=>{
+    const cur=REG[d]; if(cur&&cur.src==='man'){ mano++; return; }
+    const rec={t:[],s:'',ob:cur?(cur.ob||''):'',src:'pdf'};
+    perData[d].forEach(t=>{
+      const tipo=String(t.tipoGiornata||'').toUpperCase();
+      if(tipo==='TURNO'){ const i=oraOk(t.oraInizio), f=oraOk(t.oraFine); if(i&&f&&i!==f) rec.t.push({i,f,k:'p'}); }
+      else if(/RIPOSO/.test(tipo)) rec.s='riposo'; else if(/FERIE/.test(tipo)) rec.s='ferie';
+      else if(/PERMESS/.test(tipo)) rec.s='permesso'; else if(/MALATT/.test(tipo)) rec.s='malattia';
+    });
+    if(rec.t.length) rec.s='';
+    if(!rec.t.length&&!rec.s) return;
+    if(cur&&typeof cur.fest==='boolean') rec.fest=cur.fest;
+    const prima=cur?JSON.stringify({t:cur.t,s:cur.s}):null;
+    if(prima===JSON.stringify({t:rec.t,s:rec.s})) return;
+    if(prima) cambiati++;
+    REG[d]=rec; scritti++; mesi[d.slice(0,7)]=true;
+  });
+  if(scritti){
+    salvaReg();
+    const link=lsGet(KEY_LINK,''), meseOggi=oggi().slice(0,7);
+    if(link&&mesi[link]) usaNelCalcolo(link,true); else if(!link&&mesi[meseOggi]) usaNelCalcolo(meseOggi,true);
+    renderCal();
+  }
+  return {scritti, cambiati, mano};
+}
 const leggiArrayBuffer=f=>new Promise((res,rej)=>{ const rd=new FileReader(); rd.onload=()=>res(rd.result); rd.onerror=()=>rej(rd.error); rd.readAsArrayBuffer(f); });
 const drop=$('drop');
 drop.onclick=()=>$('file').click();
@@ -2027,7 +2076,7 @@ $('bk-file').onchange=e=>{
       if(!confirm(conBuste?'Sostituisco registro, profili, valori e buste con quelli del file?':'Sostituisco registro, profili e valori con quelli del file?')) return;
       REG=data.registro||{}; salvaReg(); if(data.profili) scriviProfili(data.profili); if(data.campi) applicaCampi(data.campi);
       APERTO=data.aperto||null; lsSet(KEY_APERTO,JSON.stringify(APERTO)); lsSet(KEY_LINK,data.link||''); lsSet(KEY_OB,data.ob||'');
-      aggiornaSelect(lsGet('gpg_ultimo','')); aggiornaOraria(true); renderTb(); renderCal(); calcola(); renderScadenze(); caricaRel();
+      aggiornaSelect(lsGet('gpg_ultimo','')); aggiornaSpunta8(); aggiornaOraria(true); renderTb(); renderCal(); calcola(); renderScadenze(); caricaRel();
       if(conBuste){ lsSet(KEY_BUSTE,JSON.stringify(data.buste)); BS_SEL=null; renderBuste(); }
       $('bk-msg').textContent='Copia di sicurezza caricata.';
     }catch(err){ $('bk-msg').textContent='Questo file non è una copia di sicurezza del Ruolino.'; }
@@ -2810,12 +2859,12 @@ function pulisciBusta(B){ if(!B||typeof B!=='object') return null;
 // dalla busta agli ingressi del motore, nello stesso modo della taratura
 function inputDaBusta(B){
   const V=c=>B.voci.filter(v=>v.cod===c), q=c=>V(c).reduce((a,v)=>a+v.qta,0);
-  const oreGg=n('c-ggferie')||6.66, valTra=n('d-val')||7;
+  const oreGg=n('c-ggferie')||6.66, valTra=valTraPer(B.anno+'-'+pad(B.mese));
   const str=B.voci.filter(eStraord), strOre=str.reduce((a,v)=>a+v.qta,0), strComp=str.reduce((a,v)=>a+v.comp,0);
   const trasf=B.voci.filter(eTrasf).reduce((a,v)=>a+v.comp,0);
   const ord=q(1), ferieOre=q(580)+q(620), fest=q(53), orePagate=ord+ferieOre+q(103)+q(652)+q(662);
   const I=leggiInput(), oraria=(V(1)[0]||{}).base||I.oraria;
-  I.oltre='misto'; I.oraria=oraria;                      // la busta dice già quali ore sono straordinario e quali trasferta
+  I.oltre='misto'; I.oraria=oraria; I.valTra=valTra;     // la busta dice già quali ore sono straordinario e quali trasferta
   I.ore=ord+strOre+trasf/valTra+fest; I.gg=q(107)+q(108)+q(110)+q(105); I.ferie=ferieOre/oreGg;
   I.notti=q(107); I.i561=q(108); I.i312=q(110); I.festOre=fest; I.festRet=Math.round(q(103)/oreGg);
   I.strOre=strOre; I.strP=str.length===1?str[0].pct:strOre>0?+((strComp/(strOre*oraria)-1)*100).toFixed(2):I.strP;
@@ -2926,7 +2975,7 @@ $('bs-drop').addEventListener('drop',e=>caricaBuste(Array.prototype.slice.call(e
 const CAMPI=['ore','oraria','liv','gg','ferie','fig-min','fig-mag','isee','duelav','quinto','presti','sind','altre',
   'd-str','d-strp','d-val','d-notti','d-i561','d-i312','d-fest','d-festret','d-addiz','d-contr','v-netto','v-ord','v-str','v-ind','v-trasf','v-imp','v-contr','v-irpef','v-addiz',
   'c-ore','c-gg','c-buono','c-ggferie','c-festperc','c-nott','c-strad','c-risc','c-diur','c-nottperc','c-nottore','c-mens','c-aum',
-  'coniuge','fig-dt','fig-quota','c-inizio','c-assunz','c-superm','sc-decreto','sc-porto','sc-tiro','sc-altro-nome','sc-altro','c-oltre','c-ratei'];
+  'coniuge','fig-dt','fig-quota','c-inizio','c-assunz','c-superm','sc-decreto','sc-porto','sc-tiro','sc-altro-nome','sc-altro','c-oltre','c-ratei','d-val8dal'];
 const CAMPI_ORARIA=['liv','c-inizio','c-assunz','c-superm','c-ore'];
 var GIA_USATO=lsGet('gpg',null)!==null;   // chi aveva già usato il Ruolino prima di questa apertura
 applicaGaritta(lsGet(KEY_GAR,'0')==='1');
@@ -2940,6 +2989,8 @@ CAMPI.forEach(id=>{ const el=$(id); if(el) el.addEventListener('input',()=>{
   if(CAMPI_ORARIA.indexOf(id)>=0) aggiornaOraria(id!=='liv');
   if(id.indexOf('sc-')===0){ renderScadenze(); renderServizio(); }
   calcola(); renderStat(); }); });
+$('d-val8').onchange=()=>{ $('d-val8dal').value=$('d-val8').checked?oggi().slice(0,7):''; aggiornaSpunta8(); calcola(); renderCal(); };
+aggiornaSpunta8();
 /* mese e anno partono da oggi; livello, tabella e festività non lavorate si ricalcolano da soli */
 ANNO=new Date().getFullYear(); $('anno').value=ANNO;
 $('mese').value=String(new Date().getMonth()+1);
@@ -2977,7 +3028,7 @@ caricaBacheca();
 window.RP={inflateJS,inflateBytes,frammenti,foglio,leggiPDF,riepilogo,FRASI,GRADI,pasqua,festivo,reg:()=>REG,
   motore,leggiInput,tabella,carriera,livelloAl,scattiAl,orariaPer,aggiornaOraria,nettoDaRegistro,valoreTurno,
   detrConiuge,detrFigli,statoScadenze,icsScadenze,oreNotturne,nottiUsuranti,testoRelazione,SCUSE,MOSTRINE,statoServizio,
-  leggiCiclo,QUIZ,statoAnno,foglioMatricolare,leggiBusta,inputDaBusta,stimaBusta,leggiBuste,renderBuste,caricaBuste,pulisciBusta,usaBusta,altreVoci,stimaConExtra};
+  leggiCiclo,QUIZ,statoAnno,foglioMatricolare,leggiBusta,inputDaBusta,stimaBusta,leggiBuste,renderBuste,caricaBuste,pulisciBusta,usaBusta,altreVoci,stimaConExtra,importaTurniPortale,valTraPer};
 /* installabile e utilizzabile senza rete: solo quando la pagina arriva da un indirizzo, non da un file */
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
