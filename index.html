@@ -264,8 +264,11 @@ header .titolo{flex:1 1 auto;min-width:0}
 #bs-dett{margin-top:12px;border-top:1px solid var(--line-2);padding-top:10px}
 #bs-dett h4{margin:0 0 6px;font-family:Oswald,sans-serif;font-weight:500;font-size:16px;text-transform:capitalize}
 .spunte{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px;font-size:13.5px}
-.spunta-8{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;font-weight:600;cursor:pointer}
-.spunta-8 input{width:20px;height:20px;margin:0}
+.spunta-8{display:flex;align-items:flex-start;gap:12px;margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card-2);cursor:pointer}
+.spunta-8 input{width:24px;height:24px;margin:2px 0 0;flex:0 0 auto;accent-color:var(--accent)}
+.spunta-8 b{display:block;font-size:15px;font-weight:600;color:var(--ink)}
+.spunta-8 small{display:block;font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px}
+.spunta-8:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
 .spunte li{display:flex;gap:8px;align-items:flex-start}
 .spunte li b{flex:0 0 auto;font-family:"IBM Plex Mono",Menlo,Consolas,monospace;color:var(--good)}
 .spunte li.no b{color:var(--warn)}
@@ -607,9 +610,6 @@ html[data-edizione="istituzionale"] [data-goliardia]{display:none!important}
             <label for="d-val">Valore ora di trasferta (€)</label>
             <input type="number" id="d-val" inputmode="decimal" step="0.5" value="7">
             <div class="hint">Le ore oltre ordinarie e straordinario vengono pagate così.</div>
-            <label class="spunta-8"><input type="checkbox" id="d-val8"> 8 € l'ora già da questo mese</label>
-            <input type="hidden" id="d-val8dal" value="">
-            <div class="hint" id="d-val8-hint">Nell'istituto di riferimento da gennaio 2027 la trasferta passa a 8 € l'ora: il Ruolino lo applica da solo.</div>
           </div>
           <div class="f">
             <label for="d-notti">Giorni con servizio notturno</label>
@@ -617,6 +617,8 @@ html[data-edizione="istituzionale"] [data-goliardia]{display:none!important}
             <div class="hint">−1 = come i giorni lavorati. I giorni senza notte prendono l'indennità diurna.</div>
           </div>
         </div>
+        <label class="spunta-8"><input type="checkbox" id="d-val8"><span><b>Trasferta a 8 € l'ora già da questo mese</b><small id="d-val8-hint">Nell'istituto di riferimento da gennaio 2027 la trasferta passa a 8 € l'ora: il Ruolino lo applica da solo.</small></span></label>
+        <input type="hidden" id="d-val8dal" value="">
         <div class="g3" style="margin-top:11px">
           <div class="f">
             <label for="d-i561">Giorni zona stradale</label>
@@ -2153,7 +2155,7 @@ $('c-reset').onclick=()=>{ for(const k in BASE_IST) if($(k)) $(k).value=BASE_IST
   msgProf('Valori predefiniti ripristinati.'); calcola(); };
 
 /* ---- versione, indirizzo, contatore ---- */
-const VERSIONE='2026.10.28-4';
+const VERSIONE='2026.10.28-5';
 const SERIO=document.documentElement.getAttribute('data-edizione')==='istituzionale';
 if(SERIO) document.querySelectorAll('[data-serio]').forEach(el=>{ el.textContent=el.getAttribute('data-serio'); });
 const SITO=SERIO?location.origin+location.pathname.replace(/index\.html$/,''):'https://ruolino-paga.github.io/';
