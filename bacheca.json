@@ -1,6 +1,12 @@
 {
   "avvisi": [
     {
+      "id": "2026-10-28-portale",
+      "data": "28/10/2026",
+      "testo": "Turni dal portale: nella scheda Turni, in cima, colleghi il portale dei turni con codice e password. Il Ruolino scarica i turni, li segna nel registro, tiene una copia di ogni versione con data e ora e confronta le ore del portale, del registro e della busta. I giorni che segni a mano restano tuoi.",
+      "evidenza": true
+    },
+    {
       "id": "2026-10-28-seria",
       "data": "28/10/2026",
       "testo": "Il Ruolino cambia tono: via encomi, medaglie, gradi, concorso e frasario. Restano il calcolo, il registro dei turni, le buste, le scadenze, la relazione di servizio e le notti per la pensione. La scheda Ruolino si chiama Turni, la Caserma si chiama Pratiche.",
